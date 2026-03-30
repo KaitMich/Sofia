@@ -1,0 +1,156 @@
+{
+  "cluster_0": {
+    "name": "\ud83d\udcbb",
+    "emoji": "\ud83c\udf31",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_1": {
+    "name": "\ud83d\udd25",
+    "emoji": "\ud83e\udded",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_2": {
+    "name": "\ud83d\udca7",
+    "emoji": "\ud83d\udee1\ufe0f",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_3": {
+    "name": "\ud83d\udd25\u27f3",
+    "emoji": "\ud83d\udc94",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_4": {
+    "name": "\ud83d\udcbb\u27f3",
+    "emoji": "\ud83e\ude9e",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_5": {
+    "name": "\u2699",
+    "emoji": "\ud83e\ude9e",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_6": {
+    "name": "\u2651",
+    "emoji": "\ud83d\udee1\ufe0f",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_7": {
+    "name": "\u2666",
+    "emoji": "\ud83c\udf0a",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_8": {
+    "name": "\ud83d\udd25\u27f3\u27f3",
+    "emoji": "\ud83c\udf19",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_9": {
+    "name": "\ud83d\udca7\u27f3",
+    "emoji": "\ud83d\udd25",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_10": {
+    "name": "\ud83d\udcbb\u27f3\u27f3",
+    "emoji": "\u26a1",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_11": {
+    "name": "\ud83d\udcbb\u27f3\u27f3\u27f3",
+    "emoji": "\ud83e\ude9e",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_12": {
+    "name": "\u2699\u27f3",
+    "emoji": "\ud83c\udf31",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_13": {
+    "name": "\u2666\u27f3",
+    "emoji": "\ud83d\udd25",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_14": {
+    "name": "\u2651\u27f3",
+    "emoji": "\ud83c\udf31",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_15": {
+    "name": "\ud83d\udcbb\u27f3\u27f3\u27f3\u27f3",
+    "emoji": "\ud83d\udee1\ufe0f",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_16": {
+    "name": "\u2666\u27f3\u27f3",
+    "emoji": "\u26a1",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_17": {
+    "name": "\u2649",
+    "emoji": "\ud83c\udf31",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_18": {
+    "name": "\u2699\u27f3\u27f3",
+    "emoji": "\ud83c\udf31",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_19": {
+    "name": "Test",
+    "emoji": "\ud83d\udc94",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_20": {
+    "name": "Processing",
+    "emoji": "\u26a1",
+    "members": [
+      "UnknownSymbol"
+    ]
+  },
+  "cluster_21": {
+    "name": "Know",
+    "emoji": "\ud83e\udded",
+    "members": [
+      "UnknownSymbol"
+    ]
+  }
+}

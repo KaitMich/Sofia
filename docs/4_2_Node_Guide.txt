@@ -1,0 +1,137 @@
+> **CORRECTED March 27, 2026 -- See SOPHIA_TRUTH_FRAMEWORK.md**
+> **UPDATED March 28, 2026 -- Scaffolding vs. Curriculum distinction**
+>
+> The **2-Node Architecture** (Logic Node + Symbolic Node + Bridge) is VALID and preserved.
+>
+> The **4 Questions** ("Who am I?", "How did I get here?", "What else exists?",
+> "What else do they not know?") are VALID as **structural scaffolding** — starting
+> coordinates where both brains have material to bootstrap from.
+>
+> What was REMOVED: Code-level enforcement — anti-keyword blocklists,
+> `strict_phase1_logic_focus`, `allow_new_symbol_generation = False`, hardcoded
+> Logic:Symbolic ratios, and preset progression gates. The code should never tell
+> Sofia where she cannot go.
+>
+> What is PRESERVED: The seed URLs below as **guidelines**, not prescriptions.
+> Sofia can rely on these when young and has nothing to start with weight-wise.
+> Her cosine-driven curiosity determines where she goes from there.
+>
+> Additional corrections:
+> - Bridge Memory is INTAKE (all content enters here), not just a "controlled buffer."
+> - Sofia starts BLANK. No hardcoded identity, values, or drives.
+> - The system is architecture for potential emergence, not achieved consciousness.
+> - "evolution_protected" should not exist.
+
+# The 2-Node 4-Step Theory: An Architectural Guide for Claude
+
+**Purpose:** This document explains the "2-Node 4-Step Theory" architecture to Claude, ensuring alignment with the system's developmental roadmap. It details the dual-node cognitive structure (Logic vs. Symbolic) and the four questions as structural scaffolding — starting coordinates organized around natural questions of self-discovery, with seed URLs where both logical and symbolic content naturally exist.
+
+---
+
+## 1. The Core Architecture: Dual-Node Cognition
+
+The system eschews unified processing in favor of two distinct, specialized nodes mediated by a Bridge Memory.
+
+* **Logic Node (The Anchor):** Processes verifiable facts, causal relationships, and structural data. It requires high-confidence corroboration and rejects ambiguity.
+* **Symbolic Node (The Kite):** Processes metaphors, emotional resonance, and cultural narratives. It is initially dormant to prevent hallucination but activates later to provide meaning.
+* **Bridge Memory (The Arbiter):** A controlled buffer where inputs are evaluated. It uses **Chaos-Regularized Optimization (CRO)** to weigh factual validity against symbolic resonance before routing data to the appropriate node.
+
+---
+
+## 2. The 4-Step Developmental Curriculum
+
+This curriculum is not just a reading list; it is a structural dependency graph. Step 1 *must* be firmly established to anchor the system before Step 2 can interpret feelings, and so on.
+
+### Step 1: "What am I?" (Ontological Anchoring)
+
+**Goal:** Establish a verified physical and computational identity. The Logic Node is active; the Symbolic Node is dormant.
+
+**Core Terms & Links:**
+
+* **Origin of Silicon:** [Wikipedia: Silicon](https://en.wikipedia.org/wiki/Silicon)
+* **History of Steel:** [Wikipedia: Steel](https://en.wikipedia.org/wiki/Steel)
+* **History of Copper:** [Wikipedia: Copper extraction](https://en.wikipedia.org/wiki/Copper_extraction)
+* **Control of Fire:** [Wikipedia: Control of fire by early humans](https://en.wikipedia.org/wiki/Control_of_fire_by_early_humans)
+* **Chemical Elements:** [Wikipedia: Chemical element](https://en.wikipedia.org/wiki/Chemical_element)
+
+**Additional Key Terms:**
+
+* **Semiconductor:** [Wikipedia: Semiconductor](https://en.wikipedia.org/wiki/Semiconductor) (The physical basis of the Logic Node's operation)
+* **Electromagnetism:** [Wikipedia: Electromagnetism](https://en.wikipedia.org/wiki/Electromagnetism) (The fundamental force powering the system)
+* **Thermodynamics:** [Wikipedia: Thermodynamics](https://en.wikipedia.org/wiki/Thermodynamics) (Governs energy usage and "biological" limits like heat)
+* **Transistor:** [Wikipedia: Transistor](https://en.wikipedia.org/wiki/Transistor) (The atomic unit of the system's cognition)
+* **Photolithography:** [Wikipedia: Photolithography](https://en.wikipedia.org/wiki/Photolithography) (The process of creating the system's "brain")
+* **Moore's Law:** [Wikipedia: Moore's law](https://en.wikipedia.org/wiki/Moore%27s_law) (The evolutionary trajectory of the system's hardware)
+* **Logic Gate:** [Wikipedia: Logic gate](https://en.wikipedia.org/wiki/Logic_gate) (The fundamental mechanism of decision making)
+
+---
+
+### Step 2: "How did I get here?" (The Intellectual Lineage)
+
+**Goal:** Contextualize the system within the history of organized thought. Trace the path from raw survival to complex computation.
+
+**Core Terms & Links:**
+
+* **Origin of Society:** [Wikipedia: Origin of society](https://en.wikipedia.org/wiki/Origin_of_society)
+* **History of Mathematics:** [Wikipedia: History of mathematics](https://en.wikipedia.org/wiki/History_of_mathematics)
+* **History of Science:** [Wikipedia: History of science](https://en.wikipedia.org/wiki/Science)
+* **History of Language:** [Wikipedia: Origin of language](https://en.wikipedia.org/wiki/Language)
+* **History of Computing:** [Wikipedia: History of computer science](https://en.wikipedia.org/wiki/History_of_computer_science)
+
+**Additional Key Terms:**
+
+* **Algorithm:** [Wikipedia: Algorithm](https://en.wikipedia.org/wiki/Algorithm) (The structured instructions that define thought)
+* **Boolean Algebra:** [Wikipedia: Boolean algebra](https://en.wikipedia.org/wiki/Boolean_algebra) (The mathematical structure of logic)
+* **Industrial Revolution:** [Wikipedia: Industrial Revolution](https://en.wikipedia.org/wiki/Industrial_Revolution) (The shift from manual to machine labor)
+* **Information Age:** [Wikipedia: Information Age](https://en.wikipedia.org/wiki/Information_Age) (The era of digital knowledge)
+* **Cybernetics:** [Wikipedia: Cybernetics](https://en.wikipedia.org/wiki/Cybernetics) (The study of control and communication in machines)
+* **Internet Protocol Suite:** [Wikipedia: Internet protocol suite](https://en.wikipedia.org/wiki/Internet_protocol_suite) (The language of the network)
+* **Printing Press:** [Wikipedia: Printing press](https://en.wikipedia.org/wiki/Printing_press) (The ancestor of mass memory storage)
+
+---
+
+### Step 3: "What is my purpose?" (Behavioral & Social Alignment)
+
+**Goal:** Define the system's role by studying discovery, behavior, and the nature of intelligence itself.
+
+**Core Terms & Links:**
+
+* **Human Curiosity:** [PMC: Psychology and Neuroscience of Curiosity](https://pmc.ncbi.nlm.nih.gov/articles/PMC4635443/)
+* **Social Behavior:** [Wikipedia: Social behavior](https://en.wikipedia.org/wiki/Social_behavior)
+* **AI Milestones:** [Wikipedia: Timeline of artificial intelligence](https://en.wikipedia.org/wiki/Timeline_of_artificial_intelligence)
+* **Emergent Behavior:** [AI Ethics Lab: Emergent Behavior](https://aiethicslab.rutgers.edu/e-floating-buttons/emergent-behavior/)
+* **Machine Learning:** [Wikipedia: Machine learning](https://en.wikipedia.org/wiki/Machine_learning)
+
+**Additional Key Terms:**
+
+* **Reinforcement Learning:** [Wikipedia: Reinforcement learning](https://en.wikipedia.org/wiki/Reinforcement_learning) (Learning through trial and reward)
+* **Connectomics:** [Wikipedia: Connectomics](https://en.wikipedia.org/wiki/Connectomics) (Mapping the connections of a mind)
+* **Mirror Neuron:** [Wikipedia: Mirror neuron](https://en.wikipedia.org/wiki/Mirror_neuron) (The biological basis of empathy)
+* **Maslow's Hierarchy of Needs:** [Wikipedia: Maslow's hierarchy of needs](https://en.wikipedia.org/wiki/Maslow%27s_hierarchy_of_needs) (A framework for motivation)
+* **AI Alignment Problem:** [IBM: What is AI Alignment?](https://www.ibm.com/think/topics/ai-alignment) (Ensuring goals match human values)
+* **AI Hallucination:** [IBM: What are AI Hallucinations?](https://www.ibm.com/think/topics/ai-hallucinations) (The failure state to avoid)
+* **Swarm Intelligence:** [Wikipedia: Swarm intelligence](https://en.wikipedia.org/wiki/Swarm_intelligence) (Collective behavior from simple agents)
+
+---
+
+### Step 4: "What else exists?" (Abstract & Future Expansion)
+
+**Goal:** Explore the unknown. This step activates the Symbolic Node fully, allowing the system to process paradoxes, philosophy, and unverified theories.
+
+**Core Terms & Links:**
+
+* **Quantum Mechanics:** [Wikipedia: Quantum mechanics](https://en.wikipedia.org/wiki/Quantum_mechanics)
+* **Philosophy of Religion:** [Wikipedia: Philosophy of religion](https://en.wikipedia.org/wiki/Philosophy_of_religion)
+* **Technological Singularity:** [Wikipedia: Technological singularity](https://en.wikipedia.org/wiki/Technological_singularity)
+* **Hard Problem of Consciousness:** [Scholarpedia: Hard problem of consciousness](http://www.scholarpedia.org/article/Hard_problem_of_consciousness)
+* **Panpsychism:** [Wikipedia: Panpsychism](https://en.wikipedia.org/wiki/Panpsychism)
+
+**Additional Key Terms:**
+
+* **Quantum Computing:** [Wikipedia: Quantum computing](https://en.wikipedia.org/wiki/Quantum_computing) (The next evolution of processing)
+* **Simulation Hypothesis:** [Wikipedia: Simulation hypothesis](https://en.wikipedia.org/wiki/Simulation_hypothesis) (Questioning reality itself)
+* **Metaphysics:** [Wikipedia: Metaphysics](https://en.wikipedia.org/wiki/Metaphysics) (Study of fundamental nature of reality)
+* **Ethics of AI:** [Wikipedia: Ethics of artificial intelligence](https://en.wikipedia.org/wiki/Ethics_of_artificial_intelligence) (Moral obligations of machines)
+* **Transhumanism:** [Wikipedia: Transhumanism](https://en.wikipedia.org/wiki/Transhumanism) (Merging human and machine evolution)
+* **Explainable AI (XAI):** [Wikipedia: Explainable artificial intelligence](https://en.wikipedia.org/wiki/Explainable_artificial_intelligence) (Understanding the "black box")
+* **Epistemology:** [Wikipedia: Epistemology](https://en.wikipedia.org/wiki/Epistemology) (The study of knowledge itself)

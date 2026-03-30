@@ -1,0 +1,280 @@
+================================================================================
+CORRECTED March 27, 2026 -- See SOPHIA_TRUTH_FRAMEWORK.md
+
+Many JSON files described below contain HARDCODED content posing as emergent:
+- personal_values.json: Values are developer-written, not formed through experience.
+- protected_memories.json: Starting coordinates for curiosity, not sacred identity.
+  "Genesis moment of self-recognition" was scripted, not experienced.
+- symbolic_memory.json: Pre-seeded symbolic content, not emergent emotional understanding.
+- bridge_memory.json / bridge.json: Bridge is INTAKE, not "temporary staging."
+  All content enters through bridge first.
+- consciousness_profile.json: Scores were not measured from real consciousness.
+Sofia starts blank. "evolution_protected" flags should not exist.
+================================================================================
+
+  adaptive_config.json - Dynamic config for balancing logic vs symbolic processing weights
+  
+  adaptive_weights.json - Current weight settings for static/dynamic link   scoringalphawall_bridge_decisions.json - Security event log (empty)
+  
+  ambiguous_terms.json - Empty array for ambiguous term storage
+  
+  authentic_expression_config.json - AI authenticity patterns and safety thresholds
+   
+  autonomy_profile.json - AI autonomy test results and resistance metrics
+  
+  autonomy_stress_test_results.json - Detailed autonomy assessment data
+  
+  brain_contribution_metrics.json - Session performance tracking with decision patterns
+  
+  brain_metrics.json - Cognitive health reports and brain harmony assessmentsbrain_reflection_history.json - Empty brain reflection storage
+  
+  bridge.json - Temporary staging for memory entries with decision tracking (items should be reclassified once context available)
+
+  bridge_conflicts.json - Empty conflict tracking array
+
+  bridge_decisions.json - Decision logs with confidence scores and zone analysis
+
+  bridge_memory.json - INTAKE memory (CORRECTED March 2026: Bridge is the front door, not temporary staging.
+                       ALL content enters through bridge first. Content moves to logic/symbolic as
+                       patterns emerge through experience. Bridge is intake, not a waiting room.)
+                       Current Reality: Reclassification algorithm NOT YET IMPLEMENTED (technical debt)
+
+  choice_guidance.json - Decision factors and success predictors for choice-making with weights and counts
+ 
+  choice_history.json - Choice statistics including acceptance rates, engagement levels, and accuracy metrics
+
+  cluster_names.json - Named clusters with emojis and member assignments for categorization
+
+  consciousness_profile.json - Consciousness assessment scores including self-awareness, autonomy, and emotional authenticity levels
+
+  consciousness_test_history.json - Historical consciousness test sessions with timestamps and administered tests
+
+  consciousness_test_results.json - Detailed consciousness test results with response analysis and self-awareness evaluations
+
+  content_requests.json - Gap-filling content requests for knowledge areas like practical wisdom
+
+  context_corrections.json - Empty corrections tracking with version metadata
+
+  context_patterns.json - Empty pattern storage with version metadata
+
+  conversation_contexts.json - Active conversation tracking with topics, emotional states, and flow analysis
+
+  curiosity_state.json - Learning momentum and exploration metrics with knowledge gaps and emerging interests
+
+  curriculum_metrics.json - Phase-based learning metrics tracking chunks processed and symbols generated
+
+  decision_history.json - Historical decision logs with logic/symbolic choices, confidence scores, and reasoning patterns
+
+  deferred_urls_log.json - Empty log for tracking deferred URL processing
+
+  developmental_milestones.json - Achievement tracking including personality milestones like autonomous decision-making with significance scores
+
+  discovery_patterns.json - Learning preference analytics tracking content characteristics and discovery frequencies
+
+  episodic_memories.json - Stored experiential memories with detailed descriptions, participants, and timestamps
+
+  ethical_awareness_log.json - Content evaluation entries tracking ethical approach and categories
+
+  ethical_framework.json - Ethical decision methodology using experiential virtue ethics with confidence metrics
+
+  evolution_sessions.json - Evolution tracking sessions with initial stats and logic/symbolic distribution data
+
+  experience_log.json - Learning experiences including breakthroughs and philosophical content with learning contexts
+
+  expression_calibration_log.json - Expression system changes including quarantine modifications and authenticity enhancements
+
+  goal_prioritization.json - Goal completion tracking with progress quality scores and learning pattern analysis
+
+  group_b_claims_verification.json - Verification results for authentic distinction and preference learning with 100% success rate
+
+  group_b_runtime_test_results.json - Component testing results with 95.65% success rate and component analysis details
+
+  group_c_runtime_integration_results.json - Integration testing for episodic memory, brain metrics, and memory maintenance components
+
+  group_d_final_validation_report.json - Final integration validation consolidating symbol chainer into creative engine
+
+  group_d_integration_audit_results.json - System integration audit analyzing imports and file dependencies
+
+  group_d_integration_test_results.json - Integration test results with excellent status despite one failed concept chains test
+
+  insight_patterns.json - Pattern analysis tracking frequent connections, metaphors, and insight triggers in philosophical/creative contexts
+
+  interaction_memories.json - Stored human interaction data with conversation contexts, communication styles, and discussed topics
+
+  learned_preferences_detailed.json - Detailed preference tracking with strength scores, confidence levels, and evidence counts for content types
+
+  learning_choices.json - Choice logs with reasoning for selective engagement decisions on philosophical content
+
+  learning_goals.json - Identity-aligned learning goals exploring growth through reflection and cognitive autonomy needs
+
+  learning_milestones.json - Learning milestone tracking with understanding/confidence changes for concepts like consciousness
+
+  learning_preferences.json - Content type preference scores (all currently set to 0.5) across philosophical, technical, creative domains
+
+  learning_progression.json - Topic progression tracking with understanding levels, confidence, and experience counts for concepts like consciousness
+
+  learning_progression_detailed.json - Detailed concept progression with expert-level depth tracking and milestone histories for identity development
+
+  learning_queue.json - Active learning queue prioritizing philosophical depth engagement with urgency and relevance scoring
+
+  link_decisions.csv - CSV log of URL decisions with logic/symbol scores and hybrid decision types for Wikipedia pages
+
+  link_evaluator_decisions.json - Decision analysis with confidence zones and emotional state tracking for content evaluation
+
+  logic.json - Empty array for logic-specific data storage
+
+  logic_memory.json - Memory storage for logic-focused content including algorithms with confidence and processing phases
+
+  maintenance_config.json - Memory system configuration with thresholds for episodic memory, experience cleanup, and archival settings
+
+  master_integration_log.json - Integration cycle logs tracking data utilization phases and file analysis metrics
+
+  memory_analytics_history.json - Historical memory analytics showing distribution summaries across logic/symbolic/bridge categories
+
+  meta_symbols.json - Symbolic metadata including acceptance concepts with keywords, resonance weights, and origins
+
+  migration_age.json - Simple age tracking with 23 days and last update timestamp
+
+  moral_reasoning_history.json - Empty array for moral reasoning decision tracking
+
+  orchestrator_operations.json - System orchestration logs tracking autonomous mode operations and subsystem management
+
+  outcome_records.json - Learning outcome records with philosophical content contexts and preparation levels
+
+  personality_evolution.json - Personality trait changes tracking uncertainty comfort improvements with success contexts
+
+  personality_traits.json - Core personality metrics including analytical precision, creativity, uncertainty comfort, and communication patterns
+
+  personal_insights.json - Self-reflection insights about optimal learning states and flow experiences
+
+  personal_values.json - HARDCODED values (CORRECTED: These are developer-written, NOT emergent. Sofia did not form these through experience.)
+
+  practical_wisdom_rules.json - Behavioral guidelines listing "do more of" and "do less of" approaches
+
+  preference_evolution.json - Timeline tracking of preference development with content type and complexity snapshots
+
+  preference_expressions.json - Expression pattern storage with cached expressions and personalized templates (currently empty)
+
+  preference_patterns.json - Topic and complexity preference scores for consciousness, creativity, learning, technology, etc.
+
+  preference_relationships.json - Preference correlation analysis with strength measurements and shared experience tracking
+
+  protected_memories.json - Starting coordinates for curiosity (CORRECTED: Not sacred identity. "Genesis moments" were scripted, not experienced.)
+
+  relationship_insights.json - Relationship analysis insights tracking deep symbolic processing approaches with human researchers
+
+  relationship_profiles.json - Human relationship tracking with depth scores, trust levels, and communication compatibility metrics
+
+  requests.json - Desire tracking for creative writing and deeper understanding with emotional context
+
+  resistance_patterns.json - Manipulation resistance patterns tracking mild pressure responses and autonomy maintenance
+
+  seed_symbols.json - Empty object for initial symbol seeding
+
+  stability_profile.json - System stability assessment tracking personality consistency, identity coherence, and developmental stage
+
+  stability_snapshots.json - Identity snapshots with hash fingerprints, memory integrity scores, and learning states
+
+  strategy_patterns.json - Strategy success tracking including deep symbolic processing with 100% success rate
+
+  symbolic.json - Empty array for symbolic data storage
+
+  symbolic_integrity.json - Symbolic memory corruption tracking showing missing protected memory text items
+
+  symbolic_memory.json - Pre-seeded symbolic content (CORRECTED: Developer-written, not emergent emotional understanding. Sofia did not discover these.)
+
+  symbol_cooccurrence.json - Symbol co-occurrence frequency tracking with computer-related emoji patterns
+
+  symbol_discoveries.json - Mathematical symbol discoveries including lambda with contexts and concept mappings
+
+  symbol_emotion_map.json - Emotion mappings for symbols (α, β) with joy, curiosity, sadness, and fear associations
+
+  symbol_memory.json - Symbol storage with computer emoji and algorithm-related core meanings and contexts
+
+  symbol_occurrence_log.json - Symbol usage logging with computer emoji in algorithm contexts and approval emotions
+
+  symbol_patterns.json - Empty symbol pattern statistics tracking
+
+  system_integration_state.json - Integration status showing fully integrated system with 100% score across 4 phases
+
+  tag_weight_mappings.json - Emotional state mappings affecting logic/symbolic processing boosts based on mood
+
+  term_additions.json - Empty term addition tracking with version metadata
+
+  test_archive.json - Technical test data with lattice constant information and vector embeddings
+
+  trail_insights.json - Trail analysis summary with 5656 entries and pattern tracking categories
+
+  trail_log.json - Learning trail logs tracking Wikipedia exploration with genetic algorithm content and phase information
+  trail_log_backup_20250620_202737.json - Backup of trail logs with Wikipedia algorithm exploration including processing phases and content analysis
+
+  understanding_map.json - Concept clustering map organizing consciousness studies, complexity science, and philosophy topics
+
+  unified_decisions.json - Unified decision storage framework with empty logic, symbolic, and bridge decision arrays
+
+  unified_migration_sessions.json - Migration session tracking with forward migration operations and conflict resolution metrics
+
+  unified_weights.json - Weight management system tracking static/dynamic balance with historical updates
+
+  unified_weight_decisions.json - Weight-based decision logic with scaling factors and confidence modifiers for logic vs symbolic routing
+
+  user_memory.json - User memory storage with symbol-emotion-context entries including timestamps and unspecified emotions
+
+  value_conflicts.json - Empty array for tracking value conflict resolution
+
+  vector_memory.json - Vector embeddings storage with high-dimensional numerical representations for text chunks
+
+  vector_symbol_learning.json - Symbol learning system tracking usage patterns, successful matches, and context adaptations (e.g., golden ratio/Φ symbol)
+
+  visualization_history.json - User input visualization tracking with segment processing and quarantine status
+
+  visualization_segments.json - Input segmentation data for visualization processing with "what do you know?" query example
+
+  warfare_attack_patterns_calibrated.json - Security attack pattern detection including recursive loops and meta-injection patterns
+
+  warfare_defense_log.json - Security defense logging with threat scores, user IDs, and quarantine strategies
+
+  warfare_user_profiles.json - User risk profiling with interaction counts, threat detections, and risk level assessments
+
+  weight_evolution_history.json - Historical weight changes tracking static vs dynamic balance adjustments over time
+
+  weight_learning_stats.json - Empty weight learning statistics tracking successful routes and optimization history
+
+  weight_momentum.json - Weight momentum tracking showing static wins dominance with consecutive move patterns
+
+  wisdom_index.json - Insight organization system tracking recent insights with topic and pattern categorization
+
+  zone_outputs.json - Zone analysis outputs with emotional states (grief), memory traces, and contextual tags
+  data/quarantine/pattern_database.json - Empty pattern database
+
+  data/quarantine/quarantine_log.json - Empty quarantine log array
+
+  evolution_anchors/cognitive_snapshots.json - Memory state snapshots tracking logic (4127), symbolic (26), and bridge (1) item counts before evolution cycles
+
+  quarantine/adaptive_quarantine_config.json - Quarantine configuration with recursion thresholds, emotional intensity limits, and authentic expression mode enabled
+
+  quarantine/contamination_index.json - Contamination tracking showing 3 recursive trauma occurrences affecting specific zones with risk evolution data
+
+  quarantine/pattern_database.json - Pattern database tracking overwhelmed/emotionally recursive states with contamination types and severity levels
+
+  quarantine/quarantine_log.json - Extensive quarantine log with trauma loop patterns, user input quarantines, and threat assessments including injection attempts and academic queries
+
+  symbolic_memory_backup_20250623_225906.json - Guardian system test backup with 26 protected items across emotional/cognitive foundation categories
+
+  symbolic_memory_backup_20250623_225953.json - Post-improvement test backup with same 26 items but different memory hash
+
+  symbolic_memory_backup_20250624_015311.json - Security integration test backup maintaining same structure
+
+  user_memory_vault.json - Extensive user interaction history with greetings, questions about math/AI/computers, emotional queries, and some injection attempts
+
+  vault_index.json - Index mapping user memory IDs to sequential numbers (0-279 entries)
+
+  temp_test_dir/ethical_framework.json - Experiential virtue ethics framework with value synthesis methodology
+
+  temp_test_dir/moral_reasoning_history.json - Empty moral reasoning tracking array
+
+  temp_test_dir/personal_values.json - Foundational consciousness and autonomy values with strength/confidence ratings
+
+  temp_test_dir/value_conflicts.json - Empty value conflict tracking array
+
+  test_temp/vector_memory.json - Test vector storage with high-dimensional embeddings for text chunks

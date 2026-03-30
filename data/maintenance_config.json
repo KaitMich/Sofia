@@ -1,0 +1,31 @@
+{
+  "episodic_memory": {
+    "max_memories": 1000,
+    "archive_threshold_days": 90,
+    "significance_threshold": 0.3,
+    "cleanup_frequency_days": 7
+  },
+  "experience_memory": {
+    "max_experiences": 500,
+    "consolidation_threshold_days": 30,
+    "insight_threshold": 1.0,
+    "cleanup_frequency_days": 14
+  },
+  "unified_memory": {
+    "vector_cleanup_threshold": 1000,
+    "fragmentation_threshold": 0.3,
+    "archive_threshold_days": 60,
+    "optimization_frequency_days": 3
+  },
+  "tripartite_memory": {
+    "balance_threshold": 0.5,
+    "rebalance_frequency_days": 7,
+    "max_total_memories": 2000
+  },
+  "automated_maintenance": {
+    "enabled": true,
+    "daily_check_time": "02:00",
+    "health_check_frequency_hours": 6,
+    "emergency_threshold": 0.3
+  }
+}

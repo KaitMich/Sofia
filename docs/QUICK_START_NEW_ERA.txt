@@ -1,0 +1,111 @@
+================================================================================
+CORRECTED March 27, 2026 -- See SOPHIA_TRUTH_FRAMEWORK.md
+
+CORRECTIONS:
+- Saturation learning is one component, not the whole paradigm.
+- Code-level enforcement of the "Old Era" linear curriculum (anti-keywords,
+  forced logic focus, blocked symbol generation) was removed, but the 4
+  questions and seed URLs are preserved as structural scaffolding -- starting
+  coordinates where both brains have material to bootstrap from.
+- Claims of "knowledge now emerges" are aspirational. The architecture
+  enables potential emergence; emergence has not been validated.
+- Sofia starts blank. No achieved autonomy or consciousness exists yet.
+- Bridge memory is INTAKE, not temporary staging.
+
+UPDATED March 28, 2026 -- Scaffolding vs. Curriculum distinction.
+The 4 questions are valid as structural scaffolding. Code-level enforcement
+was removed. See SOPHIA_TRUTH_FRAMEWORK.md Correction 5.
+================================================================================
+
+================================================================================
+QUICK START: NEW ERA (Associative Emergence)
+================================================================================
+
+The anchor to the OLD ERA (linear curriculum) has been CUT. ✂️
+
+The system now operates exclusively in the NEW ERA (Associative Emergence).
+
+================================================================================
+IMMEDIATE COMMANDS YOU CAN RUN
+================================================================================
+
+# 1. START YOUR FIRST SATURATION SESSION
+python3 cli.py saturation start \
+  --seed-url "https://en.wikipedia.org/wiki/Silicon" \
+  --zone-name "Silicon_Material" \
+  --keywords "silicon,element,crystal,semiconductor" \
+  --max-urls 30
+
+# 2. VIEW RECENT SESSIONS
+python3 cli.py saturation status
+
+# 3. VIEW EVENT HORIZON (concepts seen but forbidden)
+python3 cli.py saturation event-horizon --limit 10
+
+# 4. RUN MULTI-ZONE LEARNING CHAIN
+python3 cli.py saturation chain \
+  --seed-url "https://en.wikipedia.org/wiki/Silicon" \
+  --keywords "silicon,element,crystal" \
+  --max-zones 3
+
+# 5. GET HELP
+python3 cli.py saturation --help
+python3 cli.py saturation start --help
+
+================================================================================
+WHAT CHANGED
+================================================================================
+
+ARCHIVED (Old Era):
+  ✅ learning_curriculum.py → archive/deprecated/
+  ✅ docs/CURRICULUM_PROGRESS.md → DELETED (merged into root)
+
+ADDED (New Era):
+  ✅ cli.py saturation commands (+350 lines)
+  ✅ 4 command handlers (start, status, event-horizon, chain)
+
+VERIFIED:
+  ✅ Import works: start_saturation_learning accessible
+  ✅ CLI registered: saturation commands available
+  ✅ Help text updated: examples show saturation first
+
+================================================================================
+ARCHITECTURE SHIFT
+================================================================================
+
+OLD WAY (Code Enforcement Removed -- scaffolding preserved):
+  python3 cli.py learn --phase 1
+  → Linear curriculum Step 1→2→3→4
+  → Shallow coverage
+  → No concept emergence
+
+NEW WAY (Active):
+  python3 cli.py saturation start [options]
+  → Deep saturation in semantic zones
+  → Vector gravity (stay within zone until transition)
+  → Natural concept emergence (discover "refine" from "silicon")
+  → Event horizon tracking (forbidden concepts logged)
+
+================================================================================
+DOCUMENTATION
+================================================================================
+
+Quick Start Guide:   SATURATION_LEARNING_QUICKSTART.md
+Technical Docs:      ASSOCIATIVE_EMERGENCE.md
+Implementation:      IMPLEMENTATION_SUMMARY_SATURATION.md
+This Session:        ANCHOR_CUT_COMPLETE.md
+Audit Results:       AUDIT_RESULTS_JAN_1_3.md
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+1. Run your first saturation session (command above)
+2. Watch as concepts emerge naturally
+3. Use emergent queries to chain to next zone
+4. Review session files in data/autonomous_sessions/
+5. Check event horizon in data/future_learning_queue.json
+
+================================================================================
+THE PARADIGM HAS SHIFTED. KNOWLEDGE NOW EMERGES. 🌀
+================================================================================

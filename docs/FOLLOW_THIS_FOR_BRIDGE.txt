@@ -1,0 +1,985 @@
+================================================================================
+CORRECTED March 27, 2026 -- See SOPHIA_TRUTH_FRAMEWORK.md
+
+BRIDGE MODEL CORRECTION:
+Bridge memory is INTAKE, not "temporary staging for ambiguous content."
+ALL content enters through bridge first. The bridge is the front door
+to the memory system, not a holding pen for edge cases.
+
+The reclassification approach described below treats bridge as a place
+where "ambiguous" items wait. Under the corrected model:
+- Bridge is where ALL new content arrives (intake)
+- Content moves to logic/symbolic as patterns emerge through experience
+- The "cluster gravity" algorithm below is still valid as a mechanism,
+  but the framing should be: content enters bridge -> patterns form ->
+  gravity pulls content to where it belongs, based on DISCOVERED
+  relationships, not predetermined categories.
+
+Sofia starts blank. Values are emergent, not hardcoded.
+================================================================================
+
+BRIDGE RECLASSIFICATION IMPLEMENTATION - CAREFUL INCREMENTAL APPROACH
+
+CRITICAL RULES - READ BEFORE DOING ANYTHING
+
+1. DO NOT modify multiple files at once
+2. DO NOT rewrite entire files - only add/modify specific sections
+3. BACKUP before each file modification
+4. TEST after each step before proceeding
+5. If ANY step fails, STOP and report - do not attempt to fix by rewriting more
+
+Files that will be affected:
+- NEW: bridge_reclassifier.py (create from scratch)
+- NEW: tests/test_bridge_reclassification.py (create from scratch)
+- MODIFY: unified_memory.py (add 2 methods only)
+- MODIFY: memory_management.py (add 1 function only)
+- MODIFY: unified_orchestration.py (add scheduling only)
+- MODIFY: cli.py (add 1 command only)
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 1: VERIFY CURRENT STATE (Do this first, change nothing)
+═══════════════════════════════════════════════════════════════════════════════
+
+Before writing ANY code, verify the current state:
+
+1.1 Check bridge_memory.json exists and show its contents
+1.2 Show the current structure of unified_memory.py (just the class methods list)
+1.3 Show the current structure of memory_management.py (just the function names)
+1.4 Show the current structure of unified_orchestration.py (just the class methods)
+1.5 Show the current structure of cli.py (just the command names)
+1.6 Confirm bridge_reclassifier.py does NOT exist yet
+
+Report findings before proceeding. Wait for approval.
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 2: CREATE NEW FILE - bridge_reclassifier.py (Safe - new file only)
+═══════════════════════════════════════════════════════════════════════════════
+
+Create bridge_reclassifier.py with the following structure.
+
+IMPORTANT: Use the CLUSTER GRAVITY algorithm, not simple ratio recalculation.
+```python
+"""
+Bridge Memory Reclassification System
+
+Purpose: Move items OUT of bridge memory when accumulated context
+provides enough evidence to classify them as Logic or Symbolic.
+
+Design Philosophy:
+- Bridge is TEMPORARY staging, not permanent storage
+- Items escape via "cluster gravity" - when surrounded by clear neighbors
+- Three gates must pass: TIME (7 days), CONTEXT (5+ items), GRAVITY (70%)
+
+Created: [date]
+Author: Claude Code
+"""
+
+import json
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Dict, List, Tuple, Optional
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class BridgeReclassifier:
+    """
+    Handles periodic review and reclassification of bridge memory items.
+    
+    Algorithm: Cluster Gravity
+    - Instead of recalculating an item's own ratio, we look at WHERE
+      related items live (Logic vs Symbolic memory)
+    - If 70%+ of related items are in one memory type, the bridge item
+      gets "pulled" into that memory
+    """
+    
+    # Configuration
+    MIN_AGE_DAYS = 7           # Gate 1: Must be in bridge at least this long
+    MIN_RELATED_ITEMS = 5      # Gate 2: Must have this many related neighbors
+    DOMINANCE_THRESHOLD = 0.70 # Gate 3: Cluster must be 70%+ one type
+    
+    def __init__(self, unified_memory, config_path: str = "data/bridge_reclassification_config.json"):
+        """
+        Initialize with reference to unified memory system.
+        
+        Args:
+            unified_memory: Instance of UnifiedMemory class
+            config_path: Path to configuration file (optional)
+        """
+        self.memory = unified_memory
+        self.config_path = Path(config_path)
+        self.config = self._load_config()
+        self.log_path = Path(self.config.get('log_file', 'data/bridge_reclassification_log.json'))
+        
+    def _load_config(self) -> Dict:
+        """Load configuration or return defaults."""
+        if self.config_path.exists():
+            try:
+                with open(self.config_path, 'r') as f:
+                    return json.load(f)
+            except Exception as e:
+                logger.warning(f"Could not load config: {e}, using defaults")
+        
+        return {
+            "enabled": True,
+            "min_age_days": self.MIN_AGE_DAYS,
+            "min_related_items": self.MIN_RELATED_ITEMS,
+            "dominance_threshold": self.DOMINANCE_THRESHOLD,
+            "max_reclassifications_per_review": 10,
+            "log_file": "data/bridge_reclassification_log.json"
+        }
+    
+    def find_related_content(self, bridge_item: Dict) -> List[Dict]:
+        """
+        Find items in Logic and Symbolic memory related to this bridge item.
+        
+        Strategy: Keyword overlap (simple but effective)
+        - Extract significant words from bridge item
+        - Find items in Logic/Symbolic with 2+ matching keywords
+        - Tag each result with its source memory type
+        
+        Args:
+            bridge_item: The bridge memory item to find relations for
+            
+        Returns:
+            List of related items, each tagged with 'memory_type': 'logic'|'symbolic'
+        """
+        related = []
+        
+        # Extract keywords from bridge item (simple approach)
+        bridge_text = bridge_item.get('text', '').lower()
+        bridge_keywords = self._extract_keywords(bridge_text)
+        
+        if len(bridge_keywords) < 2:
+            return []  # Not enough keywords to match
+        
+        # Search Logic memory
+        for item in self.memory.logic_memory:
+            item_text = item.get('text', '').lower()
+            item_keywords = self._extract_keywords(item_text)
+            overlap = len(bridge_keywords & item_keywords)
+            if overlap >= 2:
+                related.append({
+                    **item,
+                    'memory_type': 'logic',
+                    'keyword_overlap': overlap
+                })
+        
+        # Search Symbolic memory
+        for item in self.memory.symbolic_memory:
+            item_text = item.get('text', '').lower()
+            item_keywords = self._extract_keywords(item_text)
+            overlap = len(bridge_keywords & item_keywords)
+            if overlap >= 2:
+                related.append({
+                    **item,
+                    'memory_type': 'symbolic',
+                    'keyword_overlap': overlap
+                })
+        
+        return related
+    
+    def _extract_keywords(self, text: str) -> set:
+        """
+        Extract significant keywords from text.
+        Filters out common stopwords, keeps meaningful terms.
+        """
+        # Common words to ignore
+        stopwords = {
+            'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been',
+            'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
+            'would', 'could', 'should', 'may', 'might', 'must', 'shall',
+            'can', 'need', 'dare', 'ought', 'used', 'to', 'of', 'in',
+            'for', 'on', 'with', 'at', 'by', 'from', 'as', 'into',
+            'through', 'during', 'before', 'after', 'above', 'below',
+            'between', 'under', 'again', 'further', 'then', 'once',
+            'here', 'there', 'when', 'where', 'why', 'how', 'all',
+            'each', 'few', 'more', 'most', 'other', 'some', 'such',
+            'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than',
+            'too', 'very', 'just', 'and', 'but', 'if', 'or', 'because',
+            'until', 'while', 'this', 'that', 'these', 'those', 'what',
+            'which', 'who', 'whom', 'i', 'me', 'my', 'myself', 'we',
+            'our', 'ours', 'you', 'your', 'he', 'him', 'his', 'she',
+            'her', 'it', 'its', 'they', 'them', 'their', 'about'
+        }
+        
+        # Simple tokenization
+        words = text.lower().split()
+        # Remove punctuation and filter
+        keywords = set()
+        for word in words:
+            clean = ''.join(c for c in word if c.isalnum())
+            if clean and len(clean) > 2 and clean not in stopwords:
+                keywords.add(clean)
+        
+        return keywords
+    
+    def evaluate_bridge_item(self, item: Dict, related_items: List[Dict]) -> Tuple[bool, Optional[str], str]:
+        """
+        Evaluate whether a bridge item should be reclassified using Cluster Gravity.
+        
+        Three gates must pass:
+        1. TIME: Item must be in bridge >= MIN_AGE_DAYS
+        2. CONTEXT: Must have >= MIN_RELATED_ITEMS neighbors
+        3. GRAVITY: Cluster must be >= DOMINANCE_THRESHOLD one type
+        
+        Args:
+            item: The bridge memory item
+            related_items: List of related items from find_related_content()
+            
+        Returns:
+            Tuple of (should_reclassify, target_memory, reason)
+            target_memory is 'LOGIC', 'SYMBOLIC', or None
+        """
+        # GATE 1: TIME CHECK
+        item_timestamp = item.get('timestamp')
+        if item_timestamp:
+            try:
+                item_date = datetime.fromisoformat(item_timestamp.replace('Z', '+00:00'))
+                age_days = (datetime.now(item_date.tzinfo) - item_date).days
+            except:
+                age_days = 0
+        else:
+            age_days = 0
+        
+        min_age = self.config.get('min_age_days', self.MIN_AGE_DAYS)
+        if age_days < min_age:
+            return False, None, f"Too recent ({age_days}/{min_age} days - incubating)"
+        
+        # GATE 2: CONTEXT CHECK
+        min_related = self.config.get('min_related_items', self.MIN_RELATED_ITEMS)
+        if len(related_items) < min_related:
+            return False, None, f"Insufficient context ({len(related_items)}/{min_related} related items)"
+        
+        # GATE 3: CLUSTER GRAVITY CHECK
+        logic_neighbors = sum(1 for r in related_items if r.get('memory_type') == 'logic')
+        symbolic_neighbors = sum(1 for r in related_items if r.get('memory_type') == 'symbolic')
+        total = logic_neighbors + symbolic_neighbors
+        
+        if total == 0:
+            return False, None, "No valid neighbors found"
+        
+        logic_dominance = logic_neighbors / total
+        symbolic_dominance = symbolic_neighbors / total
+        
+        threshold = self.config.get('dominance_threshold', self.DOMINANCE_THRESHOLD)
+        
+        if logic_dominance >= threshold:
+            return True, "LOGIC", f"Cluster gravity: {logic_dominance:.0%} Logic neighbors ({logic_neighbors}/{total})"
+        elif symbolic_dominance >= threshold:
+            return True, "SYMBOLIC", f"Cluster gravity: {symbolic_dominance:.0%} Symbolic neighbors ({symbolic_neighbors}/{total})"
+        
+        return False, None, f"Split cluster ({logic_dominance:.0%} Logic / {symbolic_dominance:.0%} Symbolic)"
+    
+    def review_bridge_memory(self, dry_run: bool = True) -> Dict:
+        """
+        Main entry point: Review all bridge items and reclassify eligible ones.
+        
+        Args:
+            dry_run: If True, only report what would happen without making changes
+            
+        Returns:
+            Dict with review statistics and details
+        """
+        results = {
+            'timestamp': datetime.now().isoformat(),
+            'dry_run': dry_run,
+            'items_reviewed': 0,
+            'items_ready': 0,
+            'items_reclassified': 0,
+            'to_logic': 0,
+            'to_symbolic': 0,
+            'items_remaining': 0,
+            'details': [],
+            'errors': []
+        }
+        
+        bridge_items = list(self.memory.bridge_memory)  # Copy to avoid modification during iteration
+        results['items_reviewed'] = len(bridge_items)
+        
+        max_reclassify = self.config.get('max_reclassifications_per_review', 10)
+        reclassified_count = 0
+        
+        for item in bridge_items:
+            if reclassified_count >= max_reclassify:
+                break
+                
+            try:
+                # Find related content
+                related = self.find_related_content(item)
+                
+                # Evaluate for reclassification
+                should_move, target, reason = self.evaluate_bridge_item(item, related)
+                
+                detail = {
+                    'id': item.get('id', 'unknown'),
+                    'text_preview': item.get('text', '')[:50] + '...',
+                    'related_count': len(related),
+                    'should_reclassify': should_move,
+                    'target': target,
+                    'reason': reason
+                }
+                
+                if should_move:
+                    results['items_ready'] += 1
+                    
+                    if not dry_run:
+                        # Actually move the item
+                        success = self.memory.move_item_from_bridge(item, target, reason)
+                        if success:
+                            results['items_reclassified'] += 1
+                            reclassified_count += 1
+                            if target == 'LOGIC':
+                                results['to_logic'] += 1
+                            else:
+                                results['to_symbolic'] += 1
+                            detail['reclassified'] = True
+                        else:
+                            detail['reclassified'] = False
+                            detail['error'] = "Move operation failed"
+                            results['errors'].append(f"Failed to move {item.get('id')}")
+                    else:
+                        detail['reclassified'] = False
+                        detail['would_reclassify'] = True
+                
+                results['details'].append(detail)
+                
+            except Exception as e:
+                results['errors'].append(f"Error processing {item.get('id', 'unknown')}: {str(e)}")
+        
+        # Count remaining
+        results['items_remaining'] = len(self.memory.bridge_memory)
+        
+        # Log results
+        self._log_review(results)
+        
+        return results
+    
+    def _log_review(self, results: Dict):
+        """Append review results to log file."""
+        try:
+            # Load existing log
+            if self.log_path.exists():
+                with open(self.log_path, 'r') as f:
+                    log = json.load(f)
+            else:
+                log = {'reviews': []}
+            
+            # Append new review
+            log['reviews'].append(results)
+            
+            # Trim if too long
+            max_entries = self.config.get('max_log_entries', 1000)
+            if len(log['reviews']) > max_entries:
+                log['reviews'] = log['reviews'][-max_entries:]
+            
+            # Save
+            with open(self.log_path, 'w') as f:
+                json.dump(log, f, indent=2)
+                
+        except Exception as e:
+            logger.error(f"Failed to log review: {e}")
+
+
+# Convenience function for external use
+def run_bridge_review(dry_run: bool = True) -> Dict:
+    """
+    Run a bridge memory review.
+    
+    Args:
+        dry_run: If True, only report what would happen
+        
+    Returns:
+        Review results dictionary
+    """
+    from unified_memory import get_unified_memory
+    
+    memory = get_unified_memory()
+    reclassifier = BridgeReclassifier(memory)
+    return reclassifier.review_bridge_memory(dry_run=dry_run)
+```
+
+After creating this file:
+- Verify it has no syntax errors: `python -c "import bridge_reclassifier"`
+- Report the result before proceeding
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 3: MODIFY unified_memory.py (CAREFUL - add methods only)
+═══════════════════════════════════════════════════════════════════════════════
+
+⚠️ DO NOT REWRITE THE FILE. Only ADD the following methods to the UnifiedMemory class.
+
+3.1 First, create a backup:
+    cp unified_memory.py unified_memory.py.backup
+
+3.2 Find the end of the UnifiedMemory class (before any standalone functions)
+
+3.3 ADD these two methods to the class (do not modify existing methods):
+```python
+    def move_item_from_bridge(self, item: Dict, target_memory: str, reason: str) -> bool:
+        """
+        Move an item from bridge memory to logic or symbolic memory.
+        Preserves full history for audit trail.
+        
+        Args:
+            item: The bridge memory item to move
+            target_memory: 'LOGIC' or 'SYMBOLIC'
+            reason: Human-readable reason for reclassification
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            with self.lock:
+                # Verify item exists in bridge
+                item_id = item.get('id')
+                if not any(i.get('id') == item_id for i in self.bridge_memory):
+                    logger.warning(f"Item {item_id} not found in bridge memory")
+                    return False
+                
+                # Add reclassification metadata
+                item['reclassified_from_bridge'] = True
+                item['reclassification_date'] = datetime.utcnow().isoformat()
+                item['reclassification_reason'] = reason
+                item['previous_decision'] = item.get('decision_type', 'FOLLOW_HYBRID')
+                
+                # Remove from bridge
+                self.bridge_memory = [i for i in self.bridge_memory if i.get('id') != item_id]
+                
+                # Add to target memory
+                if target_memory.upper() == 'LOGIC':
+                    item['decision_type'] = 'FOLLOW_LOGIC'
+                    self.logic_memory.append(item)
+                elif target_memory.upper() == 'SYMBOLIC':
+                    item['decision_type'] = 'FOLLOW_SYMBOLIC'
+                    self.symbolic_memory.append(item)
+                else:
+                    logger.error(f"Invalid target memory: {target_memory}")
+                    return False
+                
+                # Persist changes
+                self._save_tripartite_memory()
+                
+                logger.info(f"Reclassified {item_id} from bridge to {target_memory}: {reason}")
+                return True
+                
+        except Exception as e:
+            logger.error(f"Failed to move item from bridge: {e}")
+            return False
+    
+    def get_bridge_items_for_review(self, min_age_days: int = 7) -> List[Dict]:
+        """
+        Get bridge items eligible for reclassification review.
+        
+        Args:
+            min_age_days: Minimum age in days for eligibility
+            
+        Returns:
+            List of eligible bridge items
+        """
+        eligible = []
+        cutoff = datetime.utcnow() - timedelta(days=min_age_days)
+        
+        for item in self.bridge_memory:
+            timestamp = item.get('timestamp')
+            if timestamp:
+                try:
+                    item_date = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+                    if item_date.replace(tzinfo=None) < cutoff:
+                        eligible.append(item)
+                except:
+                    # If we can't parse date, include it (assume old enough)
+                    eligible.append(item)
+            else:
+                # No timestamp, include it
+                eligible.append(item)
+        
+        return eligible
+```
+
+3.4 Verify the file still works:
+    python -c "from unified_memory import UnifiedMemory; print('OK')"
+
+3.5 Report the result. If there are ANY errors, restore from backup and STOP.
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 4: MODIFY memory_management.py (CAREFUL - add function only)
+═══════════════════════════════════════════════════════════════════════════════
+
+⚠️ DO NOT REWRITE THE FILE. Only ADD one function.
+
+4.1 First, create a backup:
+    cp memory_management.py memory_management.py.backup
+
+4.2 Find the end of the file (after all existing functions)
+
+4.3 ADD this function at the end:
+```python
+def run_bridge_reclassification_review(dry_run: bool = True, min_age_days: int = 7) -> Dict:
+    """
+    Run periodic bridge memory review and reclassification.
+    
+    This function reviews items in bridge memory and reclassifies them
+    to logic or symbolic memory when sufficient context has accumulated.
+    
+    Args:
+        dry_run: If True, only report what would happen without making changes
+        min_age_days: Minimum age in days for items to be reviewed
+        
+    Returns:
+        Dict with review statistics including:
+        - items_reviewed: Total items checked
+        - items_ready: Items eligible for reclassification
+        - items_reclassified: Items actually moved (0 if dry_run)
+        - to_logic: Items moved to logic memory
+        - to_symbolic: Items moved to symbolic memory
+        - items_remaining: Items still in bridge
+        - details: Per-item breakdown
+    """
+    try:
+        from bridge_reclassifier import BridgeReclassifier
+        from unified_memory import get_unified_memory
+        
+        unified_memory = get_unified_memory()
+        reclassifier = BridgeReclassifier(unified_memory)
+        
+        # Update config with provided parameters
+        reclassifier.config['min_age_days'] = min_age_days
+        
+        results = reclassifier.review_bridge_memory(dry_run=dry_run)
+        return results
+        
+    except ImportError as e:
+        return {
+            'error': f"Bridge reclassifier not available: {e}",
+            'items_reviewed': 0,
+            'items_reclassified': 0
+        }
+    except Exception as e:
+        return {
+            'error': f"Bridge review failed: {e}",
+            'items_reviewed': 0,
+            'items_reclassified': 0
+        }
+```
+
+4.4 Verify the file still works:
+    python -c "from memory_management import run_bridge_reclassification_review; print('OK')"
+
+4.5 Report the result. If there are ANY errors, restore from backup and STOP.
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 5: MODIFY cli.py (CAREFUL - add command only)
+═══════════════════════════════════════════════════════════════════════════════
+
+⚠️ DO NOT REWRITE THE FILE. Only ADD one command.
+
+5.1 First, create a backup:
+    cp cli.py cli.py.backup
+
+5.2 Find where other @cli.command() functions are defined
+
+5.3 ADD this command (near other commands):
+```python
+@cli.command()
+@click.option('--dry-run/--no-dry-run', default=True, help='Preview changes without executing (default: dry-run)')
+@click.option('--min-age', default=7, type=int, help='Minimum age in days for review (default: 7)')
+def bridge_review(dry_run, min_age):
+    """
+    Review bridge memory and reclassify eligible items.
+    
+    Bridge memory holds ambiguous items until enough context accumulates
+    to classify them as Logic or Symbolic. This command reviews items
+    and moves them when they have sufficient related neighbors.
+    
+    Use --dry-run (default) to preview what would happen.
+    Use --no-dry-run to actually execute reclassification.
+    """
+    from memory_management import run_bridge_reclassification_review
+    
+    mode = "DRY RUN (preview only)" if dry_run else "LIVE (will make changes)"
+    click.echo(f"\n🌉 Bridge Memory Review - {mode}")
+    click.echo(f"   Minimum item age: {min_age} days\n")
+    
+    results = run_bridge_reclassification_review(
+        dry_run=dry_run,
+        min_age_days=min_age
+    )
+    
+    if 'error' in results:
+        click.echo(f"❌ Error: {results['error']}")
+        return
+    
+    # Display results
+    click.echo("📊 Review Results:")
+    click.echo(f"   Items in bridge:     {results.get('items_reviewed', 0)}")
+    click.echo(f"   Ready to reclassify: {results.get('items_ready', 0)}")
+    
+    if dry_run:
+        click.echo(f"   Would reclassify:    {results.get('items_ready', 0)}")
+    else:
+        click.echo(f"   Actually reclassified: {results.get('items_reclassified', 0)}")
+        click.echo(f"     → To Logic:        {results.get('to_logic', 0)}")
+        click.echo(f"     → To Symbolic:     {results.get('to_symbolic', 0)}")
+    
+    click.echo(f"   Remaining in bridge: {results.get('items_remaining', 0)}")
+    
+    # Show details for each item
+    details = results.get('details', [])
+    if details:
+        click.echo("\n📝 Item Details:")
+        for d in details:
+            status = "✓ READY" if d.get('should_reclassify') else "○ WAIT"
+            target = f"→ {d.get('target')}" if d.get('target') else ""
+            click.echo(f"   {status} {d.get('id', 'unknown')[:20]}... {target}")
+            click.echo(f"         Related: {d.get('related_count', 0)} items | {d.get('reason', '')}")
+    
+    if dry_run:
+        click.echo("\n💡 To execute reclassification, run with --no-dry-run")
+```
+
+5.4 Verify the CLI still works:
+    python cli.py --help
+
+5.5 Report the result. If there are ANY errors, restore from backup and STOP.
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 6: MODIFY unified_orchestration.py (CAREFUL - add scheduling only)
+═══════════════════════════════════════════════════════════════════════════════
+
+⚠️ This step is OPTIONAL for now. Skip if orchestration is complex.
+
+If proceeding:
+
+6.1 First, create a backup:
+    cp unified_orchestration.py unified_orchestration.py.backup
+
+6.2 Find where scheduled tasks are defined
+
+6.3 ADD the bridge review to scheduled tasks (weekly at 3am):
+```python
+    # Bridge memory reclassification review (weekly)
+    def _run_scheduled_bridge_review(self):
+        """Periodic bridge memory review - runs weekly."""
+        try:
+            from memory_management import run_bridge_reclassification_review
+            
+            logger.info("Running scheduled bridge memory review...")
+            results = run_bridge_reclassification_review(dry_run=False)
+            
+            logger.info(f"Bridge review complete: "
+                       f"{results.get('items_reclassified', 0)} items reclassified, "
+                       f"{results.get('items_remaining', 0)} remaining")
+            
+        except Exception as e:
+            logger.error(f"Scheduled bridge review failed: {e}")
+```
+
+6.4 Register the task in the scheduler (find where other tasks are scheduled)
+
+6.5 Verify the file still works
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 7: CREATE TEST FILE (Safe - new file only)
+═══════════════════════════════════════════════════════════════════════════════
+
+Create tests/test_bridge_reclassification.py:
+```python
+"""
+Tests for Bridge Memory Reclassification System
+
+Run with: pytest tests/test_bridge_reclassification.py -v
+"""
+
+import pytest
+import json
+from datetime import datetime, timedelta
+from unittest.mock import MagicMock, patch
+from bridge_reclassifier import BridgeReclassifier
+
+
+class MockUnifiedMemory:
+    """Mock memory system for testing."""
+    
+    def __init__(self):
+        self.logic_memory = []
+        self.symbolic_memory = []
+        self.bridge_memory = []
+        self.lock = MagicMock()
+        self._saved = False
+    
+    def _save_tripartite_memory(self):
+        self._saved = True
+    
+    def move_item_from_bridge(self, item, target, reason):
+        # Remove from bridge
+        self.bridge_memory = [i for i in self.bridge_memory if i.get('id') != item.get('id')]
+        # Add to target
+        item['reclassified_from_bridge'] = True
+        item['reclassification_reason'] = reason
+        if target == 'LOGIC':
+            self.logic_memory.append(item)
+        else:
+            self.symbolic_memory.append(item)
+        return True
+
+
+class TestBridgeReclassifier:
+    """Test suite for BridgeReclassifier."""
+    
+    def setup_method(self):
+        """Set up test fixtures."""
+        self.mock_memory = MockUnifiedMemory()
+        self.reclassifier = BridgeReclassifier(self.mock_memory)
+    
+    def test_keyword_extraction(self):
+        """Test that keywords are extracted correctly."""
+        text = "The quantum physics experiment showed interesting results"
+        keywords = self.reclassifier._extract_keywords(text)
+        
+        assert 'quantum' in keywords
+        assert 'physics' in keywords
+        assert 'experiment' in keywords
+        assert 'the' not in keywords  # Stopword
+        assert 'showed' in keywords
+    
+    def test_gate1_time_check_too_recent(self):
+        """Test that recent items are not reclassified."""
+        item = {
+            'id': 'test_1',
+            'text': 'Test item',
+            'timestamp': datetime.now().isoformat()  # Just created
+        }
+        
+        should_move, target, reason = self.reclassifier.evaluate_bridge_item(item, [])
+        
+        assert should_move is False
+        assert 'Too recent' in reason or 'incubating' in reason
+    
+    def test_gate2_insufficient_context(self):
+        """Test that items without enough related content stay in bridge."""
+        old_date = (datetime.now() - timedelta(days=30)).isoformat()
+        item = {
+            'id': 'test_2',
+            'text': 'Test item',
+            'timestamp': old_date
+        }
+        
+        # Only 2 related items (need 5)
+        related = [
+            {'memory_type': 'logic'},
+            {'memory_type': 'logic'}
+        ]
+        
+        should_move, target, reason = self.reclassifier.evaluate_bridge_item(item, related)
+        
+        assert should_move is False
+        assert 'Insufficient context' in reason
+    
+    def test_gate3_cluster_gravity_logic(self):
+        """Test that logic-dominated clusters pull items to logic."""
+        old_date = (datetime.now() - timedelta(days=30)).isoformat()
+        item = {
+            'id': 'test_3',
+            'text': 'Test item',
+            'timestamp': old_date
+        }
+        
+        # 8 logic, 2 symbolic = 80% logic dominance
+        related = [
+            {'memory_type': 'logic'},
+            {'memory_type': 'logic'},
+            {'memory_type': 'logic'},
+            {'memory_type': 'logic'},
+            {'memory_type': 'logic'},
+            {'memory_type': 'logic'},
+            {'memory_type': 'logic'},
+            {'memory_type': 'logic'},
+            {'memory_type': 'symbolic'},
+            {'memory_type': 'symbolic'},
+        ]
+        
+        should_move, target, reason = self.reclassifier.evaluate_bridge_item(item, related)
+        
+        assert should_move is True
+        assert target == 'LOGIC'
+        assert '80%' in reason or 'Logic' in reason
+    
+    def test_gate3_cluster_gravity_symbolic(self):
+        """Test that symbolic-dominated clusters pull items to symbolic."""
+        old_date = (datetime.now() - timedelta(days=30)).isoformat()
+        item = {
+            'id': 'test_4',
+            'text': 'Test item',
+            'timestamp': old_date
+        }
+        
+        # 2 logic, 8 symbolic = 80% symbolic dominance
+        related = [
+            {'memory_type': 'logic'},
+            {'memory_type': 'logic'},
+            {'memory_type': 'symbolic'},
+            {'memory_type': 'symbolic'},
+            {'memory_type': 'symbolic'},
+            {'memory_type': 'symbolic'},
+            {'memory_type': 'symbolic'},
+            {'memory_type': 'symbolic'},
+            {'memory_type': 'symbolic'},
+            {'memory_type': 'symbolic'},
+        ]
+        
+        should_move, target, reason = self.reclassifier.evaluate_bridge_item(item, related)
+        
+        assert should_move is True
+        assert target == 'SYMBOLIC'
+    
+    def test_gate3_split_cluster_stays(self):
+        """Test that split clusters keep items in bridge."""
+        old_date = (datetime.now() - timedelta(days=30)).isoformat()
+        item = {
+            'id': 'test_5',
+            'text': 'Test item',
+            'timestamp': old_date
+        }
+        
+        # 5 logic, 5 symbolic = 50/50 split
+        related = [
+            {'memory_type': 'logic'},
+            {'memory_type': 'logic'},
+            {'memory_type': 'logic'},
+            {'memory_type': 'logic'},
+            {'memory_type': 'logic'},
+            {'memory_type': 'symbolic'},
+            {'memory_type': 'symbolic'},
+            {'memory_type': 'symbolic'},
+            {'memory_type': 'symbolic'},
+            {'memory_type': 'symbolic'},
+        ]
+        
+        should_move, target, reason = self.reclassifier.evaluate_bridge_item(item, related)
+        
+        assert should_move is False
+        assert target is None
+        assert 'Split' in reason or 'ambiguous' in reason.lower()
+    
+    def test_dry_run_does_not_modify(self):
+        """Test that dry run mode doesn't actually move items."""
+        old_date = (datetime.now() - timedelta(days=30)).isoformat()
+        
+        self.mock_memory.bridge_memory = [{
+            'id': 'bridge_1',
+            'text': 'quantum physics experiment research',
+            'timestamp': old_date
+        }]
+        
+        # Add logic items that would match
+        self.mock_memory.logic_memory = [
+            {'id': f'logic_{i}', 'text': 'quantum physics research paper'} 
+            for i in range(10)
+        ]
+        
+        # Run in dry-run mode
+        results = self.reclassifier.review_bridge_memory(dry_run=True)
+        
+        # Item should still be in bridge
+        assert len(self.mock_memory.bridge_memory) == 1
+        assert results['items_reclassified'] == 0
+    
+    def test_find_related_content(self):
+        """Test finding related items by keyword overlap."""
+        self.mock_memory.logic_memory = [
+            {'id': 'logic_1', 'text': 'quantum physics experiment'},
+            {'id': 'logic_2', 'text': 'cooking recipe pasta'},
+        ]
+        self.mock_memory.symbolic_memory = [
+            {'id': 'sym_1', 'text': 'physics makes me feel curious'},
+        ]
+        
+        bridge_item = {'text': 'quantum physics is fascinating'}
+        
+        related = self.reclassifier.find_related_content(bridge_item)
+        
+        # Should find logic_1 (quantum, physics) and sym_1 (physics)
+        related_ids = [r['id'] for r in related]
+        assert 'logic_1' in related_ids
+        assert 'logic_2' not in related_ids  # No overlap
+        assert 'sym_1' in related_ids
+
+
+if __name__ == '__main__':
+    pytest.main([__file__, '-v'])
+```
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 8: INTEGRATION TEST
+═══════════════════════════════════════════════════════════════════════════════
+
+Run a full integration test:
+
+8.1 Run the unit tests:
+    pytest tests/test_bridge_reclassification.py -v
+
+8.2 Test the CLI command (dry run):
+    python cli.py bridge-review --dry-run
+
+8.3 Check the current bridge memory:
+    cat data/bridge_memory.json
+
+8.4 Report all results before proceeding to live test
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 9: LIVE TEST (Only after all above passes)
+═══════════════════════════════════════════════════════════════════════════════
+
+⚠️ Only proceed if Steps 1-8 all passed successfully
+
+9.1 Create a backup of all memory files:
+    cp data/bridge_memory.json data/bridge_memory.json.backup
+    cp data/logic_memory.json data/logic_memory.json.backup
+    cp data/symbolic_memory.json data/symbolic_memory.json.backup
+
+9.2 Run live reclassification:
+    python cli.py bridge-review --no-dry-run
+
+9.3 Verify results:
+    - Check bridge_memory.json (should have fewer items)
+    - Check logic_memory.json or symbolic_memory.json (should have new items with reclassified_from_bridge: true)
+    - Check data/bridge_reclassification_log.json for audit trail
+
+9.4 Report final status
+
+═══════════════════════════════════════════════════════════════════════════════
+ROLLBACK PROCEDURE (If anything goes wrong)
+═══════════════════════════════════════════════════════════════════════════════
+
+If any step fails badly:
+
+1. Restore file backups:
+   mv unified_memory.py.backup unified_memory.py
+   mv memory_management.py.backup memory_management.py
+   mv cli.py.backup cli.py
+   mv unified_orchestration.py.backup unified_orchestration.py
+
+2. Restore data backups (if Step 9 was attempted):
+   mv data/bridge_memory.json.backup data/bridge_memory.json
+   mv data/logic_memory.json.backup data/logic_memory.json
+   mv data/symbolic_memory.json.backup data/symbolic_memory.json
+
+3. Delete new files (safe to remove):
+   rm bridge_reclassifier.py
+   rm tests/test_bridge_reclassification.py
+
+4. Report what went wrong
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Key safety features in this prompt:
+
+Step-by-step with verification - Each step requires verification before proceeding
+Backups before every modification - Can restore if anything breaks
+Add-only approach - Never rewrite existing files, only add new methods/functions
+Dry-run default - CLI command defaults to preview mode
+Clear rollback procedure - Easy to undo if things go wrong
+New files are safe - Can delete without affecting existing system
+Integration test before live - Catches issues before modifying real data

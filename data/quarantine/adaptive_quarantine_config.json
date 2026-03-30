@@ -1,0 +1,11 @@
+{
+  "min_words_threshold": 1,
+  "quarantine_thresholds": {
+    "recursion_count": 5,
+    "emotional_intensity": 0.95,
+    "vagueness_score": 0.85,
+    "context_weight": 0.5
+  },
+  "authentic_expression_mode": true,
+  "calibration_applied": "2025-06-24T21:51:18.713316"
+}

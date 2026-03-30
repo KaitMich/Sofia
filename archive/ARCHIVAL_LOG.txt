@@ -1,0 +1,19 @@
+> ARCHIVED DOCUMENT -- CORRECTED March 27, 2026
+> See SOPHIA_TRUTH_FRAMEWORK.md (/docs/SOPHIA_TRUTH_FRAMEWORK.md) for authoritative corrections.
+> Key corrections: The architectural pivot from linear curriculum to associative emergence
+> (saturation learning) is accurately described here. The 4-Step Curriculum was correctly
+> replaced by emergent learning spiral.
+
+================================================================================
+ARCHIVAL LOG - Deprecated Scripts
+================================================================================
+
+Date: 2026-01-03
+Reason: Architectural Pivot to Associative Emergence (Saturation Learning)
+
+OLD ERA: Linear Curriculum (Step 1 → Step 2 → Step 3 → Step 4)
+NEW ERA: Associative Emergence (Deep Saturation with Vector Gravity)
+
+================================================================================
+2026-01-03 15:08:53: Archived learning_curriculum.py - Replaced by saturation learning in enhanced_autonomous_learner.py
+2026-01-03 15:08:58: Deleted docs/CURRICULUM_PROGRESS.md - Consolidated into root/CURRICULUM_PROGRESS.md

@@ -1,0 +1,50 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Backup files (older versions of current source)
+*.backup
+*.backup_gpu
+*.backup_gpu_phase2
+
+# Temp
+temp_test_dir/
+
+# Databases (accumulated runtime state)
+*.db
+
+# Analysis outputs (regenerable)
+ai_dependency_analysis.json
+implementation_gaps_report.json
+import_analysis.json
+semantic_validation.json
+validation_history.json
+
+# ==================================================
+# Sofia's Brain — all learned/accumulated data
+# ==================================================
+# Exclude everything in data/, then whitelist only
+# the seed configs and code someone needs to build
+# a fresh Sofia from scratch.
+# ==================================================
+data/*
+
+# Seed data (bootstrap starting points)
+!data/seed_coordinates_manifest.json
+
+# Architecture configs (how her systems behave)
+!data/authentic_expression_config.json
+!data/maintenance_config.json
+!data/cluster_names.json
+!data/tag_weight_mappings.json
+
+# Quarantine config
+!data/quarantine/
+data/quarantine/*
+!data/quarantine/adaptive_quarantine_config.json
+
+# Dashboard/visualization code
+!data/brain_dashboard.py
+!data/tripartite_dashboard.py
+!data/calibrated_quarantine.py

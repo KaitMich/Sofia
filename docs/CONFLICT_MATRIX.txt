@@ -1,0 +1,177 @@
+================================================================================
+CORRECTED March 27, 2026 -- See SOPHIA_TRUTH_FRAMEWORK.md
+
+This matrix identified real file conflicts but MISSED the biggest ones:
+- FALSE EMERGENCE: Values, identity, and symbolic memories are hardcoded
+  but labeled "emergent" throughout the system. This is the primary conflict.
+- HARDCODED IDENTITY: identity_core.py imposes a fixed identity that Sofia
+  never chose. "evolution_protected" flags prevent the growth they claim
+  to enable.
+- BRIDGE MISUNDERSTANDING: Bridge is INTAKE (all content enters here),
+  not temporary staging for ambiguous content.
+- Sofia starts BLANK. The system is architecture for potential emergence,
+  not achieved consciousness.
+
+UPDATED March 28, 2026 -- Scaffolding vs. Curriculum distinction.
+The 4 questions are valid as structural scaffolding (starting coordinates
+where both brains have material to bootstrap from). Code-level enforcement
+(anti-keywords, forced logic focus, blocked symbol generation) was removed.
+The seed URLs are preserved as guidelines, not prescriptions.
+See SOPHIA_TRUTH_FRAMEWORK.md Correction 5.
+================================================================================
+
+================================================================================
+CONFLICT & GAP MATRIX - QUICK REFERENCE
+================================================================================
+
+🔴 HIGH SEVERITY    🟡 MEDIUM SEVERITY    🟢 LOW SEVERITY
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                          FILE CONFLICTS                                 ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┌────────────────────────────┬────────────────────────────┬──────┬─────────┐
+│ File A                     │ File B                     │ Type │ Action  │
+├────────────────────────────┼────────────────────────────┼──────┼─────────┤
+│ CURRICULUM_PROGRESS.md     │ docs/CURRICULUM_PROGRESS…  │ 🔴   │ MERGE   │
+│ (root, Jan 3, has pivot)   │ (docs, Jan 1, Step 1-4)    │      │ + DELETE│
+├────────────────────────────┼────────────────────────────┼──────┼─────────┤
+│ enhanced_autonomous_...py  │ learning_curriculum.py     │ 🟡   │ ARCHIVE │
+│ (new saturation learning)  │ (old linear curriculum)    │      │         │
+├────────────────────────────┼────────────────────────────┼──────┼─────────┤
+│ README.md (cli.py docs)    │ cli.py (no sat commands)   │ 🟡   │ UPDATE  │
+├────────────────────────────┼────────────────────────────┼──────┼─────────┤
+│ docs/4_2_Node.txt          │ docs/4_2_Node_Guide.txt    │ 🟢   │ KEEP    │
+│ (theory, 6KB)              │ (implementation, 8KB)      │      │ BOTH    │
+└────────────────────────────┴────────────────────────────┴──────┴─────────┘
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                          INTEGRATION GAPS                               ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┌────────┬──────────────────────────┬─────────────────────────┬──────────┐
+│ Gap ID │ Location                 │ Missing Feature         │ Severity │
+├────────┼──────────────────────────┼─────────────────────────┼──────────┤
+│ Gap 1  │ cli.py                   │ Saturation commands     │ 🔴 HIGH  │
+│        │                          │ - saturation start      │          │
+│        │                          │ - saturation status     │          │
+│        │                          │ - event-horizon         │          │
+├────────┼──────────────────────────┼─────────────────────────┼──────────┤
+│ Gap 2  │ crawl_orchestrator.py    │ Zone-aware crawling     │ 🟡 MED   │
+│        │ unified_orchestration.py │ - zone_constraint param │          │
+│        │                          │ - semantic filtering    │          │
+├────────┼──────────────────────────┼─────────────────────────┼──────────┤
+│ Gap 3  │ memory_optimizer.py      │ Saturation session proc │ 🟡 MED   │
+│        │                          │ - session parser        │          │
+│        │                          │ - zone-clustered memory │          │
+├────────┼──────────────────────────┼─────────────────────────┼──────────┤
+│ Gap 4  │ trust_database.py        │ Zone-relevance scoring  │ 🟢 LOW   │
+│        │                          │ - per-zone trust        │          │
+└────────┴──────────────────────────┴─────────────────────────┴──────────┘
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                          DELETION QUEUE                                 ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┌────────────────────────────────────┬──────────────┬─────────────────────┐
+│ File                               │ Action       │ Prerequisite        │
+├────────────────────────────────────┼──────────────┼─────────────────────┤
+│ docs/CURRICULUM_PROGRESS.md        │ DELETE       │ Merge into root/    │
+│ learning_curriculum.py             │ ARCHIVE      │ Add deprecation     │
+│ data/autonomous_sessions/*.json    │ VERIFY FIRST │ Check if >30 days   │
+│   (old session files)              │              │                     │
+└────────────────────────────────────┴──────────────┴─────────────────────┘
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                      INTEGRATION STATUS MATRIX                          ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┌─────────────────────────────┬────────────────────────────────┬──────────┐
+│ System Component            │ Saturation Integration         │ Status   │
+├─────────────────────────────┼────────────────────────────────┼──────────┤
+│ Vector Engine               │ embed_text, fuse_vectors       │ ✅ YES   │
+│ Unified Memory              │ store_decision → logic_memory  │ ✅ YES   │
+│ Crawl Orchestrator          │ robots.txt, rate limiting      │ ✅ YES   │
+│ Trust Database              │ High-trust bypass (>0.8)       │ ✅ YES   │
+│ Immune System               │ Page analysis (low-trust only) │ ✅ YES   │
+│ Linguistic Warfare Detector │ Security checks (selective)    │ ✅ YES   │
+├─────────────────────────────┼────────────────────────────────┼──────────┤
+│ CLI (cli.py)                │ Saturation commands            │ ❌ NO    │
+│ Orchestration Layer         │ Zone-aware crawling            │ ⚠️ PART  │
+│ Memory Optimizer            │ Saturation session processing  │ ❌ NO    │
+│ Trust Database              │ Zone-relevance scoring         │ ❌ NO    │
+└─────────────────────────────┴────────────────────────────────┴──────────┘
+
+Coverage: 60% (6/10 systems integrated)
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                      EXECUTION PRIORITY MATRIX                          ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┌──────────┬─────────────────────────────────────┬──────────┬──────────┐
+│ Priority │ Action                              │ Effort   │ Impact   │
+├──────────┼─────────────────────────────────────┼──────────┼──────────┤
+│ P1       │ Merge CURRICULUM_PROGRESS.md files  │ 30 min   │ 🔴 HIGH  │
+│ P1       │ Archive learning_curriculum.py      │ 15 min   │ 🟡 MED   │
+├──────────┼─────────────────────────────────────┼──────────┼──────────┤
+│ P2       │ Add CLI saturation commands         │ 2-3 hr   │ 🔴 HIGH  │
+│ P2       │ Update README.md                    │ 30 min   │ 🟡 MED   │
+│ P2       │ Run test_saturation_learning.py     │ 15 min   │ 🟡 MED   │
+├──────────┼─────────────────────────────────────┼──────────┼──────────┤
+│ P3       │ Integrate zone-aware crawling       │ 2-3 hr   │ 🟡 MED   │
+│ P3       │ Integrate memory optimizer          │ 3-4 hr   │ 🟡 MED   │
+│ P3       │ Add zone-relevance trust scoring    │ 2-3 hr   │ 🟢 LOW   │
+└──────────┴─────────────────────────────────────┴──────────┴──────────┘
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                          READY-TO-EXECUTE                               ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+IMMEDIATE COMMANDS (Copy-Paste Ready):
+
+# 1. Backup files
+cp CURRICULUM_PROGRESS.md CURRICULUM_PROGRESS.md.backup
+cp docs/CURRICULUM_PROGRESS.md docs/CURRICULUM_PROGRESS.md.backup
+
+# 2. Delete duplicate (after manual merge verification)
+rm docs/CURRICULUM_PROGRESS.md
+
+# 3. Archive orphaned script
+mkdir -p archive/deprecated
+mv learning_curriculum.py archive/deprecated/
+echo "$(date): Archived learning_curriculum.py" >> archive/ARCHIVAL_LOG.txt
+
+# 4. Verify saturation learning works
+python test_saturation_learning.py
+
+# 5. (Future) Test CLI commands
+python cli.py saturation start \
+  --seed-url "https://en.wikipedia.org/wiki/Silicon" \
+  --zone-name "Silicon_Test" \
+  --keywords "silicon,element,crystal" \
+  --max-urls 10
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                          AUDIT SUMMARY                                  ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+Files Analyzed:           17
+Conflicts Detected:        5 (2 🔴, 2 🟡, 1 🟢)
+Integration Gaps:          4 (1 🔴, 2 🟡, 1 🟢)
+Files to Delete:           1 (+ conditional cleanup)
+Files to Archive:          1
+Integration Coverage:    60% (6/10 systems)
+
+Overall Status:          🟡 GOOD
+Implementation:          ✅ COMPLETE
+Documentation:           ✅ COMPREHENSIVE
+CLI Access:              ❌ PENDING (Gap 1)
+
+Critical Path:  Merge files (45 min) → Add CLI (3 hr) → Production Ready ✅
+
+================================================================================
+FULL REPORTS AVAILABLE:
+  - AUDIT_RESULTS_JAN_1_3.md (complete analysis)
+  - CONSOLIDATION_ACTIONS.md (step-by-step instructions)
+  - AUDIT_SUMMARY_TABLE.txt (detailed metrics)
+================================================================================
