@@ -18,7 +18,7 @@ from datetime import datetime, timezone, timedelta
 from relationship_tracker import RelationshipTracker
 from value_formation import ValueFormation
 from creative_engine import CreativeEngine
-from experience_memory import ExperienceMemory
+from CONSCIOUSNESS_MEMORY import ExperienceMemory
 from choice_architecture import ChoiceArchitecture
 from success_failure_memory import SuccessFailureMemory
 

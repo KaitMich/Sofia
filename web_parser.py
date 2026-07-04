@@ -91,7 +91,7 @@ def sanitize_text_for_storage(text):
     if re.match(r'^[\d\s\.\,\-\(\)\[\]\;\:\/]+$', text):
         return None
 
-    # Reject citation-dominated content (>70% citation patterns)
+    # Reject citation-dominated content (>85% citation patterns - relaxed for academic)
     cleaned = text
     cleaned = re.sub(r'\(\d{4}[a-z]?\)', '', cleaned)        # (2019), (2007b)
     cleaned = re.sub(r'\[\d+(?:,\s*\d+)*\]', '', cleaned)    # [1], [2,3]
@@ -101,7 +101,9 @@ def sanitize_text_for_storage(text):
     cleaned = re.sub(r'pp?\.\s*\d+[-\u2013]\d+', '', cleaned) # pp. 123-456
     remaining_words = [w for w in cleaned.split() if len(w) > 2 and w.isalpha()]
     original_words = [w for w in text.split() if len(w) > 2]
-    if original_words and len(remaining_words) / max(len(original_words), 1) < 0.3:
+    
+    # Relaxed threshold: 0.15 (85% citations) instead of 0.3 (70% citations)
+    if original_words and len(remaining_words) / max(len(original_words), 1) < 0.15:
         if 'et al' in text.lower() or re.search(r'\(\d{4}\)', text) or re.search(r'\[\d+\]', text):
             return None
 

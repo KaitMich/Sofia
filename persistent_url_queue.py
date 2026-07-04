@@ -170,6 +170,38 @@ class PersistentURLQueue:
 
         return recovered
 
+    def peek_pending(self, limit: int = 20) -> List[Dict]:
+        """
+        Peek at top pending URLs without changing their status.
+
+        Returns URL info dicts sorted by priority DESC, oldest first.
+        Does NOT mark them as in_progress — purely read-only.
+
+        Args:
+            limit: Maximum number of URLs to return
+
+        Returns:
+            List of dicts with url, priority, depth, domain keys
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT url, priority, depth, domain
+            FROM url_queue
+            WHERE status = ?
+            ORDER BY priority DESC, added_timestamp ASC
+            LIMIT ?
+        ''', (self.STATUS_PENDING, limit))
+
+        rows = cursor.fetchall()
+        conn.close()
+
+        return [
+            {'url': row[0], 'priority': row[1], 'depth': row[2], 'domain': row[3]}
+            for row in rows
+        ]
+
     # ========================================================================
     # SYNC METHODS (Original - Preserved for Backwards Compatibility)
     # ========================================================================
@@ -254,7 +286,7 @@ class PersistentURLQueue:
 
     def add_deferred(self, url: str, priority: float = 0, depth: int = 0,
                      source_url: Optional[str] = None,
-                     reason: Optional[str] = None) -> bool:
+                     reason: Optional[str] = None, **kwargs) -> bool:
         """
         Store a deferred link — not processed this session but eligible later.
 
@@ -272,7 +304,12 @@ class PersistentURLQueue:
             True if stored, False if URL already exists in queue
         """
         domain = self._get_domain(url)
-        metadata_json = json.dumps({'defer_reason': reason}) if reason else None
+        meta = {}
+        if reason:
+            meta['defer_reason'] = reason
+        if kwargs.get('anchor_text'):
+            meta['anchor_text'] = kwargs['anchor_text']
+        metadata_json = json.dumps(meta) if meta else None
 
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -622,6 +659,129 @@ class PersistentURLQueue:
 
         logger.info(f"Paused {paused} in-progress URLs")
         return paused
+
+    def reprioritize_by_relevance(self, session_centroid, session_coherence_stats,
+                                   batch_size: int = 500,
+                                   max_urls: int = 5000) -> Dict:
+        """
+        Reprioritize pending URLs by cosine similarity to the session centroid.
+
+        Blends the original priority with centroid relevance, weighted by
+        density_confidence — when the centroid is well-established it dominates,
+        when sparse the original priority is preserved.
+
+        Only processes URLs that have anchor_text in their metadata — URLs
+        without it would fall back to URL-path embedding which is low value
+        and not worth the compute. Capped at max_urls (top N by original
+        priority) to avoid hour-long embedding runs on large queues.
+
+        No URLs are dropped — low-relevance items sink in priority but remain
+        reachable. This mirrors bridge-first: triage, never discard.
+
+        Args:
+            session_centroid: np.ndarray — current session centroid vector
+            session_coherence_stats: ClusterStats — session coherence metrics
+            batch_size: Process this many pending URLs per DB transaction
+            max_urls: Maximum number of URLs to reprioritize (top N by priority)
+
+        Returns:
+            Dict with reprioritization stats
+        """
+        import numpy as np
+        try:
+            from vector_engine import fuse_vectors
+            from adaptive_bridge_migration import cosine_sim
+        except ImportError:
+            return {'reprioritized': 0, 'error': 'missing_imports'}
+
+        if session_centroid is None or session_coherence_stats is None:
+            return {'reprioritized': 0, 'skipped': 'no_centroid'}
+
+        dc = session_coherence_stats.density_confidence
+        if dc <= 0:
+            return {'reprioritized': 0, 'skipped': 'zero_confidence'}
+
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        # Count total pending for stats
+        cursor.execute(
+            'SELECT COUNT(*) FROM url_queue WHERE status = ?',
+            (self.STATUS_PENDING,))
+        total_pending = cursor.fetchone()[0]
+
+        # Only fetch URLs that have anchor_text in metadata, capped at max_urls,
+        # ordered by priority so the most promising URLs get reprioritized first.
+        cursor.execute('''
+            SELECT id, url, priority, metadata FROM url_queue
+            WHERE status = ?
+              AND metadata IS NOT NULL
+              AND metadata LIKE '%"anchor_text"%'
+            ORDER BY priority DESC
+            LIMIT ?
+        ''', (self.STATUS_PENDING, max_urls))
+
+        rows = cursor.fetchall()
+        reprioritized = 0
+        failed_embed = 0
+        skipped_no_anchor = 0
+
+        for i in range(0, len(rows), batch_size):
+            batch = rows[i:i + batch_size]
+            updates = []
+
+            for url_id, url, original_priority, metadata_json in batch:
+                # Extract anchor text from metadata
+                anchor_text = None
+                if metadata_json:
+                    try:
+                        meta = json.loads(metadata_json)
+                        anchor_text = meta.get('anchor_text')
+                    except (json.JSONDecodeError, TypeError):
+                        pass
+
+                if not anchor_text:
+                    skipped_no_anchor += 1
+                    continue
+
+                try:
+                    vec, _ = fuse_vectors(anchor_text[:200])
+                except Exception:
+                    vec = None
+
+                if vec is None:
+                    failed_embed += 1
+                    continue
+
+                relevance = cosine_sim(np.array(vec), session_centroid)
+
+                # Blend: relevance * dc + original * (1 - dc)
+                # Normalize original_priority to 0-1 range (stored as int, typically 0-100)
+                orig_normalized = min(1.0, max(0.0, original_priority / 100.0))
+                blended = relevance * dc + orig_normalized * (1 - dc)
+                new_priority = int(blended * 100)
+
+                updates.append((new_priority, url_id))
+
+            if updates:
+                cursor.executemany('''
+                    UPDATE url_queue SET priority = ? WHERE id = ?
+                ''', updates)
+                reprioritized += len(updates)
+
+            conn.commit()
+
+        conn.close()
+        logger.info(f"Reprioritized {reprioritized}/{total_pending} pending URLs "
+                    f"(failed embed: {failed_embed}, skipped no anchor: {skipped_no_anchor})")
+        return {
+            'reprioritized': reprioritized,
+            'total_pending': total_pending,
+            'candidates_fetched': len(rows),
+            'failed_embed': failed_embed,
+            'skipped_no_anchor': skipped_no_anchor,
+            'density_confidence': dc
+        }
 
     # ========================================================================
     # ASYNC METHODS (New - For Non-Blocking Event Loop Operation)

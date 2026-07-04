@@ -43,7 +43,7 @@ def print_test(test_name, status, message=""):
             print(f"   → {message}")
         warnings.append(f"{test_name}: {message}")
 
-def test_file_exists(filename):
+def check_file_exists(filename):
     """Test if a file exists"""
     path = Path(filename)
     if path.exists():
@@ -53,7 +53,7 @@ def test_file_exists(filename):
         print_test(f"File exists: {filename}", "FAIL", "File not found")
         return False
 
-def test_import(module_name):
+def check_import(module_name):
     """Test if a module can be imported"""
     try:
         module = importlib.import_module(module_name)
@@ -66,7 +66,7 @@ def test_import(module_name):
         print_test(f"Import: {module_name}", "FAIL", f"Unexpected error: {e}")
         return None
 
-def test_function_exists(module, function_name):
+def check_function_exists(module, function_name):
     """Test if a function exists in a module"""
     if module is None:
         print_test(f"Function exists: {function_name}", "FAIL", "Module not loaded")
@@ -82,7 +82,7 @@ def test_function_exists(module, function_name):
                    "Function not found")
         return None
 
-def test_function_signature(func1, func2, func_name):
+def check_function_signature(func1, func2, func_name):
     """Test if two functions have the same signature"""
     if func1 is None or func2 is None:
         print_test(f"Signature match: {func_name}", "FAIL", "One or both functions missing")
@@ -103,7 +103,7 @@ def test_function_signature(func1, func2, func_name):
         print_test(f"Signature match: {func_name}", "FAIL", f"Error: {e}")
         return False
 
-def test_function_callable(module, function_name):
+def check_function_callable(module, function_name):
     """Test if a function is callable"""
     if module is None:
         print_test(f"Callable: {function_name}", "FAIL", "Module not loaded")
@@ -191,9 +191,9 @@ def main():
     # Test 1: Verify files exist
     print("📁 Test 1: File Existence")
     print("-" * 70)
-    maintenance_exists = test_file_exists("memory_maintenance.py")
-    management_exists = test_file_exists("memory_management.py")
-    optimizer_exists = test_file_exists("memory_optimizer.py")
+    maintenance_exists = check_file_exists("memory_maintenance.py")
+    management_exists = check_file_exists("memory_management.py")
+    optimizer_exists = check_file_exists("memory_optimizer.py")
     print()
 
     if not (maintenance_exists and management_exists):
@@ -203,8 +203,8 @@ def main():
     # Test 2: Import modules
     print("📦 Test 2: Module Imports")
     print("-" * 70)
-    maintenance_module = test_import("memory_maintenance")
-    management_module = test_import("memory_management")
+    maintenance_module = check_import("memory_maintenance")
+    management_module = check_import("memory_management")
     print()
 
     if not (maintenance_module and management_module):
@@ -215,8 +215,8 @@ def main():
     print("🔍 Test 3: Function Existence")
     print("-" * 70)
     func_name = "prune_phase1_symbolic_vectors"
-    maintenance_func = test_function_exists(maintenance_module, func_name)
-    management_func = test_function_exists(management_module, func_name)
+    maintenance_func = check_function_exists(maintenance_module, func_name)
+    management_func = check_function_exists(management_module, func_name)
     print()
 
     if not (maintenance_func and management_func):
@@ -226,14 +226,14 @@ def main():
     # Test 4: Compare function signatures
     print("📝 Test 4: Function Signature Compatibility")
     print("-" * 70)
-    test_function_signature(maintenance_func, management_func, func_name)
+    check_function_signature(maintenance_func, management_func, func_name)
     print()
 
     # Test 5: Verify functions are callable
     print("☎️  Test 5: Function Callability")
     print("-" * 70)
-    test_function_callable(maintenance_module, func_name)
-    test_function_callable(management_module, func_name)
+    check_function_callable(maintenance_module, func_name)
+    check_function_callable(management_module, func_name)
     print()
 
     # Test 6: Check for circular imports

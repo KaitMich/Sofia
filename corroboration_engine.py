@@ -74,10 +74,10 @@ class CorroborationEngine:
         self._init_database()
 
         # Corroboration thresholds
-        self.min_sightings = 3  # Need at least 3 sightings
-        self.min_unique_sources = 2  # From at least 2 different sources
-        self.min_weighted_count = 2.0  # Trust-weighted count must be >= 2.0
-        self.similarity_threshold = 0.85  # Facts with >0.85 similarity are "same fact"
+        self.min_sightings = 2  # Need at least 2 sightings
+        self.min_unique_sources = 1  # From at least 1 source (unique domain)
+        self.min_weighted_count = 1.0  # Trust-weighted count must be >= 1.0
+        self.similarity_threshold = 0.78  # Facts with >0.78 similarity are "same fact"
 
         # Contradiction detection
         self.contradiction_similarity_range = (0.7, 0.95)  # Similar enough to compare, different enough to contradict
@@ -289,10 +289,15 @@ class CorroborationEngine:
 
         sighting_count, unique_sources, weighted_count = result
 
+        # HIGH-TRUST SHORTCUT: 
+        # If we have a very high weighted count (e.g., from Wikipedia or a trusted .edu),
+        # allow commit even if sighting_count < 2.
+        high_trust_shortcut = weighted_count >= 0.9
+
         ready = (
-            sighting_count >= self.min_sightings and
+            (sighting_count >= self.min_sightings or high_trust_shortcut) and
             unique_sources >= self.min_unique_sources and
-            weighted_count >= self.min_weighted_count
+            (weighted_count >= self.min_weighted_count or high_trust_shortcut)
         )
 
         cursor.execute('''

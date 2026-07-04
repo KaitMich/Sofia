@@ -7,6 +7,7 @@ Integrates with your existing tripartite memory architecture
 # Fix for torch/streamlit compatibility issue
 import os
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Suppress TensorFlow info/warning logs
 
 import streamlit as st
 import plotly.graph_objects as go
@@ -26,16 +27,33 @@ from queue import Queue
 import warnings
 import asyncio
 import atexit
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from sklearn.cluster import KMeans, HDBSCAN
 
-# Handle asyncio event loop issue
-try:
-    loop = asyncio.get_running_loop()
-except RuntimeError:
-    loop = None
-
-# Suppress torch warnings if torch is imported elsewhere
+# Suppress warnings globally
+warnings.filterwarnings("ignore", category=RuntimeWarning, module="numpy")
 warnings.filterwarnings("ignore", category=UserWarning, module="torch")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="tensorflow")
 warnings.filterwarnings('ignore', message='Tried to instantiate class')
+np.seterr(divide='ignore', invalid='ignore')
+
+# Initialize session state IMMEDIATELY to prevent KeyErrors
+if 'session_id' not in st.session_state:
+    st.session_state.session_id = datetime.now().strftime('%Y%m%d_%H%M%S')
+if 'session_start_time' not in st.session_state:
+    st.session_state.session_start_time = datetime.now().isoformat()
+if 'realtime_data' not in st.session_state:
+    st.session_state.realtime_data = Queue()
+if 'freeze_dashboard' not in st.session_state:
+    st.session_state.freeze_dashboard = False
+if 'ai_running' not in st.session_state:
+    st.session_state.ai_running = False
+if 'last_metrics' not in st.session_state:
+    st.session_state.last_metrics = {
+        'events_sec': 0, 'active_symbols': 0, 'bridge_queue': 0, 
+        'memory_usage': 0, 'recursion_status': '⚫ Offline'
+    }
 
 # Fix torch.classes file-watcher issue
 try:
@@ -254,7 +272,7 @@ class EventLogger:
         """Write buffer to disk"""
         if self.buffer:
             try:
-                with open(self.current_log, 'a') as f:
+                with open(self.current_log, 'a', encoding='utf-8') as f:
                     for event in self.buffer:
                         f.write(json.dumps(event) + '\n')
                 self.buffer.clear()
@@ -328,24 +346,6 @@ with col3:
     if freeze_state:
         st.info("Dashboard frozen - data won't update until unfrozen")
 
-# Initialize session state
-if 'session_id' not in st.session_state:
-    st.session_state.session_id = datetime.now().strftime('%Y%m%d_%H%M%S')
-if 'realtime_data' not in st.session_state:
-    st.session_state.realtime_data = Queue()
-
-# NEW: Add AI running state and last metrics
-if 'ai_running' not in st.session_state:
-    st.session_state.ai_running = False
-if 'last_metrics' not in st.session_state:
-    st.session_state.last_metrics = {
-        'events_sec': 0,
-        'active_symbols': 0,
-        'bridge_queue': 0,
-        'memory_usage': 0,
-        'recursion_status': '⚫ Offline'
-    }
-
 # Initialize logger
 logger = EventLogger()
 
@@ -362,9 +362,252 @@ def safe_atexit_flush():
 # Register atexit handler to flush buffer on shutdown
 atexit.register(safe_atexit_flush)
 
+# ==================== CLUSTERING LOGIC ====================
+
+LOGIC_SHADES = ['#1f77b4', '#aec7e8', '#3498db', '#5dade2', '#85c1e9', '#2e86c1', '#1a5276', '#5499c7']
+SYMBOLIC_SHADES = ['#e377c2', '#f7b6d2', '#d01c8b', '#f1b6da', '#c51b7d', '#de77ae', '#8e0152', '#c51b7d']
+
+class BrainCache:
+    """Holds precomputed t-SNE coords, embeddings, and item metadata."""
+    __slots__ = ('coords', 'embeddings', 'items', 'texts')
+
+    def __init__(self, coords, embeddings, items, texts):
+        self.coords = coords          # np.array (n, 2)
+        self.embeddings = embeddings   # np.array (n, dim)
+        self.items = items             # list of dicts (no embedding key)
+        self.texts = texts             # list of str (for TF-IDF)
+
+def get_file_mtime(filename):
+    path = DATA_DIR / filename
+    try:
+        return path.stat().st_mtime
+    except FileNotFoundError:
+        return 0
+
+@st.cache_resource(ttl=300, show_spinner="Computing 2D projection (one-time)...")
+def build_brain_cache(memory_file, file_mtime):
+    """Load memory → extract embeddings → PCA+t-SNE → BrainCache."""
+    path = DATA_DIR / memory_file
+    if not path.exists():
+        return None
+
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            raw_items = json.load(f)
+    except:
+        return None
+
+    embeddings, items, texts = [], [], []
+    for item in raw_items:
+        if not isinstance(item, dict): continue
+        emb = item.get('embedding')
+        if emb is not None:
+            embeddings.append(emb)
+            items.append({k: v for k, v in item.items() if k != 'embedding'})
+            texts.append(item.get('text', '')[:500])
+
+    if len(embeddings) < 2:
+        return None
+
+    embeddings = np.array(embeddings, dtype=np.float32)
+
+    if len(embeddings) < 5:
+        n_comp = min(2, embeddings.shape[1])
+        pca = PCA(n_components=n_comp, random_state=42)
+        coords = pca.fit_transform(embeddings)
+        if coords.shape[1] < 2:
+            coords = np.column_stack([coords, np.zeros(len(coords))])
+    else:
+        n_pca = min(50, len(embeddings) - 1, embeddings.shape[1])
+        pca = PCA(n_components=n_pca, random_state=42)
+        reduced = pca.fit_transform(embeddings)
+        perplexity = min(30, len(embeddings) - 1)
+        tsne = TSNE(
+            n_components=2, perplexity=perplexity, max_iter=500,
+            random_state=42, init='pca', learning_rate='auto'
+        )
+        coords = tsne.fit_transform(reduced)
+
+    return BrainCache(coords, embeddings, items, texts)
+
+def cluster_and_name(embeddings, texts, n_clusters):
+    """KMeans clustering + TF-IDF top-2 feature naming."""
+    from sklearn.feature_extraction.text import TfidfVectorizer
+
+    n = len(embeddings)
+    if n < n_clusters:
+        n_clusters = max(1, n)
+
+    if n_clusters <= 1:
+        return np.zeros(n, dtype=int), {0: "all items"}
+
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+    labels = kmeans.fit_predict(embeddings)
+
+    names = {}
+    for cid in range(n_clusters):
+        mask = labels == cid
+        cluster_texts = [texts[i] for i in range(n) if mask[i]]
+        if not cluster_texts:
+            names[cid] = f"cluster_{cid}"
+            continue
+        try:
+            tfidf = TfidfVectorizer(max_features=100, stop_words='english')
+            matrix = tfidf.fit_transform(cluster_texts)
+            if matrix.shape[0] == 0 or matrix.shape[1] == 0:
+                names[cid] = f"cluster_{cid}"
+                continue
+            features = tfidf.get_feature_names_out()
+            # Use mean(axis=0) safely
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=RuntimeWarning)
+                scores = np.asarray(matrix.mean(axis=0)).flatten()
+            
+            if scores.size == 0:
+                names[cid] = f"cluster_{cid}"
+                continue
+                
+            top = scores.argsort()[-2:][::-1]
+            parts = [features[i] for i in top if i < len(features) and scores[i] > 0]
+            names[cid] = ' / '.join(parts) if parts else f"cluster_{cid}"
+        except Exception:
+            names[cid] = f"cluster_{cid}"
+
+    return labels, names
+
+def is_ai_active():
+    """Check if the AI is currently active by reading the heartbeat file."""
+    heartbeat_path = DATA_DIR / "ai_heartbeat.json"
+    if not heartbeat_path.exists():
+        return False, None
+    
+    try:
+        with open(heartbeat_path, 'r') as f:
+            heartbeat = json.load(f)
+        
+        # Check if heartbeat is fresh (less than 20 seconds old)
+        ts_str = heartbeat.get('timestamp')
+        if ts_str:
+            ts = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
+            now = datetime.now(timezone.utc)
+            if (now - ts).total_seconds() < 20:
+                return True, heartbeat.get('session_id')
+    except:
+        pass
+    
+    return False, None
+
+def _render_brain(memory_file, title, palette, accent_color, session_only=False):
+    mtime = get_file_mtime(memory_file)
+    brain = build_brain_cache(memory_file, mtime)
+
+    if brain is None:
+        st.subheader(title)
+        st.info("Not enough data to visualize (need at least 2 items with embeddings).")
+        return
+
+    # Data selection
+    coords = brain.coords
+    items = brain.items
+    texts = brain.texts
+    embeddings = brain.embeddings
+    
+    if session_only:
+        # CHECK HEARTBEAT: Clear out if AI is not running
+        ai_active, active_session_id = is_ai_active()
+        
+        if not ai_active:
+            st.subheader(title)
+            st.info("AI is currently offline. Start Sofia to see live activity!")
+            return
+
+        # 1. Detect latest session ID from the data itself (matching heartbeat)
+        if active_session_id:
+            mask = [i for i, item in enumerate(items) if item.get('session_id') == active_session_id]
+        else:
+            # Fallback to last seen session if heartbeat has no ID
+            session_ids = [item.get('session_id') for item in items if item.get('session_id')]
+            if session_ids:
+                latest_session = session_ids[-1]
+                mask = [i for i, item in enumerate(items) if item.get('session_id') == latest_session]
+            else:
+                mask = []
+        
+        # 2. Fallback to time-based if mask is too small
+        if not mask or len(mask) < 2:
+            session_start = st.session_state.get('session_start_time')
+            mask = []
+            for i, item in enumerate(items):
+                ts = item.get('created_at') or item.get('timestamp')
+                if ts and ts >= session_start:
+                    mask.append(i)
+        
+        if not mask:
+            st.subheader(title)
+            st.info("Live session started, but no nodes committed yet...")
+            return
+            
+        coords = coords[mask]
+        items = [items[i] for i in mask]
+        texts = [texts[i] for i in mask]
+        embeddings = embeddings[mask]
+        n = len(mask)
+    else:
+        n = len(items)
+
+    st.subheader(f"{title} ({n} items)")
+
+    # Calculate cluster range safely
+    max_k = max(2, min(12, n // 5 + 1))
+    default_k = min(max_k, 5 if n > 10 else max(1, n))
+    
+    # Unique key for slider to avoid collisions
+    key_suffix = "_session" if session_only else "_all"
+    key = memory_file.replace('.', '_') + key_suffix
+
+    # Ensure slider range is valid (min < max)
+    if n > 4 and max_k > 2:
+        n_clusters = st.slider(f"Clusters ({title})", 2, max_k, default_k, key=f"k_{key}")
+    elif n >= 2:
+        # Small dataset: default to 2 clusters without a slider
+        n_clusters = 2
+    else:
+        # Very small dataset: 1 cluster
+        n_clusters = 1
+
+    labels, cluster_names = cluster_and_name(embeddings, texts, n_clusters)
+
+    fig = go.Figure()
+    for cid in range(n_clusters):
+        mask = [i for i, l in enumerate(labels) if l == cid]
+        if not mask: continue
+
+        cname = cluster_names.get(cid, f"cluster_{cid}")
+        color = palette[cid % len(palette)]
+
+        hover = []
+        for i in mask:
+            item = items[i]
+            txt = sanitize_log_string(item.get('text', ''))[:120]
+            hover.append(f"<b>{cname}</b><br>{txt}")
+
+        fig.add_trace(go.Scatter(
+            x=[float(coords[i, 0]) for i in mask],
+            y=[float(coords[i, 1]) for i in mask],
+            mode='markers',
+            name=cname,
+            marker=dict(size=8, color=color, opacity=0.7),
+            hovertext=hover,
+            hoverinfo='text',
+        ))
+
+    fig.update_layout(height=500, margin=dict(l=0,r=0,b=0,t=40), showlegend=True)
+    st.plotly_chart(fig, use_container_width=True)
+
 # Sidebar for navigation
 page = st.sidebar.selectbox("Select View", [
     "System Overview",
+    "Brain Clusters",
     "Symbol Network",
     "Bridge Analytics", 
     "Memory Evolution",
@@ -560,6 +803,38 @@ if page == "System Overview":
         else:
             st.warning("Could not extract weight data from history file.")
 
+# ==================== BRAIN CLUSTERS ====================
+
+elif page == "Brain Clusters":
+    st.header("🧠 Dual Brain Memory Clusters")
+    
+    # 5-second autorefresh for live activity
+    if HAS_AUTOREFRESH:
+        st_autorefresh(interval=5000, limit=None, key="clusters_refresh")
+    
+    st.subheader("🌐 All-Time Memory Landscape")
+    st.markdown("Full historical view of all nodes stored in memory.")
+    col_l, col_r = st.columns(2)
+    with col_l:
+        _render_brain("logic_memory.json", "Logic (All-Time)", LOGIC_SHADES, "#4682B4")
+    with col_r:
+        _render_brain("symbolic_memory.json", "Symbolic (All-Time)", SYMBOLIC_SHADES, "#FF69B4")
+
+    st.divider()
+    
+    st.subheader("⚡ Live Feed (Session Activity)")
+    session_start_display = st.session_state.get('session_start_time', datetime.now().isoformat())
+    try:
+        time_part = session_start_display.split('T')[1].split('.')[0]
+    except:
+        time_part = "unknown"
+    st.markdown(f"Nodes added since this dashboard session started ({time_part}).")
+    col_live_l, col_live_r = st.columns(2)
+    with col_live_l:
+        _render_brain("logic_memory.json", "Logic (Live)", LOGIC_SHADES, "#4682B4", session_only=True)
+    with col_live_r:
+        _render_brain("symbolic_memory.json", "Symbolic (Live)", SYMBOLIC_SHADES, "#FF69B4", session_only=True)
+
 # ==================== ENHANCED SYMBOL NETWORK ====================
 
 elif page == "Symbol Network":
@@ -575,8 +850,14 @@ elif page == "Symbol Network":
     for symbol in symbol_cooccurrence.keys():
         emotion_data = symbol_emotion_map.get(symbol, {})
         if emotion_data:
-            top_emotion = max(emotion_data.items(), key=lambda x: x[1])[0]
-            emotion_score = emotion_data[top_emotion]
+            # Filter to ensure we only have numeric values for comparison
+            numeric_emotions = {k: v for k, v in emotion_data.items() if isinstance(v, (int, float))}
+            if numeric_emotions:
+                top_emotion = max(numeric_emotions.items(), key=lambda x: x[1])[0]
+                emotion_score = numeric_emotions[top_emotion]
+            else:
+                top_emotion = 'neutral'
+                emotion_score = 0
         else:
             top_emotion = 'neutral'
             emotion_score = 0
@@ -782,6 +1063,10 @@ elif page == "Bridge Analytics":
                         height=500
                     )
                     st.plotly_chart(fig_heatmap, use_container_width=True)
+                else:
+                    st.info("ℹ️ No specific node-type conflicts detected in bridge history.")
+            else:
+                st.info("ℹ️ No bridge conflict data available. Conflicts are logged when nodes compete for the same memory slot.")
 
 # ==================== MEMORY EVOLUTION ====================
 
@@ -926,7 +1211,7 @@ elif page == "Session Replay":
         try:
             if str(selected_log).endswith('.jsonl'):
                 # JSONL format - one JSON object per line
-                with open(selected_log, 'r') as f:
+                with open(selected_log, 'r', encoding='utf-8') as f:
                     for line_num, line in enumerate(f, 1):
                         try:
                             event = json.loads(line)
@@ -935,7 +1220,7 @@ elif page == "Session Replay":
                             st.warning(f"Skipping invalid JSON on line {line_num}: {e}")
             else:
                 # JSON format - single array or object
-                with open(selected_log, 'r') as f:
+                with open(selected_log, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                     if isinstance(data, list):
                         raw_events = data
@@ -993,7 +1278,6 @@ elif page == "Session Replay":
         event_index = st.slider(
             "Event Timeline",
             0, len(events) - 1,
-            st.session_state.event_slider,
             key="event_slider",
             on_change=_on_slider_move
         )
@@ -1070,6 +1354,23 @@ elif page == "Session Replay":
                 ))
                 st.plotly_chart(fig, use_container_width=True)
             
+            elif event_type == 'legacy_event':
+                st.info("📜 Legacy Event (Pre-schema update)")
+                st.markdown(f"**Timestamp:** {current_event.get('timestamp', 'N/A')}")
+                # Try to show meaningful data
+                event_data = current_event.get('data', {})
+                if isinstance(event_data, dict):
+                    # Show data keys for exploration
+                    st.write(f"Contains {len(event_data)} data fields")
+                    try:
+                        st.json(event_data)
+                    except Exception:
+                        # Fallback for circular references
+                        st.warning("⚠️ Circular reference detected in event data. Displaying sanitized text instead.")
+                        st.text(sanitize_log_string(str(event_data)))
+                else:
+                    st.write(event_data)
+
             else:
                 # Handle unknown or legacy event types
                 st.warning(f"Unsupported event type: {event_type or 'Unknown'}")
@@ -1080,7 +1381,10 @@ elif page == "Session Replay":
                         'Timestamp': current_event.get('timestamp', 'N/A'),
                         'Data Keys': list(current_event.get('data', {}).keys()) if isinstance(current_event.get('data'), dict) else 'N/A'
                     }
-                    st.json(event_info)
+                    try:
+                        st.json(event_info)
+                    except Exception:
+                        st.text(str(event_info))
         
         # ── Frame-rate controlled advancement ────────────────────────────────
         # Use playback_speed to control frame rate
@@ -1743,6 +2047,35 @@ st.sidebar.info(f"📂 Current: {DATA_DIR}")
 # Conversion utility in sidebar
 st.sidebar.markdown("---")
 st.sidebar.subheader("🛠️ Utilities")
+
+# Add GPU Diagnostics
+with st.sidebar.expander("🖥️ GPU Diagnostics"):
+    import torch
+    st.write(f"PyTorch Version: `{torch.__version__}`")
+    st.write(f"CUDA Available: `{'✅ Yes' if torch.cuda.is_available() else '❌ No'}`")
+    if torch.cuda.is_available():
+        st.write(f"Device: `{torch.cuda.get_device_name(0)}`")
+    else:
+        st.info("If CUDA is False, try: `python -m streamlit run data/tripartite_dashboard.py` to ensure same environment.")
+
+# Add Trust Repair
+if st.sidebar.button("🛡️ Repair High-Trust Seeds"):
+    try:
+        from trust_database import TrustDatabase
+        db = TrustDatabase()
+        high_trust_seeds = {
+            'wikipedia.org': 0.95, 
+            'cambridge.org': 0.90, 
+            'iep.utm.edu': 0.95,
+            'plato.stanford.edu': 0.95,
+            'nature.com': 0.90,
+            'science.org': 0.90
+        }
+        for d, s in high_trust_seeds.items():
+            db.override_trust(d, s, "Manual repair via dashboard")
+        st.sidebar.success("✅ High-trust domains re-seeded!")
+    except Exception as e:
+        st.sidebar.error(f"Trust repair failed: {e}")
 
 # Check for existing log files
 trail_json_path = DATA_DIR / "trail_log.json"

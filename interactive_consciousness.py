@@ -32,7 +32,7 @@ from learning_progression_tracker import LearningProgressionTracker
 from curiosity_engine import CuriosityEngine
 from success_failure_memory import SuccessFailureMemory
 from symbolic_memory import SymbolicMemory
-from personal_insight_generator import PersonalInsightGenerator
+from INSIGHT_RELEVANCE import PersonalInsightGenerator
 from consciousness_testing import ConsciousnessTesting
 from autonomy_stress_testing import AutonomyStressTesting
 from long_term_stability import LongTermStability

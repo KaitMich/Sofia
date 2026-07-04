@@ -381,7 +381,14 @@ class UnifiedWeightSystem:
         
         # Performance tracking
         self.performance_stats = self._load_performance_stats()
-        
+
+        # Register cleanup so semantic adjustments survive interrupted sessions
+        try:
+            from shutdown_manager import register_cleanup as _register_cleanup
+            _register_cleanup(self._save_semantic_adjustments, "semantic_adjustments", priority=1)
+        except Exception:
+            pass
+
     def _load_autonomous_weights(self):
         """Load autonomous learning weights from weight evolution system"""
         weights_file = self.data_dir / "adaptive_weights.json"
@@ -461,12 +468,21 @@ class UnifiedWeightSystem:
                 'direct_expression': {'logic_boost': 0.1, 'symbolic_boost': 0.0}
             }
         }
-        
+
+    def _save_semantic_adjustments(self):
+        """Persist semantic adjustment mappings to disk."""
+        tag_weights_file = self.data_dir / "tag_weight_mappings.json"
+        try:
+            with open(tag_weights_file, 'w') as f:
+                json.dump(self.semantic_adjustments, f, indent=2)
+        except Exception as e:
+            print(f"Weight save error: {e}")
+
     def _load_confidence_gates(self):
         """Load confidence gate thresholds"""
         self.confidence_thresholds = {
             'high_confidence_logic': 6.0,    # logic_score * scale > this = high confidence logic
-            'high_confidence_symbolic': 3.0,  # symbolic_score * scale > this = high confidence symbolic  
+            'high_confidence_symbolic': 3.0,  # symbolic_score * scale > this = high confidence symbolic
             'force_hybrid_threshold': 0.8,   # If scores within this ratio, force hybrid
             'quarantine_confidence': 0.3,    # Below this confidence = quarantine
             'min_decision_confidence': 0.5   # Minimum confidence for any decision
@@ -742,16 +758,18 @@ class UnifiedWeightSystem:
         self.performance_stats['total_decisions'] += 1
         
         if was_successful:
-            # Find which route was taken and increment success counter
-            # This would integrate with the autonomous weight evolution
-            pass
+            route_taken = feedback_data if isinstance(feedback_data, str) else (feedback_data or {}).get('route_taken', '')
+            route_key = f"successful_{route_taken}_routes"
+            if route_key in self.performance_stats:
+                self.performance_stats[route_key] += 1
         else:
             self.performance_stats['failed_routes'] += 1
-            
+
         # Save updated stats
         with open(self.learning_stats_file, 'w') as f:
             json.dump(self.performance_stats, f, indent=2)
-            
+        self._save_semantic_adjustments()
+
     def get_system_status(self) -> Dict:
         """Get current status of unified weight system"""
         return {

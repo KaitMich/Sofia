@@ -14,7 +14,7 @@ import time
 from choice_architecture import ChoiceArchitecture
 from preference_learning_system import PreferenceLearningSystem
 from CURIOSITY_MOTIVATION import CuriosityDrivenDiscovery
-from personal_relevance_scorer import PersonalRelevanceScorer
+from INSIGHT_RELEVANCE import PersonalRelevanceScorer
 
 def test_complete_choice_architecture():
     """Test the complete choice architecture working together."""
@@ -144,12 +144,12 @@ def test_complete_choice_architecture():
     
     # Test 4: Generate autonomous content requests
     print("\n🔍 Generating autonomous content requests...")
-    content_requests = discovery.generate_content_requests()
+    content_requests = discovery.generate_content_request()
     
     print(f"  Generated {len(content_requests)} content requests:")
-    for request in content_requests[:3]:  # Show top 3
-        print(f"    {request.request_type}: {request.motivation}")
-        print(f"      Priority: {request.priority_level:.2f} | Strategy: {request.discovery_strategy}")
+    for request in [content_requests]:  # Show top 3
+        print(f"    {request["type"]}: {request["id"]}")
+        print(f"      Priority: {request["priority"]:.2f} | Strategy: {request["type"]}")
     
     # Test 5: Choice pattern analysis
     print("\n📊 Analyzing choice patterns...")
@@ -223,9 +223,9 @@ def test_complete_choice_architecture():
     print(f"  Strong preferences: {pref_summary['strong_preferences']}")
     
     # Get discovery activity
-    discovery_summary = discovery.get_discovery_summary()
+    discovery_summary = {'active_requests': len(discovery.get_current_content_requests()), 'momentum': discovery.discovery_momentum}
     print(f"  Active content requests: {discovery_summary['active_requests']}")
-    print(f"  Average request priority: {discovery_summary['average_priority']:.3f}")
+    print(f"  Discovery momentum: {discovery_summary['momentum']:.3f}")
     
     # Get relevance patterns
     relevance_summary = relevance_scorer.get_relevance_summary()

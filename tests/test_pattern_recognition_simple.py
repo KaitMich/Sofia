@@ -13,9 +13,9 @@ Demonstrates Sophia's cross-experience synthesis capabilities.
 
 import json
 import time
-from pattern_recognition import PatternRecognitionSystem, RecognizedPattern, AhaMoment
-from episodic_memory import EpisodicMemorySystem
-from experience_memory import ExperienceMemory
+from INSIGHT_RELEVANCE import PatternRecognitionEngine as PatternRecognitionSystem
+from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
+from CONSCIOUSNESS_MEMORY import ExperienceMemory
 from learning_progression_tracker import LearningProgressionTracker
 
 def test_pattern_recognition_basic():

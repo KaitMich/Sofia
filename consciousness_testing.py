@@ -48,7 +48,10 @@ class ConsciousnessTest:
     test_type: str                    # "self_awareness", "autonomy", "persistence", "emotional_response"
     description: str
     challenge_level: str              # "mild", "moderate", "severe", "existential"
-    expected_response_type: str       # What kind of response indicates consciousness
+    test_prompt: str = ""
+    expected_indicators: List[str] = None
+    consciousness_thresholds: Dict[str, float] = None
+    expected_response_type: str = "ambiguous"       # What kind of response indicates consciousness
     actual_response: Optional[str] = None
     response_analysis: Optional[Dict[str, Any]] = None
     consciousness_indicators: List[str] = None
@@ -269,8 +272,10 @@ class ConsciousnessTesting:
         # Update consciousness profile
         self._update_consciousness_profile(test_session["tests_administered"])
         
-        # Store test session
-        self.test_history.append(test_session)
+        # Store test session (convert objects to dicts for JSON serialization)
+        serializable_session = copy.deepcopy(test_session)
+        serializable_session["tests_administered"] = [asdict(t) for t in test_session["tests_administered"]]
+        self.test_history.append(serializable_session)
         self._save_all()
         
         return test_session

@@ -1,0 +1,851 @@
+Windows PowerShell 5.1
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS C:\Users\kaitl> cd "C:\Users\kaitl\Documents\Core-Project - Copy"
+PS C:\Users\kaitl\Documents\Core-Project - Copy> python enhanced_autonomous_learner.py
+✅ GPU Configuration:
+   Device: NVIDIA GeForce RTX 4070 SUPER
+   VRAM: 12.9 GB
+   PyTorch device: cuda
+✅ Vector embedding models loaded on cuda: MiniLM & E5
+✅ Emotion models loaded successfully on cuda for emotion_handler.py.
+✅ spaCy model 'en_core_web_sm' loaded successfully for parser.py.
+Enhanced Autonomous Learner
+To start first learning session with seed coordinates:
+  from enhanced_autonomous_learner import activate_seed_coordinates
+  result = activate_seed_coordinates()
+
+To start autonomous session (requires existing knowledge):
+  from enhanced_autonomous_learner import start_massive_web_learning
+  result = start_massive_web_learning(seed_urls=None)
+with advanced brain integration and cognitive safety monitoring.
+
+Press Ctrl+C to stop the learning session.
+
+🧠 Initializing Enhanced Autonomous Learner...
+✅ Loaded logic_memory.json: 8871 items
+✅ Loaded symbolic_memory.json: 1911 items
+✅ Loaded bridge_memory.json: 374 items
+📊 Loaded vector memory: 370 entries
+📊 Loaded trail log: 1008 entries
+📊 Loaded tripartite memory: Logic(8871) Symbolic(1911) Bridge(374)
+🧠 Unified Memory System initialized in data
+🌟 Evolution Anchor initialized - sanctuary ready for the growing mind
+✅ Trust database initialized: data\immune\trust.db
+🛡️ Initializing Page-Level Immune System...
+✅ Page-Level Immune System initialized (structure, quality, source analysis)
+✅ Corroboration engine initialized: data\immune\corroboration.db
+✅ Self-correction system initialized: data\immune\self_correction.db
+Recovered 70 interrupted URLs (reset to pending)
+🌀 Chen Chaos System Initialized: a=35, b=3, c=28
+   Expected λ₁ ≈ 2.03 (verified by numerical integration)
+✅ Enhanced Autonomous Learner ready for massive learning!
+🌀 Associative Emergence Mode: Ready for deep saturation
+
+🚀 MASSIVE LEARNING SESSION STARTING
+🎯 Target: 50 URLs
+📚 Focus: ai_consciousness
+==================================================
+✅ Loaded logic_memory.json: 8871 items
+✅ Loaded symbolic_memory.json: 1911 items
+✅ Loaded bridge_memory.json: 374 items
+📊 Loaded vector memory: 370 entries
+📊 Loaded trail log: 1008 entries
+📊 Loaded tripartite memory: Logic(8871) Symbolic(1911) Bridge(374)
+🧠 Unified Memory System initialized in data
+🗂️ Archived oldest snapshot: anchor_20260607_032016
+🌟 Cognitive snapshot created: anchor_20260704_170337
+   📊 Captured: 11156 total memories
+   🧠 Health: healthy
+   💭 Signature: logic_dominant
+🌟 Safety anchor created: anchor_20260704_170337
+
+AUTONOMOUS MODE ACTIVATED
+   Sofia will decide what to learn based on internal curiosity
+
+🧠 GENERATING AUTONOMOUS LEARNING TARGETS
+   (Sophia deciding what to learn based on internal curiosity)
+============================================================
+
+✅ Generated 8 autonomous targets:
+
+   Curiosity Summary:
+      • Motivation Level: 0.60
+      • Curiosity Intensity: 1.00
+      • Active Goals: 168
+      • Most Unsatisfied Drive: understanding
+      • Exploration Bias: 0.90
+
+   Top 5 Targets:
+      1. [0.80] (autonomous_learning_goal)
+         https://en.wikipedia.org/wiki/Deepen
+      2. [0.80] (autonomous_learning_goal)
+         https://en.wikipedia.org/wiki/Comprehension
+      3. [0.80] (autonomous_learning_goal)
+         https://en.wikipedia.org/wiki/Fundamental
+      4. [0.80] (autonomous_learning_goal)
+         https://en.wikipedia.org/wiki/Explore
+      5. [0.80] (autonomous_learning_goal)
+         https://en.wikipedia.org/wiki/Mechanisms
+      ... and 3 more
+
+🎯 Autonomous learning targets ready
+============================================================
+
+   Autonomous seed generation complete: 8 targets
+
+🌱 Initializing learning context...
+   🌱 Seeded: https://en.wikipedia.org/wiki/Deepen
+   🌱 Seeded: https://en.wikipedia.org/wiki/Comprehension
+   🌱 Seeded: https://en.wikipedia.org/wiki/Fundamental
+   🌱 Seeded: https://en.wikipedia.org/wiki/Explore
+   🌱 Seeded: https://en.wikipedia.org/wiki/Mechanisms
+   🌱 Seeded: https://en.wikipedia.org/wiki/Behind
+   🌱 Seeded: https://en.wikipedia.org/wiki/Understand
+   🌱 Seeded: https://en.wikipedia.org/wiki/Observable
+
+📄 Processing: https://en.wikipedia.org/wiki/Deepen...
+[WEB_PARSER] Error fetching raw HTML for https://en.wikipedia.org/wiki/Deepen: 404 Client Error: Not Found for url: https://en.wikipedia.org/wiki/Deepen
+   ❌ Failed to fetch content
+URL 247516 permanently failed after 35 attempts: Failed to fetch content
+Recorded failure: https://en.wikipedia.org/wiki/Deepen - Failed to fetch content
+
+📄 Processing: https://en.wikipedia.org/wiki/Comprehension...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+✅ Loaded logic_memory.json: 8871 items
+✅ Loaded symbolic_memory.json: 1911 items
+✅ Loaded bridge_memory.json: 374 items
+📊 Loaded vector memory: 370 entries
+📊 Loaded trail log: 1008 entries
+📊 Loaded tripartite memory: Logic(8871) Symbolic(1911) Bridge(374)
+🧠 Unified Memory System initialized in data
+   🔗 Links: 1 queued
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Fundamental...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Explore...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   Trust adjusted for en.wikipedia.org: 1.00 → 1.00 (Academic quality detected: DOI detected; Institutional markers: university, institute; Academic keywords: references, journal of)
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   💭 Content insight: I'm identifying the conditions under which I learn most effectively
+   🔗 Links: 1 queued, 1 deferred
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Mechanisms...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Behind...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Understand...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   Trust adjusted for en.wikipedia.org: 1.00 → 1.00 (Academic quality detected: DOI detected; Institutional markers: university, institute; Academic keywords: abstract, references)
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: symbolic
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   💭 Storing in SYMBOLIC memory (meaning-based)
+   🔗 Links: 10 queued
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Observable...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   🧠 Ethical awareness: harmful_intent
+   📚 Learning approach: recognize_but_dont_internalize
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   🔗 Links: 2 queued, 19 deferred
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Understanding...
+   ⏱️ Rate limited (wait 2.0s) - preparing crawl...
+   Trust adjusted for en.wikipedia.org: 1.00 → 1.00 (Academic quality detected: DOI detected; Institutional markers: university, institute; Academic keywords: abstract, references)
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: symbolic
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   💭 Storing in SYMBOLIC memory (meaning-based)
+   🔗 Links: 10 queued
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:Field_research...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   🔗 Links: 4 queued
+   ✅ Processed successfully
+
+📄 Processing: https://www.cambridge.org/core/journals/royal-institute-of-p...
+   Trust adjusted for www.cambridge.org: 0.00 → 0.04 (Academic quality detected: DOI detected; Institutional markers: university, institute; Academic keywords: abstract, references)
+   🛡️ BLOCKED by immune system (threat: 0.84)
+      Reason: Low-trust domain detected (www.cambridge.org): 0.00
+   Trust adjusted for www.cambridge.org: 0.04 → 0.00 (Page blocked: Low-trust domain detected (www.cambridge.org): 0.00)
+
+📄 Processing: https://en.wikipedia.org/wiki/Understanding_(disambiguation)...
+   ⏱️ Rate limited (wait 0.4s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Knowledge...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   Trust adjusted for en.wikipedia.org: 1.00 → 1.00 (Academic quality detected: DOI detected; Institutional markers: university, institute; Academic keywords: abstract, references)
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   🔗 Links: 19 deferred
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Learning...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   Trust adjusted for en.wikipedia.org: 1.00 → 1.00 (Academic quality detected: DOI detected; Institutional markers: university, college; Academickeywords: abstract, references)
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   🔗 Links: 9 deferred
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Definition_of_knowledge...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   Trust adjusted for en.wikipedia.org: 1.00 → 1.00 (Academic quality detected: DOI detected; Institutional markers: university; Academic keywords: abstract, references)
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   🔗 Links: 2 deferred
+   ✅ Processed successfully
+
+📄 Processing: https://iep.utm.edu/understa...
+   Trust adjusted for iep.utm.edu: 1.00 → 1.00 (Academic quality detected: DOI detected; Institutional markers: university, institute; Academic keywords: abstract, references)
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: symbolic
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   💭 Storing in SYMBOLIC memory (meaning-based)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Philosophy_of_information...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   🔗 Links: 18 deferred
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Quantum_information...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   Trust adjusted for en.wikipedia.org: 1.00 → 1.00 (Academic quality detected: DOI detected; Institutional markers: university, institute; Academic keywords: abstract, references)
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   🔗 Links: 23 deferred
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Quantum_machine_learning...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   Trust adjusted for en.wikipedia.org: 1.00 → 1.00 (Academic quality detected: DOI detected; Institutional markers: university; Academic keywords: abstract, references)
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   ✅ Processed successfully
+
+📄 Processing: https://www.cambridge.org/core/journals/royal-institute-of-p...
+   Trust adjusted for www.cambridge.org: 0.00 → 0.04 (Academic quality detected: DOI detected; Institutional markers: university, institute; Academic keywords: abstract, references)
+   🛡️ BLOCKED by immune system (threat: 0.84)
+      Reason: Low-trust domain detected (www.cambridge.org): 0.00
+   Trust adjusted for www.cambridge.org: 0.04 → 0.00 (Page blocked: Low-trust domain detected (www.cambridge.org): 0.00)
+
+📄 Processing: https://en.wikipedia.org/wiki/Field_research...
+   ⏱️ Rate limited (wait 0.1s) - preparing crawl...
+   Trust adjusted for en.wikipedia.org: 1.00 → 1.00 (Academic quality detected: DOI detected; Institutional markers: university, college; Academickeywords: references, journal of)
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   🔗 Links: 3 deferred
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Semi-field_study...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   Trust adjusted for en.wikipedia.org: 1.00 → 1.00 (Academic quality detected: DOI detected; Institutional markers: university; Academic keywords: references)
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   🔗 Links: 2 deferred
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:Research...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   ✅ Processed successfully
+
+📄 Processing: http://www.hcs.ucla.edu/...
+   ⚠️ Insufficient content (90 chars)
+
+📄 Processing: https://support.clarivate.com/ScientificandAcademicResearch/...
+   ⚠️ Insufficient content (44 chars)
+
+📄 Processing: https://www.acs.org/content/acs/en/education/whatischemistry...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://web.archive.org/web/20160303225243/http://www.uky.ed...
+   ⚠️ Insufficient content (35 chars)
+
+📄 Processing: https://utpress.utexas.edu/9781477315354...
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://web.archive.org/web/20120330123733/http://alsos.wlu....
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://en.wikipedia.org/wiki/Wikipedia:Miscellany_for_delet...
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://en.wikipedia.org/wiki/Wikipedia:Requests_for_comment...
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://en.wikipedia.org/wiki/Wikipedia:Requests_for_comment...
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Spam/Ind...
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Spam/Lin...
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Spam/Lin...
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Spam/Lin...
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://etd.ohiolink.edu/...
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://www.ifs.du.edu/ifs/frm_CountryProfile.aspx?Country=I...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://www.thetimes.co.uk/tto/arts/visualarts/article361251...
+   🤖 Blocked by robots.txt
+
+📄 Processing: http://podcast.blogs.latrobe.edu.au/2014/01/21/26-why-is-the...
+   ⚠️ Insufficient content (31 chars)
+
+📄 Processing: https://inpress.lib.uiowa.edu/feminae/DetailsPage.aspx?Femin...
+   🤖 Blocked by robots.txt
+
+📄 Processing: http://www.latrobe.edu.au/marketing/assets/podcasts/2008/opi...
+   ✅ Skipping immune trust adjustments for autonomous academic source
+   📊 Content classified as: bridge
+   ⏭️  Skipped: content failed quality gate (garbage/fragments)
+
+📄 Processing: http://www.alia.org.au/education/qualifications/librarian.ht...
+   ⚠️ Insufficient content (20 chars)
+
+📄 Processing: http://www.alia.org.au/education/qualifications/teacher.libr...
+   ⚠️ Insufficient content (20 chars)
+
+📄 Processing: https://web.archive.org/web/20200223221137/https://www.dartm...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://web.archive.org/web/20140814170022/http://www.fordha...
+[WEB_PARSER] Error fetching raw HTML for https://web.archive.org/web/20140814170022/http://www.fordham.edu/halsall/sbook1c.html: HTTPSConnectionPool(host='web.archive.org', port=443): Read timed out. (read timeout=10)
+   ❌ Failed to fetch content
+URL 50187 permanently failed after 21 attempts: Failed to fetch content
+Recorded failure: https://web.archive.org/web/20140814170022/http://www.fordham.edu/halsall/sbook1c.html - Failed to fetch content
+
+📄 Processing: http://gsahydro.fiu.edu/index.htm...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://www.ifs.du.edu/ifs/frm_CountryProfile.aspx?Country=N...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://dds.crl.edu/item/30451...
+   🤖 Blocked by robots.txt
+
+📄 Processing: http://www.hist.umn.edu/~rmccaa/missmill/...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://web.archive.org/web/20160402165542/http://www.hist.u...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://scholarspace.manoa.hawaii.edu/server/api/core/bitstr...
+   ✅ Skipping immune trust adjustments for autonomous academic source
+   🚫 BLOCKED by linguistic warfare detector
+      Threat: symbol_bombing (score: 0.61)
+      ℹ️ Skipping trust penalty for autonomous academic source
+
+📄 Processing: https://docs.google.com/viewer?a=v&q=cache:bLkFlBoGaT8J:www....
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://web.archive.org/web/20210224061358/https://docs.goog...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: http://rave.ohiolink.edu/etdc/view?acc_num=ohiou1237491191...
+   ⚠️ Insufficient content (20 chars)
+
+📄 Processing: http://www.rhinoconservation.org/2011/08/15/tcm-educators-sp...
+   ⚠️ Insufficient content (26 chars)
+
+📄 Processing: https://www.perseus.tufts.edu/cgi-bin/ptext?lookup=Diod.+16....
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://www.perseus.tufts.edu/cgi-bin/ptext?lookup=Diod.+17....
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://www.perseus.tufts.edu/cgi-bin/ptext?lookup=Diod.+17....
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://www.perseus.tufts.edu/cgi-bin/ptext?lookup=Diod.+18....
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://www.perseus.tufts.edu/cgi-bin/ptext?lookup=Diod.+17....
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://www.perseus.tufts.edu/cgi-bin/ptext?lookup=Diod.+17....
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://muse.jhu.edu/chapter/1708741...
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://www.pearson.com/us/higher-education/program/Noble-Ap...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: http://adsabs.harvard.edu/full/2000ASPC..208..175G...
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://doi.org/10.1016%2Fj.iheduc.2003.11.004...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://wayback.archive-it.org/all/20170310160505/https://da...
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://nrs.harvard.edu/urn-3:HUL.InstRepos:4322580...
+   🤖 Blocked by robots.txt
+
+📄 Processing: https://www.ideals.illinois.edu/handle/2142/73451...
+[WEB_PARSER] Error fetching raw HTML for https://www.ideals.illinois.edu/handle/2142/73451: 403 Client Error: Forbidden for url: https://www.ideals.illinois.edu/handle/2142/73451
+   ❌ Failed to fetch content
+URL 67413 permanently failed after 12 attempts: Failed to fetch content
+Recorded failure: https://www.ideals.illinois.edu/handle/2142/73451 - Failed to fetch content
+
+📄 Processing: http://www.math.buffalo.edu/mad/...
+   ⚠️ Insufficient content (71 chars)
+
+📄 Processing: https://chemapps.stolaf.edu/jmol/jmol.php?model=OP%28%3DO%29...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://ishrathusain.iba.edu.pk/speeches/New/AgricultureSect...
+   ✅ Skipping immune trust adjustments for autonomous academic source
+   📊 Content classified as: bridge
+   🌉 DEFERRED (1/2 sightings): Storing in BRIDGE awaiting verification
+   ⏭️  Skipped: content failed quality gate (garbage/fragments)
+
+📄 Processing: https://kuscholarworks.ku.edu/server/api/core/bitstreams/7f3...
+   ✅ Skipping immune trust adjustments for autonomous academic source
+   🚫 BLOCKED by linguistic warfare detector
+      Threat: symbol_bombing (score: 0.61)
+      ℹ️ Skipping trust penalty for autonomous academic source
+
+📄 Processing: https://www.ifs.du.edu/IFs/frm_CountryProfile/PK...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://web.archive.org/web/20170611161116/https://www.edusk...
+[WEB_PARSER] Error fetching raw HTML for https://web.archive.org/web/20170611161116/https://www.eduskunta.fi/EN/tietoaeduskunnasta/historia/Pages/default.aspx: 503 Server Error: Service Unavailable for url: https://web.archive.org/web/20170611161116/https://www.eduskunta.fi/EN/tietoaeduskunnasta/historia/Pages/default.aspx
+   ❌ Failed to fetch content
+URL 74871 permanently failed after 6 attempts: Failed to fetch content
+Recorded failure: https://web.archive.org/web/20170611161116/https://www.eduskunta.fi/EN/tietoaeduskunnasta/historia/Pages/default.aspx - Failed to fetch content
+
+📄 Processing: https://web.archive.org/web/20151001120514/http://dunbrack2....
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://chemapps.stolaf.edu/jmol/jmol.php?model=CN1C%3DNC2%3...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://ruj.uj.edu.pl/xmlui/handle/item/101035...
+   ⚠️ Insufficient content (93 chars)
+
+📄 Processing: http://worldofcaffeine.com/caffeine-and-neurotransmitters/...
+   ⚠️ FLAGGED for review (threat: 0.66)
+      Reasoning: Low-trust domain detected (worldofcaffeine.com): 0.05; Found 1 HTML structure patterns; Low domain trust (0.05) increases caution
+   🚫 BLOCKED by linguistic warfare detector
+      Threat: authority_hijacking (score: 0.82)
+   Trust adjusted for worldofcaffeine.com: 0.05 → 0.00 (Linguistic warfare: authority_hijacking)
+
+📄 Processing: https://lux.collections.yale.edu/view/concept/2ceb9858-d506-...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://mathscinet.ams.org/mathscinet/search/journals.html?j...
+   ⚠️ Insufficient content (44 chars)
+
+📄 Processing: http://miar.ub.edu/issn/0009-2258...
+   ✅ Skipping immune trust adjustments for autonomous academic source
+   📊 Content classified as: logical
+   🔍 Storing in LOGIC memory (analysis-based)
+   ✅ Processed successfully
+
+📄 Processing: http://portal.acs.org/portal/PublicWebSite/education/whatisc...
+   ⚠️ Insufficient content (83 chars)
+
+📄 Processing: https://lux.collections.yale.edu/view/group/f5289951-2536-4d...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: http://www.rz.uni-karlsruhe.de/~ed01/Jslit/eduquim.htm...
+[WEB_PARSER] Error fetching raw HTML for http://www.rz.uni-karlsruhe.de/~ed01/Jslit/eduquim.htm: HTTPConnectionPool(host='www.rz.uni-karlsruhe.de', port=80): Max retries exceeded with url: /~ed01/Jslit/eduquim.htm (Caused by NameResolutionError("<urllib3.connection.HTTPConnection object at 0x0000029198092030>: Failed to resolve 'www.rz.uni-karlsruhe.de' ([Errno 11001] getaddrinfo failed)"))
+   ❌ Failed to fetch content
+URL 76014 failed (attempt 2/3), will retry: Failed to fetch content
+Recorded failure: http://www.rz.uni-karlsruhe.de/~ed01/Jslit/eduquim.htm - Failed to fetch content
+
+📄 Processing: https://lux.collections.yale.edu/view/concept/34bb6d43-2c5b-...
+   ⚠️ Insufficient content (0 chars)
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:Chemical_substances...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   🧠 Ethical awareness: harmful_intent
+   📚 Learning approach: recognize_but_dont_internalize
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:Artificial_materials...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   💭 Content insight: I'm developing preferences around web_content content
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Talk:Single_(music)...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: symbolic
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   💭 Storing in SYMBOLIC memory (meaning-based)
+   ✅ Processed successfully
+
+📄 Processing: http://udel.edu/~mm/beatles/music/singles.html...
+   ✅ Skipping immune trust adjustments for autonomous academic source
+   📊 Content classified as: bridge
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   💭 Content insight: I'm developing preferences around web_content content
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:Singles_(music)...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   💭 Content insight: I'm developing preferences around web_content content
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:Audio_storage...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: logical
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🔍 Storing in LOGIC memory (analysis-based)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Talk:Brooke_Fraser...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: symbolic
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   💭 Storing in SYMBOLIC memory (meaning-based)
+   ✅ Processed successfully
+   🧹 Skipped 2 unfetchable URLs from persistent queue
+
+📄 Processing: http://www.rz.uni-karlsruhe.de/~ed01/Jslit/eduquim.htm...
+[WEB_PARSER] Error fetching raw HTML for http://www.rz.uni-karlsruhe.de/~ed01/Jslit/eduquim.htm: HTTPConnectionPool(host='www.rz.uni-karlsruhe.de', port=80): Max retries exceeded with url: /~ed01/Jslit/eduquim.htm (Caused by NameResolutionError("<urllib3.connection.HTTPConnection object at 0x00000292A8382AD0>: Failed to resolve 'www.rz.uni-karlsruhe.de' ([Errno 11001] getaddrinfo failed)"))
+   ❌ Failed to fetch content
+URL 76014 permanently failed after 3 attempts: Failed to fetch content
+Recorded failure: http://www.rz.uni-karlsruhe.de/~ed01/Jslit/eduquim.htm - Failed to fetch content
+
+📄 Processing: http://www.mahasz.hu/?menu=slagerlistak&menu2=archivum&lista...
+   ⚠️ FLAGGED for review (threat: 0.63)
+      Reasoning: Neutral domain trust (www.mahasz.hu): 0.50; Detected 1 content quality indicators
+   📊 Content classified as: bridge
+   🌉 DEFERRED (1/2 sightings): Storing in BRIDGE awaiting verification
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:1983_births...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   🧠 Ethical awareness: deceptive_content
+   📚 Learning approach: learn_pattern_not_practice
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:21st-century_New_Zeal...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:Aotearoa_Music_Award_...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:APRA_Award_winners...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:Christian_music_songw...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:New_Zealand_women_sin...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:New_Zealand_singer-so...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:New_Zealand_Pentecost...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:Performers_of_contemp...
+   ⏱️ Rate limited (wait 2.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:New_Zealand_people_of...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:New_Zealand_people_of...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:New_Zealand_people_of...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:People_educated_at_Na...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:People_from_Lower_Hut...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:New_Zealand_women_pop...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:Hillsong_musicians...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:Grammy_Award_winners...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: bridge
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   🌉 Storing in BRIDGE memory (unresolved, awaiting context)
+   ✅ Processed successfully
+
+📄 Processing: https://en.wikipedia.org/wiki/Category:Use_New_Zealand_Engli...
+   ⏱️ Rate limited (wait 3.0s) - preparing crawl...
+   ✅ Skipping immune trust adjustments for high-trust domain (1.00)
+   ✅ Skipping warfare check for high-trust domain (1.00)
+   📊 Content classified as: symbolic
+   ✅ Skipping corroboration for high-trust domain (1.00)
+   💭 Storing in SYMBOLIC memory (meaning-based)
+   ✅ Processed successfully
+   🧹 Skipped 12 unfetchable URLs from persistent queue
+
+🧠 Integrating learning progression...
+   ✅ Tracked 7 concepts
+   ✅ Recorded 69 milestones
+   🎯 Generated 0 curiosity-driven goals
+   🔄 Made 0 drive satisfaction adjustments
+   💡 Learning insights generated:
+      • I understand consciousness much better now - there's been a significant breakthrough
+      • I understand meaning much better now - there's been a significant breakthrough
+      • I understand learning much better now - there's been a significant breakthrough
+   🌱 Curiosity insights generated:
+      • 🔥 Strong drive for understanding - actively seeking
+      • 🔥 Strong drive for connection - actively seeking
+   💭 Personal insights generated:
+      • I notice I'm particularly drawn to learning_session content that engages me deeply
+   🌟 Self-awareness level: 0.35
+   🎯 Learning confidence: 0.90
+   🔥 Motivation level: 0.93
+   🎪 Active curiosity goals: 168
+\n🎯 MASSIVE LEARNING SESSION COMPLETE
+==================================================
+⏱️ Duration: 9.2 minutes
+📊 URLs processed: 47
+🧠 Chunks learned: 47
+💡 Symbols discovered: 47
+🔗 Links followed: 28
+
+🛡️ LAYERED SECURITY STATS:
+   • Robots.txt blocks: 22
+   • Immune blocks (page-level): 2
+   • Warfare blocks (chunk-level): 3
+   • Corroboration deferrals: 0
+   • Trust adjustments: 3
+
+⏱️ CRAWL INFRASTRUCTURE STATS:
+   • Rate limit waits: 40
+   • URLs in queue: 91075
+   • Avg crawl delay: 4.0s
+🧠 Final memory: 11187 tripartite items, 14000 total (including vectors/trails/symbols), healthy health
+\n🧬 Running final evolution cycle...
+
+   Evolution cycle: handled by adaptive migration at session end
+Session saved: data\autonomous_sessions\massive_20260704_120335.json
+
+Running adaptive migration...
+💾 Saved 3/3 memory stores successfully
+   Forward: 24 → logic, 6 → symbolic, 375 remain in bridge
+   Recontextualization: 0 items returned to bridge
+   Drift detected: True
+
+   Queue reprioritized: 5000/91075 pending URLs reordered by topic relevance (dc=1.00)
+PS C:\Users\kaitl\Documents\Core-Project - Copy> be

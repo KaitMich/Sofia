@@ -28,7 +28,7 @@ test_results = {
 # Test 1: Episodic Memory Creation and Retrieval
 print("\n1. Testing Episodic Memory System...")
 try:
-    from episodic_memory import EpisodicMemorySystem
+    from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
     
     em = EpisodicMemorySystem()
     test_results["components_tested"].append("episodic_memory")
@@ -192,7 +192,7 @@ except Exception as e:
 print("\n5. Testing Cross-Component Data Flow...")
 try:
     # Create an episodic memory and see if brain metrics can analyze it
-    from episodic_memory import EpisodicMemorySystem
+    from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
     from brain_metrics import BrainMetrics
     
     em = EpisodicMemorySystem()

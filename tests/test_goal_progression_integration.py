@@ -168,7 +168,7 @@ def test_goal_progression_bidirectional_integration():
     # Test 4: Learning Trajectory Influence on Goals
     print(f"\n📝 Test 4: Learning Trajectory Analysis")
     
-    trajectory = lpt.get_learning_trajectory()
+    trajectory = lpt.get_overall_learning_trajectory()
     print(f"\n   Active learning areas: {trajectory['active_areas']}")
     print(f"   Momentum areas: {trajectory['momentum_areas']}")
     print(f"   Gap areas: {trajectory['gap_areas']}")

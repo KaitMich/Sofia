@@ -99,7 +99,7 @@ def test_security_integration():
     
     # Test episodic memory protection
     try:
-        from episodic_memory import EpisodicMemorySystem
+        from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
         
         episodic_memory = EpisodicMemorySystem()
         

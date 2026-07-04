@@ -22,7 +22,7 @@ import math
 # Import related systems
 try:
     from curiosity_engine import CuriosityEngine
-    from interest_tracker import InterestTracker
+    from INSIGHT_RELEVANCE import InterestTracker
     from identity_core import get_identity_core
     MOTIVATION_SYSTEMS_AVAILABLE = True
 except ImportError:

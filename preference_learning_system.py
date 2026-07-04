@@ -1188,6 +1188,12 @@ class PreferenceLearningSystem:
         
         # Complexity signal
         complexity = content_characteristics["complexity"]
+        
+        # Ensure complexity is a float for comparison
+        if isinstance(complexity, str):
+            complexity_map = {"low": 0.2, "medium": 0.5, "high": 0.8, "existential": 0.9, "complex": 0.7}
+            complexity = complexity_map.get(complexity.lower(), 0.5)
+            
         complexity_category = "high" if complexity > 0.7 else "medium" if complexity > 0.3 else "low"
         signals.append({
             "preference_type": "complexity",

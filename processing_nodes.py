@@ -6,6 +6,7 @@ from pathlib import Path
 from datetime import datetime
 import re
 from collections import Counter, defaultdict
+from urllib.parse import urlparse
 
 # Ensure spacy is imported if P_Parser.nlp is used directly for type hinting or other reasons
 # import spacy # Uncomment if direct spacy types are needed
@@ -25,7 +26,7 @@ import emotion_handler as EH_EmotionHandler
 from unified_symbol_system import UnifiedSymbolSystem, get_unified_symbol_system
 
 # Import value formation system for emergent morality
-from value_formation import ValueFormation as ValueFormationSystem
+from value_formation import ValueFormation
 
 # Import new security and visualization modules
 # Content detection is implemented locally in this module
@@ -36,15 +37,15 @@ COOCCURRENCE_LOG_PATH = Path("data/symbol_cooccurrence.json")
 COOCCURRENCE_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 # Lazy loader to avoid circular dependency with visualization_prep
-def _get_visualization_prep():
+def _get_visualization_prep(data_dir: str = "data"):
     """Load VisualizationPrep lazily to avoid circular dependency"""
     try:
         from utils.visualization_prep import VisualizationPrep
-        return VisualizationPrep(data_dir="data")
+        return VisualizationPrep(data_dir=data_dir)
     except ImportError:
         try:
             from visualization_prep import VisualizationPrep
-            return VisualizationPrep(data_dir="data")
+            return VisualizationPrep(data_dir=data_dir)
         except ImportError as e:
             print(f"Warning: Could not import VisualizationPrep: {e}")
             return None
@@ -261,6 +262,7 @@ class LogicNode:
             
             # Perform authentic reasoning analysis
             reasoning_analysis = self.analyze_reasoning_process(query_text, logic_items)
+            current_pattern = reasoning_analysis['reasoning_pattern']
             
             # Enhanced pattern matching based on reasoning type
             query_keywords = set(query_text.lower().split())
@@ -277,7 +279,6 @@ class LogicNode:
                     
                     # Reasoning-pattern specific weighting
                     reasoning_boost = 0
-                    current_pattern = reasoning_analysis['reasoning_pattern']
                     
                     if current_pattern == 'causal' and any(word in item_text for word in ['cause', 'effect', 'result', 'leads to']):
                         reasoning_boost = 0.2
@@ -749,18 +750,21 @@ class CurriculumManager: # Incorporating Step 1 changes
         }
 
 class DynamicBridge: # Incorporating Step 1, 2, 4.1, 7.1 changes with Unified Weight System
-    def __init__(self, logic_node: LogicNode, symbolic_node: SymbolicNode, curriculum_manager: CurriculumManager):
+    def __init__(self, logic_node: LogicNode, symbolic_node: SymbolicNode, curriculum_manager: CurriculumManager, data_dir: str = "data"):
         self.logic_node = logic_node
         self.symbolic_node = symbolic_node
         self.curriculum_manager = curriculum_manager
+        self.data_dir = Path(data_dir)
+        
         # Trail logging is now handled through unified memory system
         self.spacy_nlp = P_Parser.nlp if P_Parser.NLP_MODEL_LOADED else None
         
         # Initialize unified weight system
-        self.unified_weights = UnifiedWeightSystem(data_dir="data")
+        self.unified_weights = UnifiedWeightSystem(data_dir=str(self.data_dir))
         
         # Initialize unified memory system
-        self.unified_memory = get_unified_memory(data_dir="data")
+        self.unified_memory = get_unified_memory(data_dir=str(self.data_dir))
+        self.tripartite_memory = self.unified_memory.tripartite
         
         # Initialize trail logger from unified memory
         self.trail_logger = self.unified_memory.trail_logger
@@ -771,16 +775,16 @@ class DynamicBridge: # Incorporating Step 1, 2, 4.1, 7.1 changes with Unified We
         self.symbolic_node.unified_memory = self.unified_memory
         
         # Initialize security modules
-        self.quarantine = UserMemoryQuarantine(data_dir="data")
-        self.warfare_detector = LinguisticWarfareDetector(data_dir="data")
-        self.viz_prep = _get_visualization_prep()
+        self.quarantine = UserMemoryQuarantine(data_dir=str(self.data_dir))
+        self.warfare_detector = LinguisticWarfareDetector(data_dir=str(self.data_dir))
+        self.viz_prep = _get_visualization_prep(data_dir=str(self.data_dir))
         
         # Load adaptive weights if available
         self.weights = self._load_adaptive_weights()
 
         # Initialize value formation system for emergent morality
         try:
-            self.value_formation = ValueFormationSystem(data_dir="data")
+            self.value_formation = ValueFormation(data_dir=str(self.data_dir))
             print("  💎 Value formation system initialized")
         except Exception as e:
             print(f"  ⚠️ Value formation system unavailable: {e}")
@@ -790,7 +794,7 @@ class DynamicBridge: # Incorporating Step 1, 2, 4.1, 7.1 changes with Unified We
         
     def _load_adaptive_weights(self):
         """Load adaptive weights from config if available"""
-        config_path = Path("data/adaptive_config.json")
+        config_path = self.data_dir / "adaptive_config.json"
         weights = {'static': 0.6, 'dynamic': 0.4}
         if config_path.exists():
             try:
@@ -957,7 +961,13 @@ class DynamicBridge: # Incorporating Step 1, 2, 4.1, 7.1 changes with Unified We
         # NEW: Check if input should be quarantined
         if source_type == "user_direct_input":
             # Run warfare detection first
-            warfare_check, warfare_analysis = check_for_warfare(text_input, source_url or "anonymous")
+            domain = urlparse(source_url).netloc if source_url else ""
+            domain_trust = self.trust_db.get_trust(domain) if hasattr(self, 'trust_db') else 0.0
+            is_academic = (domain.endswith('.edu') or
+                'wikipedia.org' in domain or domain_trust >= 0.8)
+            warfare_context = {'domain': domain,
+                'domain_trust': domain_trust, 'is_academic': is_academic}
+            warfare_check, warfare_analysis = check_for_warfare(text_input, source_url or "anonymous", context=warfare_context)
             
             if warfare_check:
                 # Store in quarantine
@@ -1207,7 +1217,13 @@ class DynamicBridge: # Incorporating Step 1, 2, 4.1, 7.1 changes with Unified We
         directives = self.curriculum_manager.get_processing_directives(current_phase)
         
         # Check for warfare first
-        should_quarantine, warfare_analysis = check_for_warfare(user_input_text, source_url or "anonymous")
+        domain = urlparse(source_url).netloc if source_url else ""
+        domain_trust = self.trust_db.get_trust(domain) if hasattr(self, 'trust_db') else 0.0
+        is_academic = (domain.endswith('.edu') or
+            'wikipedia.org' in domain or domain_trust >= 0.8)
+        warfare_context = {'domain': domain,
+            'domain_trust': domain_trust, 'is_academic': is_academic}
+        should_quarantine, warfare_analysis = check_for_warfare(user_input_text, source_url or "anonymous", context=warfare_context)
         
         if should_quarantine:
             # Handle hostile input

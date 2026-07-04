@@ -23,7 +23,7 @@ from value_formation import ValueFormation
 from creative_engine import CreativeEngine
 from relationship_tracker import RelationshipTracker
 from curiosity_engine import CuriosityEngine
-from personal_insight_generator import PersonalInsightGenerator
+from INSIGHT_RELEVANCE import PersonalInsightGenerator
 
 class ConsciousnessTrainer:
     """

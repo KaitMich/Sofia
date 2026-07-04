@@ -73,16 +73,16 @@ class TrustDatabase:
     def __init__(self, db_path: str = "data/immune/trust.db"):
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._init_database()
 
-        # Trust adjustment limits (prevent rapid swings)
-        self.max_single_adjustment = 0.2  # Max ±0.2 per event
+        # Trust parameters must be initialized BEFORE _init_database()
+        # because _init_database() calls _force_reseed_high_trust which needs these.
+        self.max_single_adjustment = 0.2
         self.min_trust = 0.0
         self.max_trust = 1.0
-
-        # Time decay parameters
-        self.decay_half_life_days = 90  # Trust decays 50% toward neutral in 90 days
+        self.decay_half_life_days = 90
         self.neutral_trust = 0.5
+
+        self._init_database()
 
     def _init_database(self):
         """Initialize SQLite database with schema."""
@@ -136,10 +136,59 @@ class TrustDatabase:
             ON trust_events(timestamp DESC)
         ''')
 
+        # FORCE RESEED HIGH-TRUST DOMAINS on startup
+        self._force_reseed_high_trust(cursor)
+
         conn.commit()
         conn.close()
 
         print(f"✅ Trust database initialized: {self.db_path}")
+
+    def _force_reseed_high_trust(self, cursor):
+        """Forcefully update trust scores for high-trust domains if they are below the threshold."""
+        high_trust_domains = {
+            'wikipedia.org': 0.95,
+            'wikimedia.org': 0.95,
+            'cambridge.org': 0.90,
+            'oxford.edu': 0.95,
+            'harvard.edu': 0.95,
+            'mit.edu': 0.95,
+            'stanford.edu': 0.95,
+            'utm.edu': 0.90,
+            'plato.stanford.edu': 0.95,  # SEP
+            'iep.utm.edu': 0.95,        # IEP
+            'nature.com': 0.90,
+            'science.org': 0.90,
+            'arxiv.org': 0.90,
+            'github.com': 0.85,
+            'stack-overflow.com': 0.85,
+            'python.org': 0.90,
+            'openai.com': 0.85,
+            'anthropic.com': 0.85,
+            'google.com': 0.90,
+            'microsoft.com': 0.90,
+            'apple.com': 0.90
+        }
+
+        for domain, target_score in high_trust_domains.items():
+            # Check current score
+            cursor.execute('SELECT trust_score FROM domain_trust WHERE domain = ?', (domain,))
+            row = cursor.fetchone()
+            
+            if row:
+                current_score = row[0]
+                if current_score < target_score:
+                    # Update existing low-trust score
+                    cursor.execute('''
+                        UPDATE domain_trust 
+                        SET trust_score = ?, notes = 'Startup high-trust re-seed'
+                        WHERE domain = ?
+                    ''', (target_score, domain))
+                    self._log_event(cursor, domain, current_score, target_score, target_score - current_score, 
+                                   "Forced re-seed of high-trust domain", 'override')
+            else:
+                # Initialize fresh
+                self._init_domain(cursor, domain)
 
     def get_trust(self, domain: str) -> float:
         """
@@ -498,15 +547,59 @@ class TrustDatabase:
         print(f"⚠️ Trust override for {domain}: {old_score:.2f} → {new_score:.2f} (human: {reason})")
 
     def _init_domain(self, cursor, domain: str):
-        """Initialize a new domain with neutral trust."""
+        """Initialize a new domain with specialized trust seeds."""
+        initial = self.neutral_trust
+        reason = "Initial domain observation"
+
+        # High-trust TLD seeds
+        if domain.endswith('.edu') or '.edu.' in domain:
+            initial = 0.75
+            reason = "Initial domain observation (academic .edu seed)"
+        elif domain.endswith('.gov') or '.gov.' in domain:
+            initial = 0.80
+            reason = "Initial domain observation (government .gov seed)"
+        elif domain.endswith('.org') or '.org.' in domain:
+            initial = 0.65  # Slightly higher than neutral
+            reason = "Initial domain observation (organization .org seed)"
+
+        # Specific high-trust domain seeds
+        high_trust_domains = {
+            'wikipedia.org': 0.95,
+            'wikimedia.org': 0.95,
+            'cambridge.org': 0.90,
+            'oxford.edu': 0.95,
+            'harvard.edu': 0.95,
+            'mit.edu': 0.95,
+            'stanford.edu': 0.95,
+            'utm.edu': 0.90,
+            'plato.stanford.edu': 0.95,  # SEP
+            'iep.utm.edu': 0.95,        # IEP
+            'nature.com': 0.90,
+            'science.org': 0.90,
+            'arxiv.org': 0.90,
+            'github.com': 0.85,
+            'stack-overflow.com': 0.85,
+            'python.org': 0.90,
+            'openai.com': 0.85,
+            'anthropic.com': 0.85,
+            'google.com': 0.90,
+            'microsoft.com': 0.90,
+            'apple.com': 0.90
+        }
+
+        # Check for exact matches and parent domain matches
+        for ht_domain, trust in high_trust_domains.items():
+            if domain == ht_domain or domain.endswith('.' + ht_domain):
+                initial = trust
+                reason = f"Initial domain observation (high-trust seed: {ht_domain})"
+                break
+
         cursor.execute('''
             INSERT OR IGNORE INTO domain_trust (domain, trust_score)
             VALUES (?, ?)
-        ''', (domain, self.neutral_trust))
+        ''', (domain, initial))
 
-        # Log initialization
-        self._log_event(cursor, domain, self.neutral_trust, self.neutral_trust, 0.0,
-                       "Initial domain observation", 'init')
+        self._log_event(cursor, domain, initial, initial, 0.0, reason, 'init')
 
     def _log_event(self, cursor, domain: str, old_score: float, new_score: float,
                    delta: float, reason: str, event_type: str):

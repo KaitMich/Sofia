@@ -1606,39 +1606,40 @@ Examples:
     def cmd_saturation_event_horizon(self, args) -> int:
         """Show concepts on the event horizon"""
         try:
-            import json
+            import sqlite3
             from pathlib import Path
 
-            queue_file = Path(self.data_dir) / "future_learning_queue.json"
-            if not queue_file.exists():
+            db_path = Path(self.data_dir) / "future_learning_queue.db"
+            if not db_path.exists():
                 self.print_status("No event horizon data found", "warning")
                 return 0
 
-            with open(queue_file) as f:
-                data = json.load(f)
+            conn = sqlite3.connect(str(db_path))
+            if args.zone:
+                rows = conn.execute(
+                    "SELECT text, distance, zone, timestamp FROM concepts "
+                    "WHERE zone = ? ORDER BY timestamp DESC LIMIT ?",
+                    (args.zone, args.limit)).fetchall()
+                print(f"\n🔭 EVENT HORIZON (Zone: {args.zone})")
+            else:
+                rows = conn.execute(
+                    "SELECT text, distance, zone, timestamp FROM concepts "
+                    "ORDER BY timestamp DESC LIMIT ?",
+                    (args.limit,)).fetchall()
+                print(f"\n🔭 EVENT HORIZON (All Zones)")
+            conn.close()
 
-            concepts = data.get('concepts', [])
-            if not concepts:
+            if not rows:
                 self.print_status("Event horizon is empty", "info")
                 return 0
 
-            # Filter by zone if specified
-            if args.zone:
-                concepts = [c for c in concepts if c.get('zone', '') == args.zone]
-                print(f"\n🔭 EVENT HORIZON (Zone: {args.zone})")
-            else:
-                print(f"\n🔭 EVENT HORIZON (All Zones)")
-
             print("=" * 80)
-            print(f"\nTotal Concepts: {len(concepts)}\n")
+            print(f"\nTotal Concepts: {len(rows)}\n")
 
-            for i, concept in enumerate(concepts[:args.limit], 1):
-                print(f"{i:3d}. {concept['text'][:70]}")
-                print(f"      Distance: {concept['distance']:.2f} | Zone: {concept.get('zone', 'unknown')} | Seen: {concept.get('timestamp', 'unknown')[:10]}")
+            for i, (text, distance, zone, timestamp) in enumerate(rows, 1):
+                print(f"{i:3d}. {text[:70]}")
+                print(f"      Distance: {distance:.2f} | Zone: {zone} | Seen: {timestamp[:10]}")
                 print()
-
-            if len(concepts) > args.limit:
-                print(f"... and {len(concepts) - args.limit} more concepts")
 
             print("\n💡 These concepts were seen but forbidden during saturation.")
             print("   They can be used as seeds for future learning zones.")

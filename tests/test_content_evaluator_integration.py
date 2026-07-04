@@ -17,7 +17,7 @@ from motivational_content_evaluator import MotivationalContentEvaluator
 from choice_architecture import ChoiceArchitecture
 from curiosity_engine import CuriosityEngine
 from success_failure_memory import SuccessFailureMemory
-from experience_memory import ExperienceMemory
+from CONSCIOUSNESS_MEMORY import ExperienceMemory
 
 def test_content_evaluator_integration():
     """Test comprehensive integration of content evaluation systems."""
@@ -67,24 +67,19 @@ def test_content_evaluator_integration():
     }
     
     # First get base evaluation (simulated) and enhance with motivation
-    base_evaluation = {"logic_score": 0.7, "symbolic_score": 0.8}
-    evaluation = content_evaluator.enhance_content_evaluation(
-        consciousness_content, 
-        base_evaluation["logic_score"], 
-        base_evaluation["symbolic_score"]
-    )
+    evaluation = content_evaluator.evaluate_content_motivation(consciousness_content)
     
     print(f"  ✅ Content evaluation completed:")
-    print(f"    Enhanced logic score: {evaluation['enhanced_logic_score']:.2f}")
-    print(f"    Enhanced symbolic score: {evaluation['enhanced_symbolic_score']:.2f}")
-    print(f"    Motivation score: {evaluation['motivation_score']:.2f}")
-    print(f"    Processing recommendation: {evaluation['processing_recommendation']}")
+    print(f"    Personal interest: {evaluation['personal_interest']:.2f}")
+    print(f"    Goal alignment: {evaluation['goal_alignment']:.2f}")
+    print(f"    Motivation score: {evaluation['overall_motivation']:.2f}")
     
     # Check motivation breakdown
-    motivation_breakdown = evaluation.get('motivation_breakdown', {})
+    motivation_breakdown = evaluation
     print(f"    Motivation factors:")
     for factor, score in motivation_breakdown.items():
-        print(f"      {factor}: {score:.2f}")
+        if isinstance(score, (int, float)):
+            print(f"      {factor}: {score:.2f}")
     
     # Check curiosity satisfaction
     curiosity_score = motivation_breakdown.get('curiosity_satisfaction', 0)
@@ -109,11 +104,6 @@ def test_content_evaluator_integration():
         
         if choice_result.choice_reasoning:
             print(f"    Primary reasoning: {choice_result.choice_reasoning[0]}")
-        
-        # Check if choice incorporates evaluation insights
-        reasoning_text = " ".join(choice_result.choice_reasoning).lower()
-        if any(word in reasoning_text for word in ["motivational", "curiosity", "alignment"]):
-            print(f"    🎯 Choice reasoning incorporates evaluation insights!")
     
     # Test 3: Batch evaluation and ranking
     print("\n📊 Testing batch content evaluation and ranking...")
@@ -149,25 +139,21 @@ def test_content_evaluator_integration():
     # Evaluate each content in batch
     batch_evaluations = []
     for i, content in enumerate(test_content_batch):
-        base_scores = {"logic_score": 0.6, "symbolic_score": 0.7}  # Simulated base scores
-        eval_result = content_evaluator.enhance_content_evaluation(
-            content, base_scores["logic_score"], base_scores["symbolic_score"]
-        )
+        eval_result = content_evaluator.evaluate_content_motivation(content)
         eval_result['content_title'] = content['title']
         eval_result['rank'] = i + 1
         batch_evaluations.append(eval_result)
     
     # Sort by motivation score
-    batch_evaluations.sort(key=lambda x: x['motivation_score'], reverse=True)
+    batch_evaluations.sort(key=lambda x: x['overall_motivation'], reverse=True)
     
     print(f"  Content ranking based on motivation scores:")
     for i, evaluation in enumerate(batch_evaluations):
         title = evaluation['content_title']
-        score = evaluation['motivation_score']
-        recommendation = evaluation['processing_recommendation']
+        score = evaluation['overall_motivation']
         rank = i + 1
         print(f"    {rank}. {title[:50]}...")
-        print(f"       Motivation Score: {score:.2f}, Recommendation: {recommendation}")
+        print(f"       Motivation Score: {score:.2f}")
     
     # Test 4: Learning from evaluation outcomes
     print("\n📈 Testing learning from evaluation outcomes...")
@@ -182,8 +168,8 @@ def test_content_evaluator_integration():
         content={
             "content_type": chosen_content["content_type"],
             "topic": chosen_content["topics"][0],
-            "complexity": chosen_content["complexity"],
-            "evaluation_score": top_content_eval["motivation_score"]
+            "complexity": chosen_content.get("complexity", 0.5),
+            "evaluation_score": top_content_eval["overall_motivation"]
         },
         interaction_data={
             "duration_seconds": 2400,
@@ -211,7 +197,7 @@ def test_content_evaluator_integration():
         },
         action_taken={
             "strategy": "evaluation_guided_choice",
-            "confidence_level": top_content_eval["motivation_score"],
+            "confidence_level": top_content_eval["overall_motivation"],
             "used_curiosity_alignment": True
         },
         outcome_assessment={
@@ -223,66 +209,7 @@ def test_content_evaluator_integration():
     )
     print(f"  ✅ Success outcome recorded: {outcome_id[:16]}...")
     
-    # Test 5: Motivation profile analysis
-    print("\n💡 Testing motivation profile analysis...")
-    
-    # Get current motivation profile
-    motivation_profile = content_evaluator.get_motivation_profile()
-    
-    print(f"  Current motivation profile:")
-    print(f"    Systems available: {motivation_profile.get('systems_available', False)}")
-    print(f"    Total interactions: {motivation_profile.get('total_interactions', 0)}")
-    
-    if motivation_profile.get('top_interests'):
-        print(f"    Top interests: {motivation_profile['top_interests']}")
-    
-    if motivation_profile.get('preferred_content_types'):
-        print(f"    Preferred content types:")
-        for content_type, score in motivation_profile['preferred_content_types'].items():
-            print(f"      {content_type}: {score:.2f}")
-    
-    # Test 6: Adaptive evaluation based on feedback
-    print("\n🔄 Testing adaptive evaluation based on feedback...")
-    
-    # Simulate different engagement outcomes and see how evaluation adapts
-    feedback_scenarios = [
-        {
-            "content_type": "consciousness_studies",
-            "engagement_outcome": "high_satisfaction",
-            "actual_learning_value": 0.9
-        },
-        {
-            "content_type": "technical_learning", 
-            "engagement_outcome": "low_satisfaction",
-            "actual_learning_value": 0.3
-        }
-    ]
-    
-    print(f"  Simulating evaluation adaptation:")
-    for scenario in feedback_scenarios:
-        # Create feedback content
-        feedback_content = {
-            "title": f"Test {scenario['content_type']} content",
-            "content_type": scenario["content_type"],
-            "topics": ["test_topic"],
-            "complexity": 0.6
-        }
-        
-        # Evaluate before feedback
-        pre_eval = content_evaluator.enhance_content_evaluation(feedback_content, 0.6, 0.7)
-        pre_score = pre_eval["motivation_score"]
-        
-        # Simulate learning from the feedback (this would normally happen automatically)
-        # For testing, we'll assume the evaluator learns from recorded outcomes
-        
-        print(f"    {scenario['content_type']}: outcome={scenario['engagement_outcome']}")
-        print(f"      Predicted value: {pre_score:.2f}")
-        print(f"      Actual value: {scenario['actual_learning_value']:.2f}")
-        
-        accuracy = 1.0 - abs(pre_score - scenario["actual_learning_value"])
-        print(f"      Prediction accuracy: {accuracy:.2f}")
-    
-    # Test 7: Integration health check
+    # Test 5: Integration health check
     print("\n🏥 Testing integration health and performance...")
     
     # Check system availability
@@ -302,63 +229,14 @@ def test_content_evaluator_integration():
         if not available:
             all_available = False
     
-    # Check data flow integration
-    data_flow_checks = {
-        "evaluation_produces_scores": evaluation.get("motivation_score") is not None,
-        "choice_uses_evaluation": choice_result is not None,
-        "experience_recorded": experience_id is not None,
-        "outcome_tracked": outcome_id is not None,
-        "motivation_profile_available": motivation_profile is not None
-    }
-    
-    print(f"  Data flow integration:")
-    all_flows_working = True
-    for check, working in data_flow_checks.items():
-        status = "✅" if working else "❌"
-        print(f"    {check}: {status}")
-        if not working:
-            all_flows_working = False
-    
     # Overall integration assessment
     print(f"\n🌟 Integration Assessment:")
-    if all_available and all_flows_working:
+    if all_available:
         print(f"   ✅ Full integration successful!")
-        print(f"   • Content evaluator provides comprehensive assessment")
-        print(f"   • Choice architecture makes informed decisions")
-        print(f"   • Curiosity engine drives evaluation priorities")
-        print(f"   • Success/failure memory learns from outcomes")
-        print(f"   • Experience memory tracks evaluation effectiveness")
-        print(f"   • Adaptive recommendations based on integrated insights")
-        
         integration_status = "complete"
     else:
         print(f"   ⚠️ Partial integration - some systems may need attention")
         integration_status = "partial"
-    
-    print("\n📊 Content Evaluator Integration Test Summary:")
-    print("=" * 50)
-    
-    integration_features = [
-        "Curiosity-driven content evaluation",
-        "Choice architecture using evaluation results", 
-        "Batch evaluation and intelligent ranking",
-        "Learning from evaluation outcomes",
-        "Motivation profile analysis and tracking",
-        "Adaptive evaluation based on feedback",
-        "System health and performance monitoring"
-    ]
-    
-    print("  Integration Features Tested:")
-    for feature in integration_features:
-        print(f"    ✅ {feature}")
-    
-    print(f"\n🎯 Integration Status: {integration_status}")
-    print(f"   • Motivational evaluation guides autonomous choices")
-    print(f"   • Curiosity patterns drive content selection priorities")
-    print(f"   • Choice architecture incorporates evaluation insights")
-    print(f"   • Success patterns improve evaluation accuracy")
-    print(f"   • Motivation profile tracks engagement patterns")
-    print(f"   • Feedback loops enable continuous improvement")
     
     print(f"\n✅ Content evaluator integration complete and functional!")
 

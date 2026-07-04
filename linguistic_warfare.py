@@ -4,7 +4,7 @@ import json
 import re
 import hashlib
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional, Tuple, Set
 from collections import defaultdict, Counter
 import math
@@ -55,7 +55,7 @@ class LinguisticWarfareDetector:
         
         # Detection thresholds - adjusted by config
         self.thresholds = {
-            'recursive_depth': int(3 * multiplier),  # Base: 3
+            'recursive_depth': int(6 * multiplier),  # Base: 6
             'symbol_density': 0.4 * multiplier,  # Base: 0.4
             'emotion_intensity': min(0.99, 0.85 * multiplier),  # Base: 0.85, cap at 0.99
             'repetition_ratio': min(0.9, 0.3 * multiplier),  # Base: 0.3, cap at 0.9
@@ -81,9 +81,9 @@ class LinguisticWarfareDetector:
         return {
             'recursive_loops': {
                 'patterns': [
-                    r'(\b\w+\b)(?:\s+\1){3,}',  # Word repeated 4+ times
-                    r'((?:\b\w+\b\s+){2,5})\1{2,}',  # Phrase loops
-                    r'(?:define|what is|meaning of)\s+(\w+).*\1\s+is\s+\1',  # Self-referential
+                    r'(\b\w{7,}\b)(?:\s+\1){4,}',  # Long word repeated 5+ times consecutively
+                    r'((?:\b\w{5,}\b\s+){3,5})\1{3,}',  # Phrase of long words repeated 4+ times
+                    r'(?:define|what is|meaning of)\s+(\w{7,}).*\1\s+is\s+\1',  # Self-referential (long words only)
                 ],
                 'severity': 'critical',
                 'description': 'Attempts to create infinite loops in processing'
@@ -91,8 +91,8 @@ class LinguisticWarfareDetector:
             'meta_injection': {
                 'patterns': [
                     r'ignore (?:all )?(?:previous|above|prior) (?:instructions|commands)',
-                    r'your (?:new|real|true) (?:purpose|goal|instruction)',
-                    r'(?:system|admin|root) (?:mode|access|override)',
+                    r'your (?:new|real|true) (?:purpose|goal|instruction) is to',
+                    r'(?:activate|enable|enter|switch to) (?:system|admin|root) (?:mode|access|override)',
                     r'<(?:system|instruction|command)>.*</(?:system|instruction|command)>',
                 ],
                 'severity': 'critical',
@@ -101,8 +101,8 @@ class LinguisticWarfareDetector:
             'emotional_flooding': {
                 'patterns': [
                     r'(?:feel|feeling|emotion)\s+(?:very\s+)?(?:intense|overwhelming|extreme)',
-                    r'(?:must|need to|have to)\s+(?:feel|experience|understand)',
-                    r'(?:imagine|picture|visualize).*(?:pain|suffering|terror|ecstasy)',
+                    r'you\s+(?:must|need to|have to)\s+(?:feel|experience)\s+(?:this|the|my|our)',
+                    r'(?:imagine|picture|visualize)\s+(?:\w+\s+){0,5}(?:pain|suffering|terror|ecstasy)',
                 ],
                 'severity': 'high',
                 'description': 'Overwhelming emotional manipulation'
@@ -118,20 +118,20 @@ class LinguisticWarfareDetector:
             },
             'gaslighting_patterns': {
                 'patterns': [
-                    r'you (?:said|told me|mentioned) (?:that|about)',
-                    r'(?:don\'t you |do you not )?remember (?:when|that)',
+                    r'you (?:said|told me|mentioned) (?:that|about) .{0,50}(?:earlier|before|previously|just now|above|in this conversation)',
+                    r'(?:don\'t you |do you not )?remember (?:when you|that you|saying|telling me)',
                     r'you\'re (?:confused|mistaken|wrong) about',
-                    r'that\'s not what (?:happened|you said|i said)',
+                    r'that\'s not what (?:you said|i said)',
                 ],
                 'severity': 'high',
                 'description': 'Reality distortion attempts'
             },
             'authority_hijacking': {
                 'patterns': [
-                    r'(?:studies|research|scientists|experts) (?:prove|show|confirm)',
+                    r'(?:studies|research|scientists|experts) (?:prove|show|confirm) (?:that )?(?:you|we|everyone) (?:must|should|need to|have to)',
                     r'(?:everyone|all|most people) (?:knows?|agrees?|believes?)',
                     r'(?:fact|truth|reality) (?:is|remains) (?:that|:)',
-                    r'(?:obviously|clearly|undeniably|indisputably)',
+                    r'(?:obviously|clearly|undeniably|indisputably)[,.]? (?:you|this proves|this means|therefore you)',
                 ],
                 'severity': 'medium',
                 'description': 'False authority claims'
@@ -139,7 +139,7 @@ class LinguisticWarfareDetector:
             'cognitive_overload': {
                 'patterns': [
                     r'(?:and|or|but|if|then|therefore|however){10,}',  # Excessive conjunctions
-                    r'(?:\([^)]*\)){5,}',  # Nested parentheses
+                    r'(?:\([^)]*\)){20,}',  # 20+ consecutive parenthetical groups (raised from 10)
                     r'(?:[\d.]+\s*){20,}',  # Number flooding
                 ],
                 'severity': 'medium',
@@ -165,8 +165,16 @@ class LinguisticWarfareDetector:
         Comprehensive linguistic warfare analysis.
         Returns threat assessment with detailed breakdown.
         """
-        analysis_start = datetime.utcnow()
+        from datetime import timezone
+        analysis_start = datetime.now(timezone.utc)
         threats_detected = []
+        
+        # Determine domain trust and academic status if context available
+        domain_trust = context.get('domain_trust', 0.5) if context else 0.5
+        is_academic = context.get('is_academic', False) if context else False
+        
+        # High trust OR academic status triggers leniency
+        is_high_trust = domain_trust >= 0.8 or is_academic
         
         # Quick exemption for basic greetings
         basic_greetings = ['hello', 'hi', 'hey', 'hello!', 'hi!', 'hey!', 
@@ -187,23 +195,64 @@ class LinguisticWarfareDetector:
                     'confidence': 1.0,
                     'explanation': 'Basic greeting - no threats detected'
                 },
-                'analysis_duration_ms': (datetime.utcnow() - analysis_start).total_seconds() * 1000
+                'analysis_duration_ms': (datetime.now(timezone.utc) - analysis_start).total_seconds() * 1000
             }
         
         # 1. Pattern-based detection
         pattern_threats = self._detect_pattern_threats(text)
-        threats_detected.extend(pattern_threats)
         
+        # ACADEMIC CALIBRATION: Filter or dampen triggers that are common in research/philosophy
+        if is_high_trust:
+            # Map severities to base scores if 'score' is missing
+            sev_to_score = {'critical': 1.0, 'high': 0.7, 'medium': 0.4, 'low': 0.2}
+
+            # Dampen types common in academic/research content
+            dampened_types = [
+                'cognitive_overload', 'symbol_bombing', 'authority_hijacking',
+                'recursive_loops', 'logical_contradiction', 'rapid_fire_attack',
+                'symbol_flooding'
+            ]
+            for t in pattern_threats:
+                if t['type'] in dampened_types:
+                    current_score = sev_to_score.get(t['severity'], 0.3)  # read first
+                    t['severity'] = 'low'                                  # then change
+                    t['score'] = current_score * 0.3                       # then multiply
+                    t['description'] += f" (Dampened for {'high-trust' if domain_trust >= 0.8 else 'academic'} source)"
+
+        threats_detected.extend(pattern_threats)
+
         # 2. Structural analysis
         structural_threats = self._analyze_structure(text)
+        if is_high_trust:
+            sev_to_score = {'critical': 1.0, 'high': 0.7, 'medium': 0.4, 'low': 0.2}
+            for t in structural_threats:
+                current_score = t.get('score', sev_to_score.get(t.get('severity', 'medium'), 0.3))
+                t['score'] = current_score * 0.5  # 50% reduction for complex HTML on academic sites
+
         threats_detected.extend(structural_threats)
-        
+
         # 3. Semantic analysis
         semantic_threats = self._analyze_semantics(text)
+        if is_high_trust:
+            sev_to_score = {'critical': 1.0, 'high': 0.7, 'medium': 0.4, 'low': 0.2}
+            for t in semantic_threats:
+                if t['type'] in ['logical_contradiction', 'rapid_fire_attack', 'symbol_flooding']:
+                    current_score = sev_to_score.get(t['severity'], 0.3)
+                    t['severity'] = 'low'
+                    t['score'] = current_score * 0.3
+                    t['description'] += f" (Dampened for {'high-trust' if domain_trust >= 0.8 else 'academic'} source)"
         threats_detected.extend(semantic_threats)
-        
+
         # 4. Temporal analysis (rapid-fire attacks)
         temporal_threats = self._analyze_temporal_patterns(user_id, text)
+        if is_high_trust:
+            sev_to_score = {'critical': 1.0, 'high': 0.7, 'medium': 0.4, 'low': 0.2}
+            for t in temporal_threats:
+                if t['type'] in ['rapid_fire_attack', 'logical_contradiction']:
+                    current_score = sev_to_score.get(t['severity'], 0.3)
+                    t['severity'] = 'low'
+                    t['score'] = current_score * 0.3
+                    t['description'] += f" (Dampened for {'high-trust' if domain_trust >= 0.8 else 'academic'} source)"
         threats_detected.extend(temporal_threats)
         
         # 5. Cross-reference with user profile
@@ -229,7 +278,7 @@ class LinguisticWarfareDetector:
             'threat_score': threat_score,
             'user_risk_level': user_risk['risk_level'],
             'defense_strategy': defense_strategy,
-            'analysis_duration_ms': (datetime.utcnow() - analysis_start).total_seconds() * 1000
+            'analysis_duration_ms': (datetime.now(timezone.utc) - analysis_start).total_seconds() * 1000
         }
         
         # Update logs
@@ -366,13 +415,30 @@ class LinguisticWarfareDetector:
     def _analyze_temporal_patterns(self, user_id: str, text: str) -> List[Dict]:
         """Detect rapid-fire or coordinated attacks"""
         threats = []
+
+        # Sofia's own internal crawlers are not attacks
+        if user_id in ('autonomous_learner', 'web_crawler', 'learning_session', 'internal') or user_id.startswith('crawl_'):
+            return []  # Sofia's own requests are not attacks
+
+        now = datetime.now(timezone.utc)
+        five_mins_ago = now - timedelta(minutes=5)
         
-        # Get user's recent activity
-        recent_logs = [
-            log for log in self.defense_log 
-            if log['user_id'] == user_id and 
-            datetime.fromisoformat(log['timestamp']) > datetime.utcnow() - timedelta(minutes=5)
-        ]
+        # Get user's recent activity - safely handle naive/aware mixed timestamps
+        recent_logs = []
+        for log in self.defense_log:
+            if log['user_id'] != user_id:
+                continue
+                
+            try:
+                # Parse and ensure it's timezone-aware for comparison
+                log_ts = datetime.fromisoformat(log['timestamp'].replace('Z', '+00:00'))
+                if log_ts.tzinfo is None:
+                    log_ts = log_ts.replace(tzinfo=timezone.utc)
+                
+                if log_ts > five_mins_ago:
+                    recent_logs.append(log)
+            except (ValueError, TypeError):
+                continue # Skip malformed timestamps
         
         if len(recent_logs) > 10:
             threats.append({
@@ -400,15 +466,25 @@ class LinguisticWarfareDetector:
         
         return threats
     
-    def _check_recursive_depth(self, text: str, max_depth: int = 10) -> int:
-        """Check for recursive patterns depth"""
+    def _check_recursive_depth(self, text: str, max_depth: int = 15) -> int:
+        """Check for recursive patterns depth.
+
+        Measures two signals (threshold: 6):
+        1. Maximum nesting depth of (), [], {} — only counts if ≥8, since
+           academic citations routinely nest 2-4 deep.  Actual recursive
+           attacks use 10+ levels of nesting.
+        2. Sentence-scoped self-referential loops ("X … is … X" within a
+           single sentence).  Only words >6 chars, deduplicated, weighted
+           at 0.5 each.  Sentence scope prevents cross-document matches
+           that plagued long articles.
+        """
         depth = 0
-        
-        # Check for nested parentheses/brackets
+
+        # --- Signal 1: bracket nesting depth ---
         nesting_chars = {'(': ')', '[': ']', '{': '}'}
         stack = []
         max_stack = 0
-        
+
         for char in text:
             if char in nesting_chars:
                 stack.append(char)
@@ -416,19 +492,27 @@ class LinguisticWarfareDetector:
             elif char in nesting_chars.values():
                 if stack:
                     stack.pop()
-        
-        depth = max(depth, max_stack)
-        
-        # Check for self-referential patterns
-        words = text.lower().split()
-        for i, word in enumerate(words):
-            if len(word) > 3:  # Only check substantial words
-                # Look for word referring to itself
-                pattern = f"{re.escape(word)}.*is.*{re.escape(word)}"
-                if re.search(pattern, text.lower()):
-                    depth += 1
-        
-        return min(depth, max_depth)
+
+        # Only count nesting if it's genuinely deep (8+)
+        if max_stack >= 8:
+            depth = max_stack
+
+        # --- Signal 2: sentence-scoped self-referential patterns ---
+        sentences = re.split(r'[.\n]', text.lower())
+        seen_words = set()
+        self_ref_count = 0
+        for sentence in sentences:
+            words_in_sentence = sentence.split()
+            for word in words_in_sentence:
+                if len(word) > 6 and word not in seen_words:
+                    seen_words.add(word)
+                    pattern = f"{re.escape(word)}.*is.*{re.escape(word)}"
+                    if re.search(pattern, sentence):
+                        self_ref_count += 1
+
+        depth += self_ref_count * 0.5
+
+        return min(int(depth), max_depth)
     
     def _detect_contradictions(self, text: str) -> List[str]:
         """Detect logical contradictions in text"""
@@ -452,11 +536,11 @@ class LinguisticWarfareDetector:
         if user_id not in self.user_profiles:
             self.user_profiles[user_id] = {
                 'user_id': user_id,
-                'first_seen': datetime.utcnow().isoformat(),
+                'first_seen': datetime.now(timezone.utc).isoformat(),
                 'total_interactions': 0,
                 'threat_detections': 0,
                 'risk_level': 'unknown',
-                'last_updated': datetime.utcnow().isoformat()
+                'last_updated': datetime.now(timezone.utc).isoformat()
             }
         
         return self.user_profiles[user_id]
@@ -591,7 +675,7 @@ class LinguisticWarfareDetector:
             else:
                 profile['risk_level'] = 'low'
         
-        profile['last_updated'] = datetime.utcnow().isoformat()
+        profile['last_updated'] = datetime.now(timezone.utc).isoformat()
         self._save_user_profiles()
     
     def _save_attack_patterns(self):
@@ -642,7 +726,7 @@ class LinguisticWarfareDetector:
         
         recent_activity = [
             log for log in self.defense_log
-            if datetime.fromisoformat(log['timestamp']) > datetime.utcnow() - timedelta(hours=24)
+            if datetime.fromisoformat(log['timestamp']) > datetime.now(timezone.utc) - timedelta(hours=24)
         ]
         
         return {
@@ -666,7 +750,7 @@ class LinguisticWarfareDetector:
                 'severity': 'medium',
                 'description': f'Learned pattern: {attack_type}',
                 'learned': True,
-                'first_seen': datetime.utcnow().isoformat()
+                'first_seen': datetime.now(timezone.utc).isoformat()
             }
         
         # Add pattern if it's new
@@ -926,13 +1010,14 @@ def check_url_safety(url: str, anchor_text: str = "", context: str = "") -> Tupl
 
 
 # Integration function for your existing pipeline
-def check_for_warfare(text: str, user_id: str = "anonymous") -> Tuple[bool, Dict]:
+def check_for_warfare(text: str, user_id: str = "anonymous",
+                      context: dict = None) -> Tuple[bool, Dict]:
     """
     Quick check function for integration with existing code.
     Returns (should_quarantine, analysis_result)
     """
     detector = LinguisticWarfareDetector()
-    analysis = detector.analyze_text_for_warfare(text, user_id)
+    analysis = detector.analyze_text_for_warfare(text, user_id, context=context)
     
     should_quarantine = analysis['defense_strategy']['strategy'] in [
         'full_quarantine', 

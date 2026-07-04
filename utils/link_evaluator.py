@@ -10,6 +10,7 @@ import numpy as np
 from alphawall import AlphaWall
 from quarantine_layer import UserMemoryQuarantine
 from weight_evolution import WeightEvolver
+from bridge_adapter import AlphaWallBridge
 # Bridge functionality now in unified_orchestration
 from unified_orchestration import LinkEvaluator as UnifiedLinkEvaluator
 
@@ -61,10 +62,10 @@ class EnhancedLinkEvaluator:
         zone_output = self.alphawall.process_input(user_input, user_data)
         
         # Step 2: Check if immediate quarantine is needed
-        if zone_output['routing_hints']['quarantine_recommended']:
+        if zone_output['action'] == 'QUARANTINED':
             # Quarantine the input
             quarantine_result = self.quarantine.quarantine(
-                zone_output['zone_id'],
+                zone_output['zone_output']['zone_id'],
                 reason="alphawall_recommendation",
                 severity=self._determine_severity(zone_output)
             )

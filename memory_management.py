@@ -566,20 +566,10 @@ class MemoryBridge:
         Source: memory_bridge.py
         """
         try:
-            # Try the unified memory interface first
-            if hasattr(self.unified_memory, 'get_tripartite_counts'):
-                tripartite_counts = self.unified_memory.get_tripartite_counts()
-                return {
-                    'logic': tripartite_counts.get('logic', 0),
-                    'symbolic': tripartite_counts.get('symbolic', 0), 
-                    'bridge': tripartite_counts.get('bridge', 0),
-                    'total': sum(tripartite_counts.values())
-                }
-            
-            # Fall back to memory_counts if available
-            elif hasattr(self.unified_memory, 'get_memory_counts'):
+            # Use the correct memory_counts interface
+            if hasattr(self.unified_memory, 'get_memory_counts'):
                 memory_counts = self.unified_memory.get_memory_counts()
-                total = sum(memory_counts.values())
+                total = memory_counts.get('total', 0)
                 return {
                     'logic': memory_counts.get('logic', 0),
                     'symbolic': memory_counts.get('symbolic', 0),

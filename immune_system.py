@@ -220,7 +220,12 @@ class ImmuneSystem:
             try:
                 domain = urlparse(url).netloc
                 domain_trust = self.trust_db.get_trust(domain)
-                reasoning.append(f"Domain trust score: {domain_trust:.2f}")
+                if domain_trust >= 0.8:
+                    reasoning.append(f"High-trust domain detected ({domain}): {domain_trust:.2f}")
+                elif domain_trust <= 0.3:
+                    reasoning.append(f"Low-trust domain detected ({domain}): {domain_trust:.2f}")
+                else:
+                    reasoning.append(f"Neutral domain trust ({domain}): {domain_trust:.2f}")
             except Exception as e:
                 print(f"⚠️ Error getting domain trust: {e}")
 
@@ -228,19 +233,31 @@ class ImmuneSystem:
         structure_signals = self._analyze_structure(url, html_content)
         threat_signals.extend(structure_signals)
         if structure_signals:
-            reasoning.append(f"Found {len(structure_signals)} HTML structure concerns")
+            reasoning.append(f"Found {len(structure_signals)} HTML structure patterns")
 
         # 2. Content quality analysis (UNIQUE to immune system)
         quality_signals = self._analyze_content_quality(url, html_content, extracted_text)
         threat_signals.extend(quality_signals)
         if quality_signals:
-            reasoning.append(f"Detected {len(quality_signals)} content quality issues")
+            reasoning.append(f"Detected {len(quality_signals)} content quality indicators")
+
+        # Update domain trust if it was adjusted during quality analysis
+        # (e.g., by academic boost)
+        if self.trust_db:
+            try:
+                domain_trust = self.trust_db.get_trust(urlparse(url).netloc)
+            except:
+                pass
+
+        # Check if this is an academic source (either via domain or content markers)
+        is_academic = any("Academic quality detected" in r for r in reasoning) or \
+                     (domain_trust is not None and domain_trust >= 0.8)
 
         # 3. Source/domain signals (UNIQUE to immune system)
         source_signals = self._analyze_source_signals(url)
         threat_signals.extend(source_signals)
         if source_signals:
-            reasoning.append(f"Detected {len(source_signals)} source reputation concerns")
+            reasoning.append(f"Detected {len(source_signals)} source reputation signals")
 
         # 4. Incorporate existing security system results (if provided)
         if alphawall_result:
@@ -252,7 +269,7 @@ class ImmuneSystem:
                 evidence=[f"AlphaWall score: {alphawall_result.get('threat_score', 0.0):.2f}"],
                 pattern_id='alphawall_integration'
             ))
-            reasoning.append(f"AlphaWall detected threats: {alphawall_result.get('threat_type', 'unknown')}")
+            reasoning.append(f"AlphaWall threat: {alphawall_result.get('threat_type', 'unknown')}")
 
         if warfare_result:
             threat_signals.append(ThreatSignal(
@@ -281,22 +298,27 @@ class ImmuneSystem:
             confidence = 0.8  # High confidence when nothing found
             reasoning.append("No page-level threats detected - HTML structure and quality appear safe")
 
-        # Factor in domain trust (low trust increases threat score)
-        if domain_trust is not None and domain_trust < 0.5:
-            trust_penalty = (0.5 - domain_trust) * 0.3  # Max 0.15 penalty
-            overall_threat_score = min(1.0, overall_threat_score + trust_penalty)
-            reasoning.append(f"Low domain trust ({domain_trust:.2f}) increases caution")
+        # Factor in domain trust (low trust increases threat score, high trust dampens it)
+        if domain_trust is not None:
+            if domain_trust < 0.5 and not is_academic:
+                trust_penalty = (0.5 - domain_trust) * 0.4  # Max 0.2 penalty
+                overall_threat_score = min(1.0, overall_threat_score + trust_penalty)
+                reasoning.append(f"Low domain trust ({domain_trust:.2f}) increases caution")
+            elif domain_trust >= 0.8 or is_academic:
+                # Dampen threat score for high-trust or academic domains
+                overall_threat_score *= 0.5  # Significant dampening
+                reasoning.append(f"Source trusted/academic ({domain_trust:.2f}) dampens threat score")
 
         # Determine recommendation
         if overall_threat_score >= 0.7:
             recommendation = 'BLOCK'
-            reasoning.append(f"HIGH RISK: Threat score {overall_threat_score:.2f} - blocking page")
+            reasoning.append(f"BLOCK: High risk assessment ({overall_threat_score:.2f})")
         elif overall_threat_score >= 0.4:
             recommendation = 'REVIEW'
-            reasoning.append(f"MEDIUM RISK: Threat score {overall_threat_score:.2f} - flagging for review")
+            reasoning.append(f"REVIEW: Moderate risk assessment ({overall_threat_score:.2f})")
         else:
             recommendation = 'ALLOW'
-            reasoning.append(f"LOW RISK: Threat score {overall_threat_score:.2f} - allowing page")
+            reasoning.append(f"ALLOW: Low risk assessment ({overall_threat_score:.2f})")
 
         return ThreatAssessment(
             url=url,
@@ -337,9 +359,49 @@ class ImmuneSystem:
         return signals
 
     def _analyze_content_quality(self, url: str, html_content: str, extracted_text: str) -> List[ThreatSignal]:
-        """Analyze content quality indicators (UNIQUE capability)."""
+        """Analyze content quality and academic markers (UNIQUE to immune system)"""
         signals = []
-
+        text_lower = extracted_text.lower()
+        domain = urlparse(url).netloc.lower()
+        is_edu = domain.endswith('.edu') or '.edu.' in domain
+        
+        # 1. ACADEMIC MARKER DETECTION (Autonomous Trust Learning)
+        academic_score = 0.0
+        academic_reasons = []
+        
+        # DOI Detection
+        if re.search(r'\b10\.\d{4,9}/[-._;()/:a-zA-Z0-9]+\b', extracted_text):
+            academic_score += 0.4
+            academic_reasons.append("DOI detected")
+            
+        # ISBN Detection
+        if re.search(r'\b(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[0-9][- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})97[89][- 0-9]{15}$)[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]\b', extracted_text):
+            academic_score += 0.3
+            academic_reasons.append("ISBN detected")
+            
+        # Institutional markers
+        institutions = ['university', 'college', 'institute', 'academy', 'school of', 'faculty of', 'department of']
+        found_inst = [i for i in institutions if i in text_lower]
+        if found_inst:
+            academic_score += 0.2 * min(1.0, len(found_inst) / 3)
+            academic_reasons.append(f"Institutional markers: {', '.join(found_inst[:2])}")
+            
+        # Academic keywords
+        academic_keywords = ['abstract', 'keywords:', 'references', 'bibliography', 'peer-reviewed', 'journal of', 'proceedings']
+        found_kw = [k for k in academic_keywords if k in text_lower]
+        if found_kw:
+            academic_score += 0.2 * min(1.0, len(found_kw) / 3)
+            academic_reasons.append(f"Academic keywords: {', '.join(found_kw[:2])}")
+            
+        # Apply academic boost if significant markers found
+        if academic_score >= 0.5 or (is_edu and academic_score >= 0.3):
+            # Proactively adjust trust if we have a trust database
+            if self.trust_db:
+                # Small positive adjustment for finding academic quality
+                boost = 0.05 * academic_score
+                self.trust_db.adjust_trust(domain, boost, f"Academic quality detected: {'; '.join(academic_reasons)}")
+                
+        # 2. STANDARD QUALITY SIGNALS
         # Ad density analysis
         ad_count = sum(1 for indicator in self.quality_patterns['ad_indicators']
                       if indicator.lower() in html_content.lower())
@@ -363,14 +425,14 @@ class ImmuneSystem:
             pattern_weight = self.pattern_weights.get('paywall', 1.0)
             signals.append(ThreatSignal(
                 signal_type='quality',
-                severity=0.3 * pattern_weight,  # Paywalls not dangerous, just limiting
+                severity=0.3 * pattern_weight,
                 confidence=0.8,
                 description="Paywall detected - content may be incomplete",
                 evidence=paywall_matches[:3],
                 pattern_id='paywall'
             ))
 
-        # Content/code ratio (high code = suspicious)
+        # Content/code ratio
         if html_content and extracted_text:
             code_length = len(html_content)
             text_length = len(extracted_text)
@@ -378,7 +440,7 @@ class ImmuneSystem:
             if text_length > 0:
                 code_ratio = code_length / text_length
 
-                if code_ratio > 20:  # 20:1 code to content is suspicious
+                if code_ratio > 20:
                     pattern_weight = self.pattern_weights.get('code_ratio', 1.0)
                     signals.append(ThreatSignal(
                         signal_type='quality',

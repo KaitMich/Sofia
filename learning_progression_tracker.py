@@ -1333,7 +1333,7 @@ class LearningProgressionTracker:
         
         return assessment
     
-    def get_learning_trajectory(self) -> Dict[str, Any]:
+    def get_overall_learning_trajectory(self) -> Dict[str, Any]:
         """Get current learning trajectory and momentum."""
         trajectory = {
             "active_areas": [],

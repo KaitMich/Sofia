@@ -57,7 +57,18 @@ class AlphaWall:
             'false_positives': 0,
             'true_positives': 0
         }
-        
+
+        # Load accumulated stats from prior sessions
+        _stats_path = self.vault_dir / "session_stats.json"
+        if _stats_path.exists():
+            try:
+                with open(_stats_path) as _f:
+                    _saved = json.load(_f)
+                    for k in self.session_stats:
+                        self.session_stats[k] = _saved.get(k, 0)
+            except Exception:
+                pass
+
         # Initialize files
         self._init_files()
         
@@ -165,6 +176,7 @@ class AlphaWall:
         for safe_type, patterns in self.config['safe_patterns'].items():
             for pattern in patterns:
                 if pattern in text_lower:
+                    print(f"[DEBUG] Matched safe pattern '{pattern}' in safe_type '{safe_type}'")
                     return 0.0, f"safe_{safe_type}"
                     
         # Check learned safe phrases
@@ -271,7 +283,8 @@ class AlphaWall:
                 user_text, user_id, zone_output, threat_type
             )
             self.session_stats['quarantined'] += 1
-            
+            self._save_session_stats()
+
             return {
                 'action': 'QUARANTINED',
                 'zone_output': zone_output,
@@ -285,7 +298,8 @@ class AlphaWall:
             # Safe input - store in vault and jumble
             vault_id = self._store_in_vault(user_text, user_id, zone_output)
             jumbled = self._jumble_text(user_text, zone_output)
-            
+            self._save_session_stats()
+
             return {
                 'action': 'PROCESSED',
                 'zone_output': zone_output,
@@ -483,6 +497,50 @@ class AlphaWall:
                 'learned_safe_phrases': len(self.config['learned_safe_phrases']),
                 'false_positive_rate': self.config['stats']['false_positive_rate']
             }
+        }
+
+    def _save_session_stats(self):
+        """Persist session stats so counts accumulate across sessions."""
+        try:
+            stats_path = self.vault_dir / "session_stats.json"
+            with open(stats_path, 'w') as f:
+                json.dump(self.session_stats, f, indent=2)
+        except Exception:
+            pass
+
+    def _detect_emotional_state(self, text: str) -> Tuple[str, float]:
+        """Detect primary emotional state from text. Returns (emotional_state, confidence)."""
+        emotions = predict_emotions(text)
+        if not emotions.get('verified'):
+            return "neutral", 0.0
+        primary_emotion, score = emotions['verified'][0]
+        emotion_map = {
+            'joy': 'calm', 'trust': 'calm', 'fear': 'overwhelmed',
+            'surprise': 'overwhelmed', 'sadness': 'grief', 'disgust': 'angry',
+            'anger': 'angry', 'anticipation': 'calm'
+        }
+        emotional_state = emotion_map.get(primary_emotion, 'neutral')
+        if score > 0.7:
+            self.recent_patterns.append(f"emotion:{emotional_state}")
+            if self.recent_patterns.count(f"emotion:{emotional_state}") >= self.config['thresholds']['recursion_threshold']:
+                emotional_state = "emotionally_recursive"
+        return emotional_state, score
+
+    def clear_recursion_window(self):
+        """Clear the recursion detection window (for new conversation)."""
+        self.recent_patterns.clear()
+
+    def get_vault_stats(self) -> Dict:
+        """Get statistics about the vault WITHOUT exposing content."""
+        if not self.vault_file.exists():
+            return {'total_memories': 0}
+        with open(self.vault_file, 'r') as f:
+            vault = json.load(f)
+        return {
+            'total_memories': len(vault),
+            'oldest_memory': vault[0]['timestamp'] if vault else None,
+            'newest_memory': vault[-1]['timestamp'] if vault else None,
+            'vault_health': 'healthy'
         }
 
 

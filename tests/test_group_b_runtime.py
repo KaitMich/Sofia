@@ -14,7 +14,7 @@ import traceback
 from datetime import datetime
 from pathlib import Path
 
-def test_result(test_name, success, message, details=None):
+def record_record_test_result(test_name, success, message, details=None):
     """Record test result"""
     status = "✅ PASS" if success else "❌ FAIL"
     print(f"{status} {test_name}: {message}")
@@ -22,31 +22,31 @@ def test_result(test_name, success, message, details=None):
         print(f"   Details: {details}")
     return {"test": test_name, "success": success, "message": message, "details": details}
 
-def test_import_capability(module_name):
+def check_import_capability(module_name):
     """Test if a module can be imported and initialized"""
     try:
         if module_name == "authentic_expression_calibrator":
             from authentic_expression_calibrator import AuthenticExpressionCalibrator
             calibrator = AuthenticExpressionCalibrator()
-            return test_result(f"Import {module_name}", True, "Successfully imported and initialized")
+            return record_test_result(f"Import {module_name}", True, "Successfully imported and initialized")
         
         elif module_name == "preference_learning_system":
             from preference_learning_system import PreferenceLearningSystem
             pref_system = PreferenceLearningSystem()
-            return test_result(f"Import {module_name}", True, "Successfully imported and initialized")
+            return record_test_result(f"Import {module_name}", True, "Successfully imported and initialized")
         
         elif module_name == "goal_prioritization":
             from goal_prioritization import GoalPrioritizationEngine
             goal_engine = GoalPrioritizationEngine()
-            return test_result(f"Import {module_name}", True, "Successfully imported and initialized")
+            return record_test_result(f"Import {module_name}", True, "Successfully imported and initialized")
         
         elif module_name == "context_engine":
             from context_engine import ContextEngine
             context_eng = ContextEngine()
-            return test_result(f"Import {module_name}", True, "Successfully imported and initialized")
+            return record_test_result(f"Import {module_name}", True, "Successfully imported and initialized")
         
     except Exception as e:
-        return test_result(f"Import {module_name}", False, f"Import failed: {str(e)}", traceback.format_exc())
+        return record_test_result(f"Import {module_name}", False, f"Import failed: {str(e)}", traceback.format_exc())
 
 def test_authentic_expression_calibrator():
     """Test authentic expression calibrator functionality"""
@@ -76,7 +76,7 @@ def test_authentic_expression_calibrator():
                 print(f"   Mismatch: '{test_input}' - Expected: {expected_allow}, Got: {should_allow}")
         
         accuracy = authentic_correct / total_tests
-        results.append(test_result(
+        results.append(record_test_result(
             "Authentic Expression Detection", 
             accuracy >= 0.8, 
             f"Accuracy: {accuracy:.2f} ({authentic_correct}/{total_tests})",
@@ -87,29 +87,29 @@ def test_authentic_expression_calibrator():
         try:
             calibration_result = calibrator.calibrate_quarantine_system()
             has_changes = len(calibration_result.get("changes_applied", [])) > 0
-            results.append(test_result(
+            results.append(record_test_result(
                 "Calibration System", 
                 has_changes, 
                 f"Applied {len(calibration_result.get('changes_applied', []))} calibrations",
                 str(calibration_result.get("systems_calibrated", []))
             ))
         except Exception as e:
-            results.append(test_result("Calibration System", False, f"Calibration failed: {str(e)}"))
+            results.append(record_test_result("Calibration System", False, f"Calibration failed: {str(e)}"))
         
         # Test 3: Report generation
         try:
             report = calibrator.generate_calibration_report()
             has_status = "calibration_status" in report
-            results.append(test_result(
+            results.append(record_test_result(
                 "Report Generation", 
                 has_status, 
                 f"Generated report with status: {report.get('calibration_status', 'unknown')}"
             ))
         except Exception as e:
-            results.append(test_result("Report Generation", False, f"Report failed: {str(e)}"))
+            results.append(record_test_result("Report Generation", False, f"Report failed: {str(e)}"))
             
     except Exception as e:
-        results.append(test_result("Authentic Expression Calibrator", False, f"Module error: {str(e)}", traceback.format_exc()))
+        results.append(record_test_result("Authentic Expression Calibrator", False, f"Module error: {str(e)}", traceback.format_exc()))
     
     return results
 
@@ -125,48 +125,48 @@ def test_preference_learning_system():
         try:
             # This would normally learn from actual choices, but let's test the structure
             pref_system.learn_preferences_from_choices()
-            results.append(test_result(
+            results.append(record_test_result(
                 "Preference Learning", 
                 True, 
                 "Learning function executed without errors"
             ))
         except Exception as e:
-            results.append(test_result("Preference Learning", False, f"Learning failed: {str(e)}"))
+            results.append(record_test_result("Preference Learning", False, f"Learning failed: {str(e)}"))
         
         # Test 2: Can express preferences naturally?
         try:
             expressions = pref_system.express_preferences_naturally()
             can_express = isinstance(expressions, list)
-            results.append(test_result(
+            results.append(record_test_result(
                 "Natural Expression", 
                 can_express, 
                 f"Generated {len(expressions)} preference expressions"
             ))
         except Exception as e:
-            results.append(test_result("Natural Expression", False, f"Expression failed: {str(e)}"))
+            results.append(record_test_result("Natural Expression", False, f"Expression failed: {str(e)}"))
         
         # Test 3: Preference summary generation
         try:
             summary = pref_system.get_preference_summary()
             has_summary = isinstance(summary, dict) and "total_preferences" in summary
-            results.append(test_result(
+            results.append(record_test_result(
                 "Preference Summary", 
                 has_summary, 
                 f"Summary contains {summary.get('total_preferences', 0)} preferences"
             ))
         except Exception as e:
-            results.append(test_result("Preference Summary", False, f"Summary failed: {str(e)}"))
+            results.append(record_test_result("Preference Summary", False, f"Summary failed: {str(e)}"))
         
         # Test 4: Preference categories and patterns
         has_categories = hasattr(pref_system, 'preference_categories') and len(pref_system.preference_categories) > 0
-        results.append(test_result(
+        results.append(record_test_result(
             "Preference Categories", 
             has_categories, 
             f"Has {len(pref_system.preference_categories) if has_categories else 0} preference categories"
         ))
         
     except Exception as e:
-        results.append(test_result("Preference Learning System", False, f"Module error: {str(e)}", traceback.format_exc()))
+        results.append(record_test_result("Preference Learning System", False, f"Module error: {str(e)}", traceback.format_exc()))
     
     return results
 
@@ -182,17 +182,17 @@ def test_goal_prioritization():
         try:
             queue = goal_engine.generate_prioritized_queue()
             can_prioritize = isinstance(queue, list)
-            results.append(test_result(
+            results.append(record_test_result(
                 "Queue Generation", 
                 can_prioritize, 
                 f"Generated queue with {len(queue)} goals"
             ))
         except Exception as e:
-            results.append(test_result("Queue Generation", False, f"Queue generation failed: {str(e)}"))
+            results.append(record_test_result("Queue Generation", False, f"Queue generation failed: {str(e)}"))
         
         # Test 2: Priority calculation system
         has_weights = hasattr(goal_engine, 'priority_weights') and len(goal_engine.priority_weights) > 0
-        results.append(test_result(
+        results.append(record_test_result(
             "Priority Weights", 
             has_weights, 
             f"Has {len(goal_engine.priority_weights) if has_weights else 0} priority factors"
@@ -203,28 +203,28 @@ def test_goal_prioritization():
             # Test with a mock goal ID
             test_goal_id = "test_goal_123"
             goal_engine.update_goal_progress(test_goal_id, 0.1, 0.8)
-            results.append(test_result(
+            results.append(record_test_result(
                 "Progress Tracking", 
                 True, 
                 "Goal progress update executed without errors"
             ))
         except Exception as e:
-            results.append(test_result("Progress Tracking", False, f"Progress tracking failed: {str(e)}"))
+            results.append(record_test_result("Progress Tracking", False, f"Progress tracking failed: {str(e)}"))
         
         # Test 4: Prioritization summary
         try:
             summary = goal_engine.get_prioritization_summary()
             has_summary = isinstance(summary, dict) and "active_goals" in summary
-            results.append(test_result(
+            results.append(record_test_result(
                 "Prioritization Summary", 
                 has_summary, 
                 f"Summary shows {summary.get('active_goals', 0)} active goals"
             ))
         except Exception as e:
-            results.append(test_result("Prioritization Summary", False, f"Summary failed: {str(e)}"))
+            results.append(record_test_result("Prioritization Summary", False, f"Summary failed: {str(e)}"))
         
     except Exception as e:
-        results.append(test_result("Goal Prioritization Engine", False, f"Module error: {str(e)}", traceback.format_exc()))
+        results.append(record_test_result("Goal Prioritization Engine", False, f"Module error: {str(e)}", traceback.format_exc()))
     
     return results
 
@@ -264,7 +264,7 @@ def test_context_engine():
                 print(f"   Context analysis failed for '{test_text}': {str(e)}")
         
         context_accuracy = context_correct / total_context_tests
-        results.append(test_result(
+        results.append(record_test_result(
             "Context Understanding", 
             context_accuracy >= 0.5,  # Lower threshold due to complexity
             f"Context accuracy: {context_accuracy:.2f} ({context_correct}/{total_context_tests})"
@@ -272,7 +272,7 @@ def test_context_engine():
         
         # Test 2: Ambiguous term detection
         has_ambiguous_terms = hasattr(context_eng, 'ambiguous_terms') and len(context_eng.ambiguous_terms) > 0
-        results.append(test_result(
+        results.append(record_test_result(
             "Ambiguous Term Detection", 
             has_ambiguous_terms, 
             f"Tracks {len(context_eng.ambiguous_terms) if has_ambiguous_terms else 0} ambiguous terms"
@@ -286,28 +286,28 @@ def test_context_engine():
                 "identity", 
                 "This was a test correction"
             )
-            results.append(test_result(
+            results.append(record_test_result(
                 "Learning from Corrections", 
                 True, 
                 "Correction learning executed without errors"
             ))
         except Exception as e:
-            results.append(test_result("Learning from Corrections", False, f"Learning failed: {str(e)}"))
+            results.append(record_test_result("Learning from Corrections", False, f"Learning failed: {str(e)}"))
         
         # Test 4: Statistics and analysis
         try:
             stats = context_eng.get_analysis_stats()
             has_stats = isinstance(stats, dict) and "ambiguous_terms_tracked" in stats
-            results.append(test_result(
+            results.append(record_test_result(
                 "Analysis Statistics", 
                 has_stats, 
                 f"Tracks {stats.get('ambiguous_terms_tracked', 0)} terms, {stats.get('patterns_learned', 0)} patterns"
             ))
         except Exception as e:
-            results.append(test_result("Analysis Statistics", False, f"Stats failed: {str(e)}"))
+            results.append(record_test_result("Analysis Statistics", False, f"Stats failed: {str(e)}"))
         
     except Exception as e:
-        results.append(test_result("Context Engine", False, f"Module error: {str(e)}", traceback.format_exc()))
+        results.append(record_test_result("Context Engine", False, f"Module error: {str(e)}", traceback.format_exc()))
     
     return results
 
@@ -329,7 +329,7 @@ def test_integration_capabilities():
                 from authentic_expression_calibrator import AuthenticExpressionCalibrator
                 calibrator = AuthenticExpressionCalibrator()
                 # This component seems to work independently
-                results.append(test_result(
+                results.append(record_test_result(
                     f"{component} Independence", 
                     True, 
                     "Works independently without external dependencies"
@@ -338,7 +338,7 @@ def test_integration_capabilities():
             elif component == "preference_learning_system":
                 from preference_learning_system import PreferenceLearningSystem, PREFERENCE_SYSTEMS_AVAILABLE
                 pref_system = PreferenceLearningSystem()
-                results.append(test_result(
+                results.append(record_test_result(
                     f"{component} Dependencies", 
                     PREFERENCE_SYSTEMS_AVAILABLE, 
                     f"Integration available: {PREFERENCE_SYSTEMS_AVAILABLE}"
@@ -347,7 +347,7 @@ def test_integration_capabilities():
             elif component == "goal_prioritization":
                 from goal_prioritization import GoalPrioritizationEngine, MOTIVATION_SYSTEMS_AVAILABLE
                 goal_engine = GoalPrioritizationEngine()
-                results.append(test_result(
+                results.append(record_test_result(
                     f"{component} Dependencies", 
                     MOTIVATION_SYSTEMS_AVAILABLE, 
                     f"Integration available: {MOTIVATION_SYSTEMS_AVAILABLE}"
@@ -357,14 +357,14 @@ def test_integration_capabilities():
                 from context_engine import ContextEngine
                 context_eng = ContextEngine()
                 # This component has dependencies but handles them gracefully
-                results.append(test_result(
+                results.append(record_test_result(
                     f"{component} Dependencies", 
                     True, 
                     "Handles dependencies gracefully with fallbacks"
                 ))
                 
         except Exception as e:
-            results.append(test_result(f"{component} Integration", False, f"Integration test failed: {str(e)}"))
+            results.append(record_test_result(f"{component} Integration", False, f"Integration test failed: {str(e)}"))
     
     return results
 
@@ -380,7 +380,7 @@ def main():
     components = ["authentic_expression_calibrator", "preference_learning_system", "goal_prioritization", "context_engine"]
     
     for component in components:
-        result = test_import_capability(component)
+        result = check_import_capability(component)
         all_results.append(result)
     
     # Test 2: Authentic expression calibrator

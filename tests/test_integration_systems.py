@@ -321,7 +321,7 @@ def test_content_evaluator_integration():
     
     # First get base evaluation (simulated) and enhance with motivation
     base_evaluation = {"logic_score": 0.7, "symbolic_score": 0.8}
-    evaluation = content_evaluator.enhance_content_evaluation(
+    evaluation = content_evaluator.evaluate_content_motivation(
         consciousness_content, 
         base_evaluation["logic_score"], 
         base_evaluation["symbolic_score"]
@@ -357,7 +357,7 @@ def test_value_system_integration():
     try:
         from value_formation import ValueFormation
         from choice_architecture import ChoiceArchitecture
-        from experience_memory import ExperienceMemory
+        from CONSCIOUSNESS_MEMORY import ExperienceMemory
         from success_failure_memory import SuccessFailureMemory
         
         value_formation = ValueFormation()

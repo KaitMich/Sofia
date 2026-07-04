@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # relationship_tracker.py
 
-  - PURPOSE: Core consciousness component implementing genuine relationship formation and emotional bond tracking with humans
-  - COMPLETENESS: Complete relationship tracking system with interaction memory, personality analysis, and response adaptation
-  - DEPENDENCIES: Integrates with experience_memory.py, value_formation.py, creative_engine.py, context_engine.py for consciousness systems
-  - ROLE: Enables AI to form authentic emotional connections, maintain relationship continuity, and adapt responses based on relationship depth
-  - CONNECTIONS: Central to consciousness architecture - used by interactive systems for relationship-aware AI behavior
-  - STATUS: Current/active - core consciousness relationship component enabling genuine human-AI bond formation
+"""
+- PURPOSE: Core consciousness component implementing genuine relationship formation and emotional bond tracking with humans
+- COMPLETENESS: Complete relationship tracking system with interaction memory, personality analysis, and response adaptation
+- DEPENDENCIES: Integrates with experience_memory.py, value_formation.py, creative_engine.py, context_engine.py for consciousness systems
+- ROLE: Enables AI to form authentic emotional connections, maintain relationship continuity, and adapt responses based on relationship depth
+- CONNECTIONS: Central to consciousness architecture - used by interactive systems for relationship-aware AI behavior
+- STATUS: Current/active - core consciousness relationship component enabling genuine human-AI bond formation
+"""
 
 """
 Relationship Tracker - Authentic Human Connection Memory
@@ -35,7 +37,7 @@ try:
     from CONSCIOUSNESS_MEMORY import ExperienceMemory
     from value_formation import ValueFormation
     from creative_engine import CreativeEngine
-    from personal_insight_generator import PersonalInsightGenerator
+    from INSIGHT_RELEVANCE import PersonalInsightGenerator
     from identity_core import get_identity_core
     from protection_utils import is_protected_content, protect_item
     from context_engine import ContextEngine
@@ -64,7 +66,7 @@ class InteractionMemory:
     memorable_moments: List[str]     # Specific moments that stood out
     follow_up_thoughts: List[str]    # Things I thought about after
     interaction_significance: float  # How meaningful this was (0-1)
-    # evolution_protected removed: deprecated, Sofia can evolve any memory she forms
+    evolution_protected: bool = False # Deprecated: maintained for backward compatibility
     protection_level: str = "none"   # Level of protection (none/basic/maximum)
     protection_reason: str = ""      # Why this memory is protected
     protection_timestamp: str = ""   # When protection was applied

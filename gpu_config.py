@@ -33,6 +33,8 @@ class GPUConfig:
         else:
             print(f"⚠️  GPU not available - using CPU")
             print(f"   PyTorch device: {self.device}")
+            print(f"   Hint: If you have an NVIDIA GPU, ensure CUDA drivers are installed")
+            print(f"   and you're using a CUDA-enabled version of PyTorch.")
 
     def to_device(self, model):
         """

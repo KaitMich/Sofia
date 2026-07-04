@@ -321,7 +321,7 @@ def test_episodic_memory_integration() -> Dict[str, Any]:
     result = {"passed": False, "score": 0.0, "errors": []}
     
     try:
-        from episodic_memory import EpisodicMemorySystem
+        from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
         
         # Initialize episodic memory system
         episodic_system = EpisodicMemorySystem()

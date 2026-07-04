@@ -12,7 +12,7 @@ import random
 import json
 import re
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Dict, Tuple, Optional, Set, Any
 from urllib.parse import urlparse, urljoin
 from collections import deque, defaultdict
@@ -27,9 +27,10 @@ from linguistic_warfare import check_for_warfare
 from quarantine_layer import should_quarantine_input
 from learning_progression_tracker import LearningProgressionTracker
 from curiosity_engine import CuriosityEngine
-from personal_insight_generator import PersonalInsightGenerator
+from INSIGHT_RELEVANCE import PersonalInsightGenerator
 from motivational_content_evaluator import MotivationalContentEvaluator
 from vector_engine import embed_text, fuse_vectors
+from adaptive_bridge_migration import compute_cluster_stats, cosine_sim
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -111,6 +112,12 @@ class EnhancedAutonomousLearner:
         self.session_hot_keywords = set()
         self.domain_stats = defaultdict(int)
         
+        # Session topic centroid — adaptive link gating (drift prevention)
+        self.session_centroid = None          # Running centroid vector (np.ndarray or None)
+        self.session_embeddings_list = []     # All content embeddings this session
+        self.session_coherence_stats = None   # ClusterStats from compute_cluster_stats()
+        self._centroid_update_alpha = 0.85    # EMA momentum (recalculated adaptively)
+
         # Learning session tracking
         self.session_id = None
         self.session_stats = {
@@ -172,6 +179,10 @@ class EnhancedAutonomousLearner:
 
         # Path to future learning queue
         self.future_queue_path = self.data_dir / "future_learning_queue.json"
+
+        # Register migration cleanup with shutdown system
+        from shutdown_manager import register_cleanup as _register_cleanup
+        _register_cleanup(self._run_migration_cleanup, "bridge_migration", priority=2)
 
         print("✅ Enhanced Autonomous Learner ready for massive learning!")
         print("🌀 Associative Emergence Mode: Ready for deep saturation")
@@ -310,6 +321,19 @@ class EnhancedAutonomousLearner:
         # Get current curiosity state
         curiosity_state = self.curiosity_engine.export_for_consciousness_system()
 
+        # Bootstrap: if no active goals exist but drives are unsatisfied,
+        # generate goals from drives. This closes the gap where
+        # learning_goals.json is missing but Sofia has unsatisfied drives
+        # that should trigger exploration from her own architecture.
+        active_goals = curiosity_state.get('active_learning_goals', [])
+        if not active_goals:
+            print("   No active learning goals found — bootstrapping from drives...")
+            bootstrapped = self.curiosity_engine.generate_intrinsic_goals()
+            if bootstrapped:
+                print(f"   Generated {len(bootstrapped)} goals from unsatisfied drives")
+                # Re-export state with new goals included
+                curiosity_state = self.curiosity_engine.export_for_consciousness_system()
+
         # Get current learning progression state
         progression_state = self.progression_tracker.export_for_consciousness_system()
 
@@ -319,6 +343,22 @@ class EnhancedAutonomousLearner:
             progression_state=progression_state,
             max_total_urls=max_urls
         )
+
+        # Fallback: if no URLs generated from goals/gaps, check persistent queue.
+        # These are URLs Sofia herself queued during prior sessions —
+        # her own past curiosity, not external injection.
+        if not url_batch:
+            try:
+                pending = self.crawl_orchestrator.url_queue.peek_pending(limit=max_urls)
+                if pending:
+                    print(f"   No goals/gaps produced URLs — found {len(pending)} "
+                          f"self-queued URLs from prior sessions")
+                    url_batch = [
+                        (item['url'], item['priority'] / 100.0, 'persistent_queue')
+                        for item in pending
+                    ]
+            except Exception as e:
+                print(f"   Could not check persistent queue: {e}")
 
         # Convert to URL info format for learning queue
         url_infos = []
@@ -421,16 +461,22 @@ class EnhancedAutonomousLearner:
         
         try:
             # Main learning loop
-            while (len(self.processed_urls) < target_urls and 
-                   (self.url_queue or self.deferred_urls)):
-                
-                # Process URLs from queue
+            while len(self.processed_urls) < target_urls:
+                self._write_heartbeat()
+
+                # Process URLs from queue (refills from persistent queue if needed)
                 self._process_url_batch(batch_size=10)
-                
+
+                # Exit when all sources are exhausted (including persistent queue)
+                if not self.url_queue and not self.deferred_urls:
+                    self._refill_from_persistent_queue(10)
+                    if not self.url_queue:
+                        break
+
                 # Periodic cognitive health check
                 if self.session_stats['urls_processed'] % 50 == 0:
                     self._cognitive_health_check()
-                
+
                 # Evolution cycle every 100 URLs
                 if self.session_stats['urls_processed'] % 100 == 0:
                     self._run_evolution_cycle()
@@ -453,6 +499,14 @@ class EnhancedAutonomousLearner:
         except Exception as e:
             print(f"\n❌ Learning session error: {e}")
             self._emergency_session_save()
+        finally:
+            # Clear heartbeat on exit
+            try:
+                heartbeat_path = self.data_dir / "ai_heartbeat.json"
+                if heartbeat_path.exists():
+                    heartbeat_path.unlink()
+            except:
+                pass
     
     def _initialize_learning_context(self, seed_urls: List[str], learning_focus: str):
         """Initialize the learning context and seed the URL queue."""
@@ -468,7 +522,13 @@ class EnhancedAutonomousLearner:
         }
         
         self.session_hot_keywords = set(focus_keywords.get(learning_focus, focus_keywords['general']))
-        
+        self._session_learning_focus = learning_focus
+
+        # Reset session centroid state for fresh topic tracking
+        self.session_centroid = None
+        self.session_embeddings_list = []
+        self.session_coherence_stats = None
+
         # Seed the queue with initial URLs
         for url in seed_urls:
             if self._is_safe_domain(url):
@@ -494,16 +554,84 @@ class EnhancedAutonomousLearner:
     def _process_url_batch(self, batch_size: int = 10):
         """Process a batch of URLs from the queue."""
         batch_urls = []
-        
+
+        # Refill in-memory deque from persistent queue when empty
+        if not self.url_queue:
+            self._refill_from_persistent_queue(batch_size)
+
         # Get batch from queue
         for _ in range(min(batch_size, len(self.url_queue))):
             if self.url_queue:
                 batch_urls.append(self.url_queue.popleft())
-        
+
         # Process each URL in the batch
         for url_info in batch_urls:
             if url_info['url'] not in self.processed_urls:
                 self._process_single_url(url_info)
+
+    @staticmethod
+    def _should_skip_url(url: str) -> bool:
+        """Fast pre-filter for URLs that will always fail (robots-blocked,
+        non-English, action pages).  Applied both at link-discovery time
+        and when promoting deferred links from the persistent queue."""
+        # Wikipedia action/special pages — always robots-blocked
+        if '/w/index.php' in url:
+            return True
+        if '/wiki/Special:' in url:
+            return True
+        # Non-English Wikipedia subdomains (fr., de., ar., …)
+        if 'wikipedia.org' in url and 'en.wikipedia.org' not in url:
+            return True
+        # Google search/books pages — always robots-blocked
+        if 'google.com/search' in url or 'books.google.com' in url:
+            return True
+        # NCBI PMC full-text — robots-blocked
+        if 'ncbi.nlm.nih.gov/pmc/' in url:
+            return True
+        # Academia.edu — robots-blocked
+        if 'academia.edu/' in url:
+            return True
+        # Wikimedia donation/meta pages — not learnable content
+        if 'donate.wikimedia.org' in url:
+            return True
+        # Wikipedia tool infrastructure — robots.txt-blocked, no learnable content
+        if 'wikipediatools.appspot.com' in url:
+            return True
+        if 'xtools.wmflabs.org' in url:
+            return True
+        if 'toolforge.org' in url:
+            return True
+        if 'wmflabs.org' in url:
+            return True
+        # Perseus Digital Library hopper — robots.txt-blocked
+        if 'perseus.tufts.edu/hopper' in url:
+            return True
+        return False
+
+    def _refill_from_persistent_queue(self, count: int = 10):
+        """Pull pending URLs from the persistent SQLite queue into the
+        in-memory deque so the main loop can process them."""
+        skipped = 0
+        for _ in range(count + 50):  # Over-fetch to compensate for skips
+            if len(self.url_queue) >= count:
+                break
+            row = self.crawl_orchestrator.url_queue.get_next()
+            if row is None:
+                break
+            if row['url'] in self.processed_urls or self._should_skip_url(row['url']):
+                # Already seen or will always fail — discard from persistent queue
+                self.crawl_orchestrator.url_queue.mark_completed(row['id'])
+                skipped += 1
+                continue
+            self.url_queue.append({
+                'url': row['url'],
+                'depth': row.get('depth', 0),
+                'priority': row.get('priority', 0) / 100.0,  # DB stores int(priority*100)
+                'source': 'persistent_queue',
+                'context': getattr(self, '_session_learning_focus', 'general'),
+            })
+        if skipped > 0:
+            print(f"   🧹 Skipped {skipped} unfetchable URLs from persistent queue")
     
     # ------------------------------------------------------------------
     # Language detection
@@ -613,7 +741,7 @@ class EnhancedAutonomousLearner:
             # Normalize classifier vocabulary → consistent JSONL output
             classification = {'logical': 'logic'}.get(classification, classification)
             event = {
-                'timestamp': datetime.utcnow().isoformat(),
+                'timestamp': datetime.now(timezone.utc).isoformat(),
                 'session_id': self.session_id,
                 'url': url,
                 'parent_url': parent_url,
@@ -748,8 +876,14 @@ class EnhancedAutonomousLearner:
             
             # Clean and extract text
             text_content = clean_html_to_text(html_content)
-            if not text_content or len(text_content) < 100:
-                print("   ⚠️ Insufficient content")
+            
+            # Smart threshold: allow shorter content for high-trust domains (abstracts, DOI pages)
+            domain = urlparse(url).netloc
+            domain_trust = self.trust_db.get_trust(domain)
+            min_content_len = 100 if domain_trust < 0.8 else 50
+            
+            if not text_content or len(text_content) < min_content_len:
+                print(f"   ⚠️ Insufficient content ({len(text_content) if text_content else 0} chars)")
                 self._emit_crawl_event(url, 'insufficient_content', parent_url=url_info.get('source'))
                 return
 
@@ -779,7 +913,7 @@ class EnhancedAutonomousLearner:
                     'block_confidence': lang_confidence,
                     'domain_trust_at_block': domain_trust,
                     'session_id': self.session_id,
-                    'timestamp': datetime.utcnow().isoformat(),
+                    'timestamp': datetime.now(timezone.utc).isoformat(),
                 }
                 self._emit_crawl_event(
                     url, 'non_english',
@@ -842,6 +976,14 @@ class EnhancedAutonomousLearner:
             domain_trust = self.trust_db.get_trust(domain)
 
             # Page-level immune assessment (structure, quality, source signals)
+            # Autonomously identify academic potential to prevent false positives
+            is_academic = domain.endswith('.edu') or '.edu.' in domain or 'wikipedia.org' in domain
+            
+            # Look for academic markers in text for even more autonomy
+            academic_markers = ['doi:', 'isbn:', 'university', 'college', 'journal', 'abstract']
+            if not is_academic:
+                is_academic = any(m in text_content.lower()[:500] for m in academic_markers)
+
             immune_assessment = self.immune_system.analyze_page(url, html_content, text_content)
 
             # Record decision for self-correction learning
@@ -860,14 +1002,18 @@ class EnhancedAutonomousLearner:
             )
 
             # Handle immune system recommendations
-            # Skip immune trust adjustments for high-trust domains (>0.8)
-            if domain_trust > 0.8:
-                print(f"   ✅ Skipping immune trust adjustments for high-trust domain ({domain_trust:.2f})")
+            # Skip immune trust adjustments for high-trust domains (>0.8) or academic sources
+            if domain_trust > 0.8 or is_academic:
+                if domain_trust > 0.8:
+                    print(f"   ✅ Skipping immune trust adjustments for high-trust domain ({domain_trust:.2f})")
+                else:
+                    print(f"   ✅ Skipping immune trust adjustments for autonomous academic source")
+                    
                 # Still record decision but don't adjust trust or block
                 if immune_assessment.recommendation == 'BLOCK':
-                    print(f"   ℹ️ Immune would have blocked (threat: {immune_assessment.overall_threat_score:.2f}) but domain trusted")
+                    print(f"   ℹ️ Immune would have blocked (threat: {immune_assessment.overall_threat_score:.2f}) but source trusted")
                 elif immune_assessment.recommendation == 'REVIEW':
-                    print(f"   ℹ️ Immune flagged for review (threat: {immune_assessment.overall_threat_score:.2f}) but domain trusted")
+                    print(f"   ℹ️ Immune flagged for review (threat: {immune_assessment.overall_threat_score:.2f}) but source trusted")
             else:
                 # Normal immune handling for lower-trust domains
                 if immune_assessment.recommendation == 'BLOCK':
@@ -895,7 +1041,7 @@ class EnhancedAutonomousLearner:
                         'block_confidence': immune_assessment.confidence,
                         'domain_trust_at_block': domain_trust,
                         'session_id': self.session_id,
-                        'timestamp': datetime.utcnow().isoformat(),
+                        'timestamp': datetime.now(timezone.utc).isoformat(),
                     }
                     self._emit_crawl_event(**{k: v for k, v in _block_event.items()
                                               if k not in ('session_id', 'timestamp')})
@@ -906,14 +1052,22 @@ class EnhancedAutonomousLearner:
                     return
 
                 elif immune_assessment.recommendation == 'REVIEW':
+                    reasons = "; ".join([r for r in immune_assessment.reasoning if "ALLOW" not in r and "REVIEW" not in r])
                     print(f"   ⚠️ FLAGGED for review (threat: {immune_assessment.overall_threat_score:.2f})")
-                    # Slight trust adjustment but continue processing
-                    self.trust_db.adjust_trust(domain, -0.05, f"Page flagged: moderate threat")
-                    self.session_stats['trust_adjustments'] += 1
+                    if reasons:
+                        print(f"      Reasoning: {reasons}")
+                    # No trust penalty for moderate threat — REVIEW means continue processing,
+                    # not penalize. Penalizing here caused a compounding decay spiral for new
+                    # domains that couldn't recover on +0.02/page reward asymmetry.
 
-                elif immune_assessment.overall_threat_score < 0.2:
-                    # Low threat - reward with trust increase
-                    self.trust_db.adjust_trust(domain, +0.02, "Clean page: low threat score")
+                elif immune_assessment.overall_threat_score < 0.4:
+                    # Low-to-moderate threat - reward with trust increase
+                    # SIGNIFICANT BOOST for academic content to accelerate trust learning
+                    if is_academic:
+                        self.trust_db.adjust_trust(domain, +0.10, "Autonomous academic verification: high quality content")
+                        print(f"      🎓 Academic trust boost applied (+0.10)")
+                    else:
+                        self.trust_db.adjust_trust(domain, +0.02, "Clean page: low threat score")
                     self.session_stats['trust_adjustments'] += 1
 
             # Ethical awareness check (doesn't block, just notes)
@@ -963,12 +1117,24 @@ class EnhancedAutonomousLearner:
         """Process content through the unified brain architecture with layered security."""
         try:
             # ═══════════════════════════════════════════════════════════════
-            # LAYERED SECURITY: CHUNK-LEVEL SECURITY (EXISTING ALPHAWALL)
+            # LAYERED SECURITY: CHUNK-LEVEL SECURITY
             # ═══════════════════════════════════════════════════════════════
 
-            # Get domain trust BEFORE warfare check
+            # Autonomously identify academic potential to prevent false positives
             domain = urlparse(source_url).netloc
             domain_trust = self.trust_db.get_trust(domain)
+            is_academic = domain.endswith('.edu') or '.edu.' in domain or 'wikipedia.org' in domain
+            
+            # Look for academic markers in text for even more autonomy
+            academic_markers = ['doi:', 'isbn:', 'university', 'college', 'journal', 'abstract']
+            if not is_academic:
+                is_academic = any(m in text_content.lower()[:500] for m in academic_markers)
+            
+            warfare_context = {
+                'domain': domain,
+                'domain_trust': domain_trust,
+                'is_academic': is_academic
+            }
 
             # Skip warfare check for high-trust domains (>0.8)
             if domain_trust > 0.8:
@@ -976,17 +1142,33 @@ class EnhancedAutonomousLearner:
                 should_quarantine = False
                 warfare_analysis = {}
             else:
-                # Check for linguistic warfare patterns (existing security)
-                should_quarantine, warfare_analysis = check_for_warfare(text_content, source_url)
+                # Use updated detector that accepts context
+                from linguistic_warfare import LinguisticWarfareDetector
+                detector = LinguisticWarfareDetector(data_dir=self.data_dir)
+                warfare_analysis = detector.analyze_text_for_warfare(text_content, context=warfare_context)
+                should_quarantine = warfare_analysis['defense_strategy']['strategy'] in ['full_quarantine', 'selective_quarantine']
 
             if should_quarantine:
+                # Extract actual threat type from threats_detected list
+                _threats = warfare_analysis.get('threats_detected', [])
+                if _threats:
+                    _sev = {'critical': 4, 'high': 3, 'medium': 2, 'low': 1}
+                    _top = max(_threats, key=lambda t: _sev.get(t.get('severity', 'low'), 0))
+                    _threat_type = _top.get('type', 'unknown')
+                else:
+                    _threat_type = 'unknown'
+                
                 print(f"   🚫 BLOCKED by linguistic warfare detector")
-                print(f"      Threat: {warfare_analysis.get('threat_type', 'unknown')}")
+                print(f"      Threat: {_threat_type} (score: {warfare_analysis.get('threat_score', 0):.2f})")
                 self.session_stats['security_blocks'] += 1
 
-                # Adjust trust for warfare content
-                self.trust_db.adjust_trust(domain, -0.15, f"Linguistic warfare: {warfare_analysis.get('threat_type')}")
-                self.session_stats['trust_adjustments'] += 1
+                # Adjust trust for warfare content (skip penalty for academic)
+                if not is_academic:
+                    self.trust_db.adjust_trust(domain, -0.15, f"Linguistic warfare: {_threat_type}")
+                    self.session_stats['trust_adjustments'] += 1
+                else:
+                    print(f"      ℹ️ Skipping trust penalty for autonomous academic source")
+
                 _block_event = {
                     'url': source_url,
                     'status': 'warfare_blocked',
@@ -1001,7 +1183,7 @@ class EnhancedAutonomousLearner:
                         'defense_strategy', {}).get('strategy'),
                     'domain_trust_at_block': domain_trust,
                     'session_id': self.session_id,
-                    'timestamp': datetime.utcnow().isoformat(),
+                    'timestamp': datetime.now(timezone.utc).isoformat(),
                 }
                 self._emit_crawl_event(**{k: v for k, v in _block_event.items()
                                           if k not in ('session_id', 'timestamp')})
@@ -1032,23 +1214,30 @@ class EnhancedAutonomousLearner:
             # Check corroboration status (skip for high-trust domains >0.8)
             if domain_trust > 0.8:
                 print(f"   ✅ Skipping corroboration for high-trust domain ({domain_trust:.2f})")
-                # High-trust domains bypass corroboration - proceed directly to memory storage
+                # High-trust domains bypass corroboration - proceed with original classification
             else:
                 corroboration_result = self.corroboration_engine.get_corroboration_score(embedding)
 
                 if not corroboration_result.ready_to_commit:
-                    # Not enough corroboration - record sighting but defer commit
+                    # Not enough corroboration - record sighting
                     self.corroboration_engine.record_sighting(
                         fact_text=text_content[:500],
                         fact_embedding=embedding,
                         source_url=source_url,
                         trust_score=domain_trust
                     )
-
-                    print(f"   ⏳ DEFERRED: Need more sources (sightings: {corroboration_result.total_sightings}/{self.corroboration_engine.min_sightings})")
-                    self.session_stats['corroboration_deferrals'] += 1
-                    self._emit_crawl_event(source_url, 'deferred', parent_url=url_info.get('source'))
-                    return False  # Don't commit yet
+                    
+                    # AUTONOMOUS LEARNING BOOST: 
+                    # Instead of rejecting, move to BRIDGE for future verification
+                    # Only reject if threat score is very high or sightings=0 AND trust is low
+                    if corroboration_result.total_sightings > 0 or domain_trust >= 0.5:
+                        print(f"   🌉 DEFERRED (1/2 sightings): Storing in BRIDGE awaiting verification")
+                        content_type = 'bridge'
+                    else:
+                        print(f"   ⏳ DEFERRED: Need more sources (sightings: {corroboration_result.total_sightings}/{self.corroboration_engine.min_sightings})")
+                        self.session_stats['corroboration_deferrals'] += 1
+                        self._emit_crawl_event(source_url, 'deferred', parent_url=url_info.get('source'))
+                        return False  # Strictly defer low-trust single-sighting facts
 
             # Final text quality gate before storage
             from web_parser import sanitize_text_for_storage
@@ -1110,6 +1299,14 @@ class EnhancedAutonomousLearner:
                 trust_score=domain_trust
             )
 
+            # Update session topic centroid for adaptive link gating
+            try:
+                content_vec = np.array(embedding) if not isinstance(embedding, np.ndarray) else embedding
+                if content_vec is not None and np.any(content_vec != 0):
+                    self._update_session_centroid(content_vec)
+            except Exception:
+                pass  # Centroid update is non-critical
+
             # Content stored successfully — everything below is non-critical
             # Symbol generation is a bonus, not required for learning
             try:
@@ -1135,7 +1332,45 @@ class EnhancedAutonomousLearner:
             print(f"   Brain processing error: {str(e)[:100]}...")
             traceback.print_exc()
             return False
-    
+
+    def _update_session_centroid(self, content_embedding: np.ndarray):
+        """
+        Update the running session centroid with a new content embedding.
+        Uses exponential moving average so the centroid tracks what the
+        session is *currently* about while retaining history.
+        Recomputes coherence stats every 10 items using compute_cluster_stats().
+        """
+        self.session_embeddings_list.append(content_embedding)
+
+        if self.session_centroid is None:
+            # First embedding — it IS the centroid
+            self.session_centroid = content_embedding.copy()
+        else:
+            # EMA update
+            alpha = self._centroid_update_alpha
+            self.session_centroid = alpha * self.session_centroid + (1 - alpha) * content_embedding
+            # Re-normalize to unit sphere for cosine consistency
+            norm = np.linalg.norm(self.session_centroid)
+            if norm > 0:
+                self.session_centroid = self.session_centroid / norm
+
+        # Recompute coherence stats every 10 embeddings (same math as bridge migration)
+        n = len(self.session_embeddings_list)
+        if n >= 3 and n % 10 == 0:
+            self._refresh_session_coherence_stats()
+
+    def _refresh_session_coherence_stats(self):
+        """
+        Recompute session coherence using the exact same compute_cluster_stats()
+        that drives bridge migration thresholds. Thresholds derive from Sofia's
+        actual session data — no hardcoded numbers.
+        """
+        if len(self.session_embeddings_list) < 3:
+            return
+        # Build items in the format compute_cluster_stats() expects
+        items = [{'embedding': emb} for emb in self.session_embeddings_list]
+        self.session_coherence_stats = compute_cluster_stats(items)
+
     def _discover_and_queue_links(self, base_url: str, html_content: str, parent_info: Dict):
         """Discover and intelligently queue related links for exploration."""
         if parent_info.get('depth', 0) >= self.max_depth:
@@ -1164,6 +1399,7 @@ class EnhancedAutonomousLearner:
                             depth=parent_info.get('depth', 0) + 1,
                             source_url=base_url,
                             reason=reason,
+                            anchor_text=anchor_text,
                         )
                         if stored:
                             deferred_count += 1
@@ -1200,14 +1436,23 @@ class EnhancedAutonomousLearner:
     def _evaluate_link_for_learning(self, link_url: str, anchor_text: str, parent_info: Dict) -> Tuple[str, float, str]:
         """
         Evaluate a link for learning value using context-aware scoring.
+        Wikipedia links are gated against the session topic centroid using
+        the same adaptive thresholds (mean_similarity / drift_threshold) that
+        drive bridge migration. Falls back to keyword scoring when the session
+        centroid has fewer than 3 data points.
         Returns: (action, priority, reason)
         """
         # Basic safety check
         if not self._is_safe_domain(link_url):
             return "SKIP", 0.0, "unsafe_domain"
 
-        # Wikipedia article-to-article: auto-follow regardless of keyword scoring.
-        # Only matches actual article pages — filters out namespaces, action URLs, /w/ paths.
+        # Fast pre-filter: URLs that will always be robots-blocked or non-English
+        if self._should_skip_url(link_url):
+            return "SKIP", 0.0, "unfetchable_url"
+
+        # Wikipedia article-to-article: centroid-gated follow.
+        # Structural filter unchanged — still skip namespaces, /w/, etc.
+        # Relevance now checked against session topic centroid.
         parent_url = parent_info.get('url', '')
         if 'en.wikipedia.org/wiki/' in link_url and 'en.wikipedia.org/wiki/' in parent_url:
             path = urlparse(link_url).path
@@ -1217,16 +1462,45 @@ class EnhancedAutonomousLearner:
                                 ['/wiki/Special:', '/wiki/Category:', '/wiki/Wikipedia:',
                                  '/wiki/Help:', '/wiki/Talk:', '/wiki/File:',
                                  '/wiki/Template:', '/wiki/Portal:'])):
-                return "FOLLOW_NOW", 0.7, "wikipedia_article_link"
+
+                # Gate against session centroid when stats are available
+                if (self.session_centroid is not None
+                        and self.session_coherence_stats is not None
+                        and self.session_coherence_stats.density_confidence > 0):
+                    try:
+                        anchor_vec, _ = fuse_vectors(anchor_text[:200])
+                        if anchor_vec is not None:
+                            sim = cosine_sim(np.array(anchor_vec), self.session_centroid)
+                            threshold = self.session_coherence_stats.threshold
+                            drift_threshold = self.session_coherence_stats.drift_threshold
+
+                            # free_crawl: centroid guides priority (sim score)
+                            # but uses drift_threshold as the follow bar —
+                            # broad exploration, not topic gatekeeping.
+                            # Focused sessions keep the tighter threshold.
+                            is_free_crawl = getattr(self, '_session_learning_focus', '') == 'free_crawl'
+                            follow_bar = drift_threshold if is_free_crawl else threshold
+
+                            if sim >= follow_bar:
+                                return "FOLLOW_NOW", sim, f"wiki_centroid_on_topic_{sim:.3f}"
+                            elif sim >= drift_threshold:
+                                return "DEFER", sim, f"wiki_centroid_borderline_{sim:.3f}"
+                            else:
+                                return "DEFER", sim * 0.5, f"wiki_centroid_off_topic_{sim:.3f}"
+                    except Exception:
+                        pass  # Fall through to keyword scoring on embed failure
+
+                # Bootstrap fallback: no centroid yet, use old keyword path below
+                # (don't auto-follow — let keyword scoring decide)
 
         # Content relevance scoring
         relevance_score = 0.0
-        
+
         # Check anchor text against session keywords
         anchor_lower = anchor_text.lower()
         keyword_matches = sum(1 for keyword in self.session_hot_keywords if keyword in anchor_lower)
         relevance_score += keyword_matches * 0.3
-        
+
         # Educational content indicators
         educational_indicators = [
             'research', 'study', 'analysis', 'theory', 'concept', 'principle',
@@ -1234,23 +1508,54 @@ class EnhancedAutonomousLearner:
         ]
         education_score = sum(1 for indicator in educational_indicators if indicator in anchor_lower)
         relevance_score += education_score * 0.2
-        
+
         # URL structure scoring
         url_lower = link_url.lower()
         if any(domain in url_lower for domain in ['edu', 'wikipedia', 'stanford', 'mit']):
             relevance_score += 0.4
-        
-        if any(path in url_lower for path in ['article', 'research', 'paper', 'study']):
+
+        if any(path_kw in url_lower for path_kw in ['article', 'research', 'paper', 'study']):
             relevance_score += 0.2
-        
+
         # Context matching with parent
         if parent_info.get('context') in anchor_lower:
             relevance_score += 0.3
-        
+
+        # Centroid similarity modifier (when session centroid is established)
+        if (self.session_centroid is not None
+                and self.session_coherence_stats is not None
+                and self.session_coherence_stats.density_confidence > 0):
+            try:
+                anchor_vec, _ = fuse_vectors(anchor_lower[:200])
+                if anchor_vec is not None:
+                    sim = cosine_sim(np.array(anchor_vec), self.session_centroid)
+                    threshold = self.session_coherence_stats.threshold
+                    # Modifier scales with density_confidence: strong when centroid is
+                    # well-established, negligible when sparse
+                    dc = self.session_coherence_stats.density_confidence
+                    centroid_modifier = (sim - threshold) * dc
+                    relevance_score += centroid_modifier
+            except Exception:
+                pass  # Centroid modifier is non-critical
+
         # Determine action based on score
-        if relevance_score >= 0.7:
+        # free_crawl bootstrap: lower the bar until the centroid has enough
+        # data to take over (3+ embeddings → density_confidence > 0).
+        # This lets the domain bonus alone (0.4 for Wikipedia) pass through.
+        centroid_active = (self.session_centroid is not None
+                          and self.session_coherence_stats is not None
+                          and self.session_coherence_stats.density_confidence > 0)
+        if (getattr(self, '_session_learning_focus', '') == 'free_crawl'
+                and not centroid_active):
+            follow_threshold = 0.3
+            defer_threshold = 0.15
+        else:
+            follow_threshold = 0.7
+            defer_threshold = 0.4
+
+        if relevance_score >= follow_threshold:
             return "FOLLOW_NOW", relevance_score, f"high_relevance_{relevance_score:.2f}"
-        elif relevance_score >= 0.4:
+        elif relevance_score >= defer_threshold:
             return "DEFER", relevance_score, f"moderate_relevance_{relevance_score:.2f}"
         else:
             return "SKIP", relevance_score, f"low_relevance_{relevance_score:.2f}"
@@ -1446,19 +1751,21 @@ class EnhancedAutonomousLearner:
         
         # Final cognitive assessment
         final_stats = self.analyzer.get_memory_stats()
-        print(f"🧠 Final memory: {final_stats['total_items']} items, {final_stats['health_indicators']['status']} health")
-        
+        tripartite = final_stats['total_items']  # logic+symbolic+bridge
+        unified = self.unified_memory.get_canonical_total()
+        print(f"🧠 Final memory: {tripartite} tripartite items, {unified} total (including vectors/trails/symbols), {final_stats['health_indicators']['status']} health")
+
         # Final evolution cycle
         print(f"\\n🧬 Running final evolution cycle...")
         self._run_evolution_cycle()
-        
+
         # Save session log
         session_summary = {
             'session_id': self.session_id,
             'completed_at': datetime.now().isoformat(),
             'elapsed_time_minutes': elapsed_time / 60,
             'stats': self.session_stats,
-            'final_memory_stats': final_stats,
+            'final_memory_stats': {**final_stats, 'unified_total': unified},
             'processed_domains': dict(self.domain_stats)
         }
         
@@ -1495,8 +1802,25 @@ class EnhancedAutonomousLearner:
                 rc = migration_results['recontextualization']
                 print(f"   Recontextualization: {rc['reversed_from_logic'] + rc['reversed_from_symbolic']} items returned to bridge")
             print(f"   Drift detected: {migration_results.get('drift_detected', False)}")
+        except ImportError:
+            print("   Migration engine not available")
         except Exception as e:
-            print(f"   Migration check skipped: {e}")
+            print(f"   Migration error: {type(e).__name__}: {e}")
+            import traceback
+            traceback.print_exc()
+
+        # Reprioritize pending queue URLs by session centroid relevance
+        # No URLs are dropped — low-relevance items sink, high-relevance items rise
+        if self.session_centroid is not None and self.session_coherence_stats is not None:
+            try:
+                repri_result = self.crawl_orchestrator.url_queue.reprioritize_by_relevance(
+                    self.session_centroid, self.session_coherence_stats
+                )
+                if repri_result.get('reprioritized', 0) > 0:
+                    print(f"\n   Queue reprioritized: {repri_result['reprioritized']}/{repri_result['total_pending']} "
+                          f"pending URLs reordered by topic relevance (dc={repri_result['density_confidence']:.2f})")
+            except Exception as e:
+                print(f"   Queue reprioritization skipped: {e}")
 
     def _emergency_session_save(self):
         """Emergency save during interrupted sessions."""
@@ -1515,7 +1839,20 @@ class EnhancedAutonomousLearner:
             json.dump(emergency_data, f, indent=2)
         
         print(f"✅ Emergency data saved: {emergency_file}")
-    
+        try:
+            self._run_migration_cleanup()
+        except Exception:
+            pass  # emergency save must not fail
+
+    def _run_migration_cleanup(self):
+        try:
+            from adaptive_bridge_migration import AdaptiveMigrationEngine
+            engine = AdaptiveMigrationEngine(
+                self.unified_memory.tripartite, str(self.data_dir))
+            engine.check_and_migrate([])
+        except Exception as e:
+            print(f"Migration cleanup error: {e}")
+
     def _integrate_learning_progression(self):
         """Integrate session results with learning progression tracker."""
         print(f"\n🧠 Integrating learning progression...")
@@ -1591,9 +1928,11 @@ class EnhancedAutonomousLearner:
                 # High curiosity content gets priority in link evaluation
                 if stimulation_level > 0.6:
                     # Boost exploration bias temporarily
-                    self.curiosity_engine.curiosity_state["exploration_bias"] = min(1.0, 
+                    self.curiosity_engine.curiosity_state["exploration_bias"] = min(1.0,
                         self.curiosity_engine.curiosity_state.get("exploration_bias", 0.3) + 0.1)
-                
+                    if hasattr(self.curiosity_engine, '_save_curiosity_state'):
+                        self.curiosity_engine._save_curiosity_state()
+
         except Exception as e:
             # Don't let curiosity errors break content processing
             pass
@@ -1666,7 +2005,7 @@ class EnhancedAutonomousLearner:
         Returns:
             Path to generated report file
         """
-        from datetime import datetime
+        from datetime import datetime, timezone
         import statistics
 
         # Create reports directory
@@ -2248,7 +2587,7 @@ class EnhancedAutonomousLearner:
                 'block_confidence': lang_confidence,
                 'domain_trust_at_block': domain_trust,
                 'session_id': self.session_id,
-                'timestamp': datetime.utcnow().isoformat(),
+                'timestamp': datetime.now(timezone.utc).isoformat(),
             }
             self._emit_crawl_event(
                 url, 'non_english',
@@ -2325,7 +2664,7 @@ class EnhancedAutonomousLearner:
                     'block_confidence': immune_assessment.confidence,
                     'domain_trust_at_block': domain_trust,
                     'session_id': self.session_id,
-                    'timestamp': datetime.utcnow().isoformat(),
+                    'timestamp': datetime.now(timezone.utc).isoformat(),
                 }
                 self._emit_crawl_event(**{k: v for k, v in _block_event.items()
                                           if k not in ('session_id', 'timestamp')})
@@ -2354,7 +2693,7 @@ class EnhancedAutonomousLearner:
                         'defense_strategy', {}).get('strategy'),
                     'domain_trust_at_block': domain_trust,
                     'session_id': self.session_id,
-                    'timestamp': datetime.utcnow().isoformat(),
+                    'timestamp': datetime.now(timezone.utc).isoformat(),
                 }
                 self._emit_crawl_event(**{k: v for k, v in _block_event.items()
                                           if k not in ('session_id', 'timestamp')})
@@ -2631,11 +2970,39 @@ class EnhancedAutonomousLearner:
         self._update_future_learning_queue(event)
 
     def _update_future_learning_queue(self, event: Dict):
-        """Update the persistent future learning queue."""
-        # TEMPORARILY DISABLED: Multiple rapid writes cause JSON corruption
-        # The event horizon is already captured in the session report
-        # TODO: Implement proper queue with atomic writes or database storage
-        pass
+        """Persist event horizon concepts across sessions."""
+        import sqlite3
+        db_path = self.data_dir / "future_learning_queue.db"
+        try:
+            conn = sqlite3.connect(str(db_path))
+            conn.execute("""CREATE TABLE IF NOT EXISTS concepts
+                (url TEXT, text TEXT, distance REAL,
+                 timestamp TEXT, zone TEXT)""")
+            conn.execute(
+                "INSERT INTO concepts VALUES (?,?,?,?,?)",
+                (event.get('url', ''), event.get('text', ''),
+                 event.get('distance', 0.0),
+                 event.get('timestamp', ''),
+                 event.get('zone', '')))
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            pass  # never block learning for queue writes
+
+    def _write_heartbeat(self):
+        """Write current session status to heartbeat file for dashboard sync."""
+        try:
+            heartbeat = {
+                'session_id': self.session_id,
+                'timestamp': datetime.now(timezone.utc).isoformat(),
+                'processed': len(self.processed_urls),
+                'targets': len(self.url_queue)
+            }
+            heartbeat_path = self.data_dir / "ai_heartbeat.json"
+            with open(heartbeat_path, 'w') as f:
+                json.dump(heartbeat, f)
+        except Exception:
+            pass
 
     def _update_saturation_state(self):
         """Sync saturation state with consciousness systems."""

@@ -8,10 +8,10 @@ work together to create cumulative wisdom and self-awareness.
 
 import json
 import time
-from experience_memory import ExperienceMemory
+from CONSCIOUSNESS_MEMORY import ExperienceMemory
 from learning_progression_tracker import LearningProgressionTracker
 from success_failure_memory import SuccessFailureMemory
-from personal_insight_generator import PersonalInsightGenerator
+from INSIGHT_RELEVANCE import PersonalInsightGenerator
 
 def test_integrated_experience_learning():
     """Test all experience-based learning systems working together."""
@@ -248,7 +248,7 @@ def test_integrated_experience_learning():
     
     print(f"  Generated {len(insights)} insights:")
     for i, insight in enumerate(insights, 1):
-        print(f"  {i}. [{insight['type']}] {insight['content']}")
+        print(f"  {i}. [{insight['type']}] {insight['insight']}")
         print(f"     Confidence: {insight['confidence']:.2f}")
     
     # Get comprehensive summaries

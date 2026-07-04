@@ -27,8 +27,8 @@ except ImportError:
     print("⚠️ Unified memory not available for maintenance")
 
 try:
-    from experience_memory import ExperienceMemory
-    from episodic_memory import EpisodicMemorySystem
+    from CONSCIOUSNESS_MEMORY import ExperienceMemory
+    from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
     MEMORY_SYSTEMS_AVAILABLE = True
 except ImportError:
     MEMORY_SYSTEMS_AVAILABLE = False

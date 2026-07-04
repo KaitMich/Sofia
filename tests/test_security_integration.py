@@ -19,8 +19,8 @@ from protection_utils import (
     is_protected_content, get_protection_reason, validate_protection_integrity,
     get_all_protected_items, protect_item, is_migration_allowed
 )
-from episodic_memory import EpisodicMemorySystem  
-from experience_memory import ExperienceMemory
+from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem  
+from CONSCIOUSNESS_MEMORY import ExperienceMemory
 from learning_progression_tracker import LearningProgressionTracker
 from identity_core import get_identity_core
 

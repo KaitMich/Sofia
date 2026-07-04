@@ -125,9 +125,14 @@ class MigrationEngine:
         # Get stability info
         stability = self.memory.get_item_stability(item)
         
-        # Need sufficient history
-        if stability['history_length'] < 3:
-            return False, "Insufficient history"
+        # RELAXED HISTORY REQUIREMENTS
+        # High confidence or Academic sources can migrate immediately (history_length >= 1)
+        # Standard sources need at least 2 sightings across sessions (history_length >= 2)
+        is_academic = item.get('is_academic', False) or (item.get('domain_trust', 0) >= 0.8)
+        min_history = 1 if (new_score > 0.8 or is_academic) else 2
+
+        if stability['history_length'] < min_history:
+            return False, f"Insufficient history (need {min_history})"
             
         # Check recent consistency
         if not stability['recent_consistency']:

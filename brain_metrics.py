@@ -19,7 +19,7 @@ except ImportError:
 # Import memory systems for comprehensive analysis
 try:
     from CONSCIOUSNESS_MEMORY import ExperienceMemory
-    from episodic_memory import EpisodicMemorySystem
+    from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
     MEMORY_SYSTEMS_AVAILABLE = True
 except ImportError:
     MEMORY_SYSTEMS_AVAILABLE = False

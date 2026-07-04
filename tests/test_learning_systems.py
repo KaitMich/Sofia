@@ -129,8 +129,8 @@ def test_pattern_recognition():
     print("\n🔧 Initializing Pattern Recognition System...")
     try:
         from pattern_recognition import PatternRecognitionSystem
-        from episodic_memory import EpisodicMemorySystem
-        from experience_memory import ExperienceMemory
+        from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
+        from CONSCIOUSNESS_MEMORY import ExperienceMemory
         from learning_progression_tracker import LearningProgressionTracker
         from personal_insight_generator import PersonalInsightGenerator
         
@@ -250,8 +250,8 @@ def test_pattern_recognition_basic():
     print("\n🔧 Initializing Pattern Recognition System...")
     try:
         from pattern_recognition import PatternRecognitionSystem, RecognizedPattern, AhaMoment
-        from episodic_memory import EpisodicMemorySystem
-        from experience_memory import ExperienceMemory
+        from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
+        from CONSCIOUSNESS_MEMORY import ExperienceMemory
         from learning_progression_tracker import LearningProgressionTracker
         
         pattern_system = PatternRecognitionSystem()

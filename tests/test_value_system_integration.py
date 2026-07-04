@@ -17,7 +17,7 @@ import time
 from datetime import datetime, timezone, timedelta
 from value_formation import ValueFormation
 from choice_architecture import ChoiceArchitecture
-from experience_memory import ExperienceMemory
+from CONSCIOUSNESS_MEMORY import ExperienceMemory
 from success_failure_memory import SuccessFailureMemory
 
 def test_value_system_integration():

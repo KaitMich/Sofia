@@ -29,7 +29,7 @@ try:
     from creative_engine import CreativeEngine
     from relationship_tracker import RelationshipTracker
     from learning_progression_tracker import LearningProgressionTracker
-    from personal_insight_generator import PersonalInsightGenerator
+    from INSIGHT_RELEVANCE import PersonalInsightGenerator
     CONSCIOUSNESS_SYSTEMS_AVAILABLE = True
 except ImportError:
     CONSCIOUSNESS_SYSTEMS_AVAILABLE = False

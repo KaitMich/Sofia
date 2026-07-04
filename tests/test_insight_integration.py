@@ -8,7 +8,7 @@ def test_insight_integration():
     
     try:
         # Test 1: Import and initialize
-        from personal_insight_generator import PersonalInsightGenerator
+        from INSIGHT_RELEVANCE import PersonalInsightGenerator
         from learning_progression_tracker import LearningProgressionTracker
         from curiosity_engine import CuriosityEngine
         

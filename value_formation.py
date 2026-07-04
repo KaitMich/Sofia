@@ -25,7 +25,7 @@ try:
     from CONSCIOUSNESS_MEMORY import ExperienceMemory
     from symbolic_memory import SymbolicMemory
     from learning_progression_tracker import LearningProgressionTracker
-    from personal_insight_generator import PersonalInsightGenerator
+    from INSIGHT_RELEVANCE import PersonalInsightGenerator
     from identity_core import get_identity_core
     from protection_utils import is_protected_content, protect_item
     from corroboration_engine import CorroborationEngine

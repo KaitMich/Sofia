@@ -257,10 +257,10 @@ class AdaptiveMigrationEngine:
         try:
             from vector_engine import embed_text
 
-            # Try both possible locations for seed_symbols.json
-            symbols_path = self.data_dir.parent / "seed_symbols.json"
+            # Try both possible locations for seed_symbols.json - PREFER LOCAL
+            symbols_path = self.data_dir / "seed_symbols.json"
             if not symbols_path.exists():
-                symbols_path = self.data_dir / "seed_symbols.json"
+                symbols_path = self.data_dir.parent / "seed_symbols.json"
             if not symbols_path.exists():
                 print("[bootstrap] seed_symbols.json not found — cannot compute bootstrap centroid")
                 return None

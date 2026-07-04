@@ -26,6 +26,7 @@ from vector_engine import fuse_vectors, embed_text
 from sklearn.metrics.pairwise import cosine_similarity
 from quarantine_layer import UserMemoryQuarantine, should_quarantine_input
 from linguistic_warfare import LinguisticWarfareDetector, check_for_warfare
+from urllib.parse import urlparse
 try:
     from utils.visualization_prep import VisualizationPrep
 except ImportError:
@@ -101,9 +102,8 @@ class TripartiteMemory:
         not used for routing. Migration to logic or symbolic happens via
         the adaptive migration engine when cosine math resolves.
 
-        The decision_type parameter is preserved for backwards compatibility
-        but all items route to bridge. The original classification is stored
-        in item['initial_impression'] for the migration engine to reference.
+        The original classification is stored in item['initial_impression']
+        for the migration engine to reference.
         """
         with self.lock:
             # Quality gate: reject garbage before storage
@@ -141,10 +141,6 @@ class TripartiteMemory:
             self.bridge_memory.append(item)
             return  # Explicit return after bridge append
 
-        # Dead code below preserved for reference during transition
-        if False:  # pragma: no cover
-                self.bridge_memory.append(item)
-                
     def save_all(self):
         """Atomic save all memories with backups"""
         with self.lock:
@@ -464,7 +460,8 @@ class SymbolMemory:
         # Check for linguistic warfare if available
         if self.warfare_detector and example_text:
             analysis_text = f"{name or ''} {' '.join(keywords or [])} {example_text or ''}"
-            analysis = self.warfare_detector.analyze_text_for_warfare(analysis_text, user_id="symbol_creation")
+            warfare_context = {'domain': 'internal', 'domain_trust': 1.0, 'is_academic': False}
+            analysis = self.warfare_detector.analyze_text_for_warfare(analysis_text, user_id="symbol_creation", context=warfare_context)
             
             if analysis['threat_score'] > 0.7:
                 return True, analysis
@@ -685,7 +682,11 @@ class VectorMemory:
         
         # Check for linguistic warfare
         if self.warfare_detector:
-            should_quarantine_warfare, warfare_analysis = check_for_warfare(text, source_url or "anonymous")
+            domain = urlparse(source_url).netloc if source_url else ""
+            domain_trust = self.trust_db.get_trust(domain) if hasattr(self, 'trust_db') else 0.0
+            is_academic = (domain.endswith('.edu') or 'wikipedia.org' in domain or domain_trust >= 0.8)
+            warfare_context = {'domain': domain, 'domain_trust': domain_trust, 'is_academic': is_academic}
+            should_quarantine_warfare, warfare_analysis = check_for_warfare(text, source_url or "anonymous", context=warfare_context)
             
             if should_quarantine_warfare:
                 return {
@@ -943,7 +944,9 @@ class UnifiedMemory:
         return self.tripartite.store(item, decision_type, weights)
     
     def get_memory_counts(self):
-        """Get counts for all memory types"""
+        """Legacy compatibility bridge. Returns tripartite counts only
+        (logic + symbolic + bridge). Does not include vectors, trail
+        log, or symbol data. Use get_unified_stats() for full count."""
         return self.tripartite.get_counts()
     
     def get_item_stability(self, item):
@@ -955,7 +958,9 @@ class UnifiedMemory:
     # ========================================================================
     
     def get_counts(self):
-        """Legacy compatibility bridge for memory_analytics.py"""
+        """Legacy compatibility bridge. Returns tripartite counts only
+        (logic + symbolic + bridge). Does not include vectors, trail
+        log, or symbol data. Use get_unified_stats() for full count."""
         return self.get_memory_counts()
     
     @property
@@ -1084,7 +1089,7 @@ class UnifiedMemory:
             "total_memory_items": total_items,
             "breakdown": {
                 "logic_memory": tripartite_counts['logic'],
-                "symbolic_memory": tripartite_counts['symbolic'], 
+                "symbolic_memory": tripartite_counts['symbolic'],
                 "bridge_memory": tripartite_counts['bridge'],
                 "vector_data": vector_data_count,
                 "trail_log": trail_data_count,
@@ -1092,7 +1097,12 @@ class UnifiedMemory:
                 "occurrences": len(occurrences)
             }
         }
-    
+
+    def get_canonical_total(self) -> int:
+        """Single authoritative item count across all memory systems."""
+        stats = self.get_unified_stats()
+        return stats['total_memory_items']
+
     def save_all_memories(self):
         """Save all memory components"""
         results = {

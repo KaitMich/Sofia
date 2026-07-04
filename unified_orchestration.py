@@ -1211,11 +1211,12 @@ class UnifiedOrchestrationSystem:
         if self.shutdown_manager:
             self._register_shutdown_handlers()
 
-        print(f"🌟 Unified Orchestration System initialized")
-        if shutdown_active:
-            print(f"   🛡️  Shutdown protection active")
-        if dream_active:
-            print(f"   💤 Sleep cycle ready (idle threshold: 30 min)")
+        if self.verbose:
+            print(f"🌟 Unified Orchestration System initialized")
+            if shutdown_active:
+                print(f"   🛡️  Shutdown protection active")
+            if dream_active:
+                print(f"   💤 Sleep cycle ready (idle threshold: 30 min)")
     
     async def process_input(self, input_text: str, source_url: str = None) -> Dict[str, Any]:
         """Main processing interface"""

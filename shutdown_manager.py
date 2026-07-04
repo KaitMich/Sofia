@@ -89,19 +89,35 @@ class ShutdownManager:
 
     def install_handlers(self):
         """Install signal handlers for graceful shutdown."""
-        # Save original handlers
-        self.original_sigint_handler = signal.getsignal(signal.SIGINT)
-        self.original_sigterm_handler = signal.getsignal(signal.SIGTERM)
+        import threading
+        
+        # Check if we are in the main thread
+        if threading.current_thread() is not threading.main_thread():
+            if self.verbose:
+                print("  [Shutdown] Signal handlers can only be installed in the main thread. Skipping signal registration, but atexit will still work.")
+            # Still register with atexit as it's thread-safe
+            atexit.register(self._atexit_handler)
+            return
 
-        # Install our handlers
-        signal.signal(signal.SIGINT, self._signal_handler)
-        signal.signal(signal.SIGTERM, self._signal_handler)
+        try:
+            # Save original handlers
+            self.original_sigint_handler = signal.getsignal(signal.SIGINT)
+            self.original_sigterm_handler = signal.getsignal(signal.SIGTERM)
 
-        # Also register with atexit as a backup
-        atexit.register(self._atexit_handler)
+            # Install our handlers
+            signal.signal(signal.SIGINT, self._signal_handler)
+            signal.signal(signal.SIGTERM, self._signal_handler)
 
-        if self.verbose:
-            print("  [Shutdown] Signal handlers installed")
+            # Also register with atexit as a backup
+            atexit.register(self._atexit_handler)
+
+            if self.verbose:
+                print("  [Shutdown] Signal handlers installed")
+        except (ValueError, RuntimeError) as e:
+            # Fallback for environments where signal handlers cannot be installed
+            if self.verbose:
+                print(f"  [Shutdown] Could not install signal handlers ({e}). Falling back to atexit.")
+            atexit.register(self._atexit_handler)
 
     def _signal_handler(self, signum, frame):
         """Handle interrupt signals (SIGINT, SIGTERM)."""

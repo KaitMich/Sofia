@@ -1374,7 +1374,7 @@ class PersonalInsightGenerator:
     
     def get_insight_summary(self) -> Dict[str, Any]:
         """Get summary of generated insights."""
-        
+
         if not self.personal_insights:
             return {
                 "total_insights": 0,
@@ -1382,23 +1382,272 @@ class PersonalInsightGenerator:
                 "recent_insights": [],
                 "avg_confidence": 0.0
             }
-        
-        # Count insights by type
-        type_counts = Counter(insight["type"] for insight in self.personal_insights)
-        
+
+        # Count insights by type (handle both old and new schema key names)
+        type_counts = Counter(
+            insight.get("type") or insight.get("insight_type", "unknown")
+            for insight in self.personal_insights
+        )
+
         # Get recent insights
         recent_insights = self.personal_insights[-10:]  # Last 10
-        
-        # Calculate average confidence
-        confidences = [insight["confidence"] for insight in self.personal_insights]
+
+        # Calculate average confidence (handle both key names)
+        confidences = [
+            insight.get("confidence") or insight.get("confidence_level", 0.5)
+            for insight in self.personal_insights
+        ]
         avg_confidence = sum(confidences) / len(confidences)
-        
+
         return {
             "total_insights": len(self.personal_insights),
             "insight_types": dict(type_counts),
-            "recent_insights": [insight["insight"] for insight in recent_insights],
+            "recent_insights": [
+                insight.get("insight") or insight.get("insight_text", "")
+                for insight in recent_insights
+            ],
             "avg_confidence": avg_confidence,
             "insight_triggers": self.insight_patterns.get("insight_triggers", {})
+        }
+
+    # ===================================================================
+    # CONSCIOUSNESS INTEGRATION METHODS
+    # These methods connect PersonalInsightGenerator to the broader
+    # consciousness system (progression tracker, curiosity engine).
+    # All insights are data-derived observations — no identity assertions.
+    # ===================================================================
+
+    def integrate_with_consciousness_systems(self, progression_tracker=None,
+                                              curiosity_engine=None) -> Dict[str, Any]:
+        """
+        Wire this generator to the progression tracker and curiosity engine
+        so that reflection and consciousness methods can cross-reference
+        learning state.  Pure plumbing — stores references, no identity content.
+
+        Same pattern as MotivationalContentEvaluator.integrate_with_consciousness_systems().
+        """
+        systems_connected = 0
+
+        if progression_tracker is not None:
+            self.progression_tracker = progression_tracker
+            systems_connected += 1
+
+        if curiosity_engine is not None:
+            self.curiosity_engine = curiosity_engine
+            systems_connected += 1
+
+        return {
+            "integration_successful": systems_connected > 0,
+            "systems_connected": systems_connected,
+            "progression_available": hasattr(self, 'progression_tracker') and self.progression_tracker is not None,
+            "curiosity_available": hasattr(self, 'curiosity_engine') and self.curiosity_engine is not None
+        }
+
+    def generate_consciousness_insights(self, session_data: Dict[str, Any]) -> List[str]:
+        """
+        Generate insight strings from a learning session's activity data.
+
+        Packages session_data into the content/context format that the
+        existing generate_personal_insights() pipeline expects, runs it
+        through the 8 signal detectors, and extracts the insight text.
+        Returns an empty list if no signals exceed the confidence threshold.
+
+        Called at: enhanced_autonomous_learner.py _integrate_learning_progression()
+        after curiosity integration completes.
+
+        Args:
+            session_data: dict with keys:
+                - urls_processed (int)
+                - concepts_discovered (list of concept-id strings)
+                - learning_momentum (float 0-1)
+
+        Returns:
+            List[str] — human-readable insight strings
+        """
+        urls = session_data.get("urls_processed", 0)
+        concepts = session_data.get("concepts_discovered", [])
+        momentum = session_data.get("learning_momentum", 0.5)
+
+        # Package as the content/context dicts that generate_personal_insights expects
+        content = {
+            "text": f"Processed {urls} sources and discovered {len(concepts)} concepts",
+            "content_type": "learning_session",
+            "concepts": concepts,
+            "volume": urls,
+        }
+        context = {
+            "engagement_score": momentum,
+            "comprehension_level": momentum,
+            "reflection_mode": True,
+            "session_summary": True,
+        }
+
+        # Run through existing 8-signal pipeline
+        insight_dicts = self.generate_personal_insights(content, context)
+
+        # Extract text strings (callers iterate and print these)
+        return [d["insight"] for d in insight_dicts if d.get("insight")]
+
+    def generate_reminder_insights_from_content(self, text_content: str,
+                                                 context: Dict[str, Any] = None) -> List[str]:
+        """
+        Detect personal insights triggered by content being read.
+
+        Thin adapter: packages raw text into the content dict format that
+        generate_personal_insights() expects, passes context through, and
+        returns insight text strings.
+
+        Called at: enhanced_autonomous_learner.py _generate_insights_from_content()
+        during the per-URL content processing loop.
+
+        Args:
+            text_content: raw text extracted from a web page
+            context: dict with content_type, source, learning_phase,
+                     discovery_context
+
+        Returns:
+            List[str] — insight text strings (caller prints at 10% rate)
+        """
+        if context is None:
+            context = {}
+
+        content = {
+            "text": text_content[:2000],
+            "content_type": context.get("content_type", "web_content"),
+            "source": context.get("source", "unknown"),
+        }
+
+        insight_dicts = self.generate_personal_insights(content, context)
+        return [d["insight"] for d in insight_dicts if d.get("insight")]
+
+    def generate_reflection_insights(self, consciousness_state: Dict[str, Any]) -> List[str]:
+        """
+        Generate reflective observations from the full consciousness state.
+
+        Follows the generate_learning_awareness_insights() pattern exactly:
+        examine measured state, produce observations about what changed.
+        No personality declarations — only data-derived observations.
+
+        Called at: enhanced_autonomous_learner.py get_learning_consciousness_state()
+        during full consciousness state assembly.
+
+        Args:
+            consciousness_state: dict with populated keys:
+                - session_stats
+                - learning_progression (from progression_tracker export)
+                - curiosity_state (from curiosity_engine export)
+                - consciousness_insights (list of strings)
+                - curiosity_insights (list of strings)
+
+        Returns:
+            List[str] — reflective observation strings
+        """
+        insights = []
+
+        # --- Insight accumulation observations ---
+        summary = self.get_insight_summary()
+        total = summary.get("total_insights", 0)
+        avg_conf = summary.get("avg_confidence", 0.0)
+        type_counts = summary.get("insight_types", {})
+
+        if total > 0 and avg_conf > 0.7:
+            insights.append(
+                f"Insight confidence has been consistently high ({avg_conf:.2f} average across {total} insights)"
+            )
+        elif total > 0 and avg_conf < 0.4:
+            insights.append(
+                f"Insight confidence has been low ({avg_conf:.2f} average) — pattern detection may need more data"
+            )
+
+        # Identify dominant insight type if one stands out
+        if type_counts:
+            dominant_type = max(type_counts, key=type_counts.get)
+            dominant_count = type_counts[dominant_type]
+            if total > 0 and dominant_count / total > 0.4:
+                readable = self.insight_types.get(dominant_type, dominant_type).lower()
+                insights.append(
+                    f"Most frequent insight type has been {readable} ({dominant_count}/{total})"
+                )
+
+        # --- Cross-reference with learning progression if wired ---
+        progression = consciousness_state.get("learning_progression")
+        if progression:
+            prog_summary = progression.get("progression_summary", {})
+
+            momentum = prog_summary.get("learning_momentum", 0)
+            understanding = prog_summary.get("overall_understanding", 0)
+            concept_count = prog_summary.get("total_concepts", 0)
+
+            if momentum > 0.7:
+                insights.append(
+                    f"Learning momentum is high ({momentum:.2f}) with {concept_count} concepts tracked"
+                )
+            elif momentum < 0.3 and concept_count > 5:
+                insights.append(
+                    f"Learning momentum has slowed ({momentum:.2f}) despite {concept_count} concepts in progress"
+                )
+
+            if understanding > 0.6:
+                insights.append(
+                    f"Overall understanding level is at {understanding:.2f} across tracked concepts"
+                )
+
+        # --- Cross-reference with curiosity state if available ---
+        curiosity = consciousness_state.get("curiosity_state")
+        if curiosity:
+            motivation = curiosity.get("autonomous_motivation_level", 0)
+            active_goals = len(curiosity.get("active_learning_goals", []))
+
+            if motivation > 0.7 and active_goals > 3:
+                insights.append(
+                    f"Curiosity is active: motivation at {motivation:.2f} with {active_goals} open learning goals"
+                )
+            elif motivation < 0.3:
+                insights.append(
+                    f"Curiosity motivation has dropped to {motivation:.2f}"
+                )
+
+        # --- Session activity observations ---
+        stats = consciousness_state.get("session_stats", {})
+        urls = stats.get("urls_processed", 0)
+        chunks = stats.get("chunks_learned", 0)
+
+        if urls > 0 and chunks > 0:
+            retention_rate = chunks / urls if urls > 0 else 0
+            if retention_rate > 0.8:
+                insights.append(
+                    f"Content retention rate this session is high ({retention_rate:.0%} of {urls} sources committed)"
+                )
+            elif retention_rate < 0.3 and urls > 10:
+                insights.append(
+                    f"Content retention rate is low ({retention_rate:.0%}) — many sources were filtered or deferred"
+                )
+
+        return insights[:5]  # Cap at 5 to match max_insights_per_session
+
+    def export_for_consciousness_system(self) -> Dict[str, Any]:
+        """
+        Export insight generator state for consciousness system integration.
+
+        Wraps get_insight_summary() into the export format used by sister
+        classes (LearningProgressionTracker, CuriosityEngine).
+        """
+        summary = self.get_insight_summary()
+
+        return {
+            "insight_summary": {
+                "total_insights": summary.get("total_insights", 0),
+                "insight_types": summary.get("insight_types", {}),
+                "avg_confidence": summary.get("avg_confidence", 0.0),
+            },
+            "recent_insights": summary.get("recent_insights", []),
+            "insight_triggers": summary.get("insight_triggers", {}),
+            "capabilities": {
+                "personal_insight_generation": True,
+                "consciousness_insights": True,
+                "content_reminder_insights": True,
+                "reflection_insights": True,
+            }
         }
 
 

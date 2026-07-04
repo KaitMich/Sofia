@@ -19,7 +19,6 @@ except ImportError as e:
     print("   Falling back to base quarantine...")
     from quarantine_layer import UserMemoryQuarantine as AdaptiveQuarantine
 from linguistic_warfare import LinguisticWarfareDetector, check_for_warfare
-from bridge_adapter import AlphaWallBridge
 try:
     from utils.link_evaluator import EnhancedLinkEvaluator
 except ImportError:
@@ -34,7 +33,6 @@ from memory_optimizer import recompute_adaptive_link_weights
 
 # Import vector operations for direct memory access
 from vector_memory import retrieve_similar_vectors as vm_retrieve_similar_vectors
-from vector_engine import encode_with_minilm, cosine_similarity
 
 # Initialize all components
 print("🔧 Initializing processing nodes with security modules...")
@@ -45,26 +43,6 @@ logic_node, symbolic_node, curriculum_manager, dynamic_bridge = initialize_proce
 
 # Initialize security and visualization components
 alphawall = AlphaWall()
-
-# Patch AlphaWall's emotion detection for short academic questions
-original_detect = alphawall._detect_emotional_state
-def patched_detect_emotional_state(text):
-    academic_terms = ['math', 'science', 'ai', 'computer', 'physics', 'chemistry', 
-                     'biology', 'algorithm', 'data', 'code', 'program', 'earth', 'mineral']
-    text_lower = text.lower().strip('?!.')
-    
-    # Short academic words aren't emotional
-    if len(text.split()) <= 2 and any(term in text_lower for term in academic_terms):
-        return "neutral", 0.0
-    
-    # Very short questions aren't emotional
-    if len(text) < 10 and text.strip().endswith('?'):
-        return "neutral", 0.0
-        
-    return original_detect(text)
-
-alphawall._detect_emotional_state = patched_detect_emotional_state
-print("✅ AlphaWall emotion detection patched for academic questions")
 
 quarantine = AdaptiveQuarantine()
 warfare_detector = LinguisticWarfareDetector()
@@ -442,34 +420,34 @@ def process_user_input(user_input: str) -> dict:
             print(f"   [Adaptive Quarantine: {quarantine_reason}]")
     else:
         # Fallback to zone recommendation
-        should_quarantine = zone_output['routing_hints']['quarantine_recommended']
-    
+        should_quarantine = zone_output['action'] == 'QUARANTINED'
+
     # Full evaluation through enhanced link evaluator
     routing_decision, confidence, full_analysis = evaluator.evaluate_with_full_pipeline(
         user_input,
         base_logic_score=None,  # Let the system calculate
         base_symbolic_score=None
     )
-    
+
     # Override if quarantine recommended (but not for greetings!)
     if (should_quarantine or should_quarantine_warfare) and user_input.lower() not in ['hello', 'hi', 'hey', 'hello!', 'hi!']:
         routing_decision = 'QUARANTINE'
         confidence = 1.0
-    
+
     # Debug print for quarantine decisions
     if verbose_mode and routing_decision == 'QUARANTINE':
         print(f"   [Quarantine Debug: warfare={should_quarantine_warfare}, adaptive={should_quarantine}]")
-    
+
     # Extract key information for response generation
     result = {
         'routing_decision': routing_decision,
         'confidence': confidence,
-        'emotional_state': zone_output['tags'].get('emotional_state', 'neutral'),
-        'intent': zone_output['tags'].get('intent', 'unknown'),
-        'context': zone_output['tags'].get('context', []),
-        'risks': zone_output['tags'].get('risk', []),
-        'zone_id': zone_output['zone_id'],
-        'quarantine_recommended': should_quarantine or zone_output['routing_hints']['quarantine_recommended'],
+        'emotional_state': zone_output['zone_output']['tags'].get('emotional_state', 'neutral'),
+        'intent': zone_output['zone_output']['tags'].get('intent', 'unknown'),
+        'context': zone_output['zone_output']['tags'].get('context', []),
+        'risks': zone_output['zone_output']['tags'].get('risk', []),
+        'zone_id': zone_output['zone_output']['zone_id'],
+        'quarantine_recommended': should_quarantine or zone_output['action'] == 'QUARANTINED',
         'warfare_detected': should_quarantine_warfare,
         'processing_time': (time.time() - start_time) * 1000
     }
@@ -762,9 +740,9 @@ def main():
                 zone = alphawall.process_input(test_input)
                 
                 print(f"\n🔍 Debug Analysis for: '{test_input}'")
-                print(f"   Emotional State: {zone['tags']['emotional_state']} ({zone['tags']['emotion_confidence']:.2f})")
-                print(f"   Intent: {zone['tags']['intent']}")
-                print(f"   Context: {zone['tags']['context']}")
+                print(f"   Emotional State: {zone['zone_output']['tags']['emotional_state']} ({zone['zone_output']['tags']['emotion_confidence']:.2f})")
+                print(f"   Intent: {zone['zone_output']['tags']['intent']}")
+                print(f"   Context: {zone['zone_output']['tags']['context']}")
                 
                 if hasattr(quarantine, '_calculate_vagueness_score'):
                     vagueness = quarantine._calculate_vagueness_score(test_input, zone)

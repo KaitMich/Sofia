@@ -37,10 +37,10 @@ def test_integrated_experience_learning():
     print("\n🔧 Initializing systems...")
     
     try:
-        from experience_memory import ExperienceMemory
+        from CONSCIOUSNESS_MEMORY import ExperienceMemory
         from learning_progression_tracker import LearningProgressionTracker
         from success_failure_memory import SuccessFailureMemory
-        from personal_insight_generator import PersonalInsightGenerator
+        from INSIGHT_RELEVANCE import PersonalInsightGenerator
         
         exp_memory = ExperienceMemory()
         progression_tracker = LearningProgressionTracker()
@@ -374,7 +374,7 @@ def test_group_c_runtime_integration():
     # Test 1: Episodic Memory Creation and Retrieval
     print("\n1. Testing Episodic Memory System...")
     try:
-        from episodic_memory import EpisodicMemorySystem
+        from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
         
         em = EpisodicMemorySystem()
         test_results["components_tested"].append("episodic_memory")

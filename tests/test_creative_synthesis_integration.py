@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 from creative_engine import CreativeEngine
 from value_formation import ValueFormation
 from choice_architecture import ChoiceArchitecture
-from experience_memory import ExperienceMemory
+from CONSCIOUSNESS_MEMORY import ExperienceMemory
 from success_failure_memory import SuccessFailureMemory
 from curiosity_engine import CuriosityEngine
 
@@ -39,6 +39,13 @@ def test_creative_synthesis_integration():
     
     print("  ✅ All creative systems initialized")
     
+    # Initialize variables for health check tracking
+    artistic_expression = {}
+    inspired_synthesis = {}
+    choice_result = None
+    creative_solution = {}
+    creative_outcome = None
+
     # Test 1: Value-informed creative expression
     print("\n💎 Testing value-informed creative expression...")
     

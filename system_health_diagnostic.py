@@ -54,8 +54,7 @@ class SystemHealthDiagnostic:
             "memory_analytics",
             "decision_history",
             "symbolic_memory",
-            "experience_memory",
-            "episodic_memory",
+            "CONSCIOUSNESS_MEMORY",
             "learning_progression_tracker",
             "identity_core",
             "emotion_handler",
@@ -100,10 +99,10 @@ class SystemHealthDiagnostic:
             else:
                 try:
                     if file_path.endswith('.json'):
-                        with open(full_path, 'r') as f:
+                        with open(full_path, 'r', encoding='utf-8') as f:
                             json.load(f)
                     elif file_path.endswith('.py'):
-                        with open(full_path, 'r') as f:
+                        with open(full_path, 'r', encoding='utf-8') as f:
                             content = f.read()
                             if len(content) < 100:  # Suspiciously small
                                 print(f"   ⚠️ SUSPICIOUSLY SMALL: {file_path} ({len(content)} chars)")
@@ -153,8 +152,8 @@ class SystemHealthDiagnostic:
         consciousness_systems = [
             ("creative_engine", "CreativeEngine"),
             ("symbolic_memory", "SymbolicMemory"), 
-            ("episodic_memory", "EpisodicMemorySystem"),
-            ("experience_memory", "ExperienceMemory"),
+            ("CONSCIOUSNESS_MEMORY", "EpisodicMemorySystem"),
+            ("CONSCIOUSNESS_MEMORY", "ExperienceMemory"),
             ("identity_core", "get_identity_core")
         ]
         
@@ -196,7 +195,7 @@ class SystemHealthDiagnostic:
             full_path = self.project_dir / file_path
             try:
                 if full_path.exists():
-                    with open(full_path, 'r') as f:
+                    with open(full_path, 'r', encoding='utf-8') as f:
                         data = json.load(f)
                     
                     if expected_type == "list" and isinstance(data, list):
