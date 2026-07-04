@@ -1,13 +1,11 @@
-# reset_weights.py
-
-  - PURPOSE: Reset adaptive learning weights to balanced values for weight evolution and migration systems
-  - COMPLETENESS: Complete weight reset utility with adaptive config management and migration age reset
-  - DEPENDENCIES: Interacts with data/adaptive_config.json and weight evolution system files
-  - ROLE: Maintenance utility to reset learning system weights when adaptation has become unbalanced
-  - CONNECTIONS: Used by weight evolution systems and migration processes to restore balanced learning
-  - STATUS: Current/active - essential maintenance tool for keeping learning systems properly calibrated
-
 # reset_weights.py - Reset adaptive weights to balanced values
+#
+# - PURPOSE: Reset adaptive learning weights to balanced values for weight evolution and migration systems
+# - COMPLETENESS: Complete weight reset utility with adaptive config management and migration age reset
+# - DEPENDENCIES: Interacts with data/adaptive_config.json and weight evolution system files
+# - ROLE: Maintenance utility to reset learning system weights when adaptation has become unbalanced
+# - CONNECTIONS: Used by weight evolution systems and migration processes to restore balanced learning
+# - STATUS: Current/active - essential maintenance tool for keeping learning systems properly calibrated
 
 import json
 from pathlib import Path
