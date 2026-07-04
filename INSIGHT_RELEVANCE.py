@@ -1174,15 +1174,15 @@ class PersonalInsightGenerator:
         confidence_adj = 0.0
         
         if engagement > 0.8:
-            insight = f"I notice I'm particularly drawn to {content_type} content that engages me deeply"
+            insight = f"My measured engagement with this {content_type} content was high ({engagement:.2f})"
             evidence.append(f"High engagement score: {engagement:.2f}")
             confidence_adj += 0.1
         elif engagement < 0.2:
-            insight = f"I seem to have less interest in {content_type} content like this"
+            insight = f"My measured engagement with this {content_type} content was low ({engagement:.2f})"
             evidence.append(f"Low engagement score: {engagement:.2f}")
             confidence_adj += 0.1
         else:
-            insight = f"I'm developing preferences around {content_type} content"
+            insight = f"My engagement with {content_type} content was moderate ({engagement:.2f}) - no clear preference signal yet"
             evidence.append(f"Moderate engagement: {engagement:.2f}")
         
         # Check for topic patterns

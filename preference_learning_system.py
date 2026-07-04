@@ -848,7 +848,10 @@ class PreferenceLearningSystem:
                 expression = "I'm discovering that " + expression.lower()
             else:
                 expression = "I think " + expression.lower()
-        
+
+        # Always carry the measurement behind the expression
+        expression += f" [strength {pref.preference_strength:+.2f}, {pref.evidence_count} observations]"
+
         return expression
     
     def _find_preference_alternative(self, pref: PreferenceItem, all_prefs: List[PreferenceItem]) -> Optional[PreferenceItem]:
