@@ -1,0 +1,76 @@
+{
+  "generated": "2026-07-04T12:59:09.222343",
+  "purpose": "Phase 0 baseline before stabilization phases",
+  "stores": {
+    "logic_memory": {
+      "count": 8871,
+      "bytes": 128627377
+    },
+    "symbolic_memory": {
+      "count": 1911,
+      "bytes": 26577018
+    },
+    "bridge_memory": {
+      "count": 374,
+      "bytes": 5178652
+    },
+    "vector_memory": {
+      "count": 370,
+      "bytes": 4553240
+    },
+    "trail_log": {
+      "count": 1008,
+      "bytes": 433025
+    },
+    "symbol_memory": {
+      "count": 23,
+      "bytes": 13075
+    }
+  },
+  "duplication": {
+    "logic_memory": {
+      "items": 8871,
+      "texts_with_multiple_copies": 48,
+      "redundant_copies": 70
+    },
+    "symbolic_memory": {
+      "items": 1911,
+      "texts_with_multiple_copies": 37,
+      "redundant_copies": 361
+    },
+    "bridge_memory": {
+      "items": 374,
+      "texts_with_multiple_copies": 2,
+      "redundant_copies": 2
+    }
+  },
+  "queue": {
+    "tables": [
+      "url_queue",
+      "sqlite_sequence"
+    ],
+    "url_queue": 109804,
+    "sqlite_sequence": 1,
+    "url_queue_by_status": {
+      "blocked_immune": 1281,
+      "completed": 16365,
+      "deferred": 96,
+      "failed": 919,
+      "in_progress": 68,
+      "pending": 91075
+    }
+  },
+  "trust": {
+    "domain_trust": {
+      "rows": 597,
+      "zero_trust_domains": 197,
+      "high_trust_domains": 45
+    },
+    "trust_events": {
+      "rows": 7615
+    },
+    "sqlite_sequence": {
+      "rows": 1
+    }
+  }
+}
