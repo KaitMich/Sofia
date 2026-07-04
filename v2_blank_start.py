@@ -39,19 +39,22 @@ BLANK_LIST = [
 ]
 
 BLANK_DICT = [
-    # keyed collections of learned items
+    # keyed collections of learned items — safe as {} (readers iterate)
     "symbol_memory.json", "user_memory.json", "cluster_names.json",
     "symbol_cooccurrence.json", "meta_symbols.json",
-    "bridge_reclassification_log.json", "conversation_contexts.json",
-    "context_patterns.json", "context_corrections.json",
-    "choice_history.json", "choice_guidance.json",
 ]
 
 DELETE_STATE = [
-    # module-owned state: owners recreate defaults on first run
+    # module-owned state: owners recreate defaults on first run.
+    # State dicts with EXPECTED KEYS must be deleted, not blanked to {} —
+    # loaders bootstrap on a missing file but crash on an empty dict
+    # (choice_architecture's KeyError: 'total_choices' taught us this).
     "curiosity_state.json", "learning_progression_detailed.json",
     "sovereignty_log.json", "consciousness_profile.json",
     "autonomy_profile.json", "adaptive_weights.json", "ai_heartbeat.json",
+    "choice_history.json", "choice_guidance.json",
+    "conversation_contexts.json", "context_patterns.json",
+    "context_corrections.json", "bridge_reclassification_log.json",
 ]
 
 DELETE_FILES = [

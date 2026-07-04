@@ -1068,15 +1068,13 @@ class EnhancedAutonomousLearner:
                     self.trust_db.adjust_trust(domain, +0.02, "Clean page: low threat score")
                 self.session_stats['trust_adjustments'] += 1
 
-            # Ethical awareness check (doesn't block, just notes)
-            from ethical_awareness import assess_content_ethics
-            ethics_assessment = assess_content_ethics(text_content, {'url': url})
+            # Ethical awareness DISABLED (July 2026): the keyword matcher
+            # flagged 'Category:1983_births' as deceptive_content and a page
+            # about observables as harmful_intent — fabricated ethics signals.
+            # Per the no-hardcoding principle, ethical awareness must emerge
+            # from her value formation, not from keyword lists. Module kept
+            # at ethical_awareness.py for reference.
 
-            if ethics_assessment['ethical_awareness']:
-                print(f"   🧠 Ethical awareness: {', '.join(ethics_assessment['ethical_awareness'])}")
-                print(f"   📚 Learning approach: {ethics_assessment['learning_approach']}")
-                # Continue learning even with ethical concerns - just with awareness
-            
             # Process content through unified brain
             result = self._process_content_with_brain(text_content, url, url_info)
             
@@ -1190,7 +1188,13 @@ class EnhancedAutonomousLearner:
 
             # Determine memory type based on content
             content_type = self._classify_content_for_memory(text_content)
-            print(f"   📊 Content classified as: {content_type}")
+            _cls = getattr(self, '_last_classification', None)
+            if _cls is not None:
+                print(f"   📊 Classified {content_type} via {_cls.basis} "
+                      f"(logic {_cls.logic_score:.2f} / symbolic {_cls.symbolic_score:.2f}, "
+                      f"confidence {_cls.confidence:.2f})")
+            else:
+                print(f"   📊 Content classified as: {content_type}")
 
             # ═══════════════════════════════════════════════════════════════
             # LAYERED SECURITY: CORROBORATION CHECK (BEFORE COMMIT)
@@ -1264,7 +1268,10 @@ class EnhancedAutonomousLearner:
                     'learning_focus': url_info.get('context', 'general'),
                     'discovery_depth': url_info.get('depth', 0),
                     'session_id': self.session_id,
-                    'memory_type': 'symbolic'
+                    'memory_type': 'symbolic',
+                    'logic_score': getattr(self, '_last_classification', None).logic_score if getattr(self, '_last_classification', None) else 0.0,
+                    'symbolic_score': getattr(self, '_last_classification', None).symbolic_score if getattr(self, '_last_classification', None) else 0.0,
+                    'classification_basis': getattr(self, '_last_classification', None).basis if getattr(self, '_last_classification', None) else 'none'
                 }
                 memory_result = self.unified_memory.store_decision(item, "FOLLOW_SYMBOLIC")
             elif content_type == "logical":
@@ -1276,7 +1283,10 @@ class EnhancedAutonomousLearner:
                     'learning_focus': url_info.get('context', 'general'),
                     'discovery_depth': url_info.get('depth', 0),
                     'session_id': self.session_id,
-                    'memory_type': 'logical'
+                    'memory_type': 'logical',
+                    'logic_score': getattr(self, '_last_classification', None).logic_score if getattr(self, '_last_classification', None) else 0.0,
+                    'symbolic_score': getattr(self, '_last_classification', None).symbolic_score if getattr(self, '_last_classification', None) else 0.0,
+                    'classification_basis': getattr(self, '_last_classification', None).basis if getattr(self, '_last_classification', None) else 'none'
                 }
                 memory_result = self.unified_memory.store_decision(item, "FOLLOW_LOGIC")
             else:
@@ -1288,7 +1298,10 @@ class EnhancedAutonomousLearner:
                     'learning_focus': url_info.get('context', 'general'),
                     'discovery_depth': url_info.get('depth', 0),
                     'session_id': self.session_id,
-                    'memory_type': 'bridge'
+                    'memory_type': 'bridge',
+                    'logic_score': getattr(self, '_last_classification', None).logic_score if getattr(self, '_last_classification', None) else 0.0,
+                    'symbolic_score': getattr(self, '_last_classification', None).symbolic_score if getattr(self, '_last_classification', None) else 0.0,
+                    'classification_basis': getattr(self, '_last_classification', None).basis if getattr(self, '_last_classification', None) else 'none'
                 }
                 memory_result = self.unified_memory.store_decision(item, "FOLLOW_HYBRID")
 
@@ -1641,35 +1654,17 @@ class EnhancedAutonomousLearner:
         return relevant_words[:5]  # Limit to top 5
     
     def _classify_content_for_memory(self, text: str) -> str:
-        """Classify content to determine appropriate memory storage type."""
-        text_lower = text.lower()
-        
-        # Symbolic indicators (meaning, philosophy, values)
-        symbolic_keywords = [
-            'meaning', 'purpose', 'philosophy', 'ethics', 'morality', 'values',
-            'consciousness', 'awareness', 'identity', 'self', 'existence',
-            'belief', 'wisdom', 'truth', 'beauty', 'love', 'hope', 'fear',
-            'spiritual', 'metaphysical', 'phenomenology', 'existential'
-        ]
-        
-        # Logical indicators (analysis, research, technical)
-        logical_keywords = [
-            'analysis', 'research', 'study', 'experiment', 'data', 'results',
-            'method', 'approach', 'algorithm', 'system', 'process', 'technique',
-            'evidence', 'proof', 'theorem', 'hypothesis', 'conclusion',
-            'implementation', 'optimization', 'performance', 'efficiency'
-        ]
-        
-        symbolic_score = sum(1 for keyword in symbolic_keywords if keyword in text_lower)
-        logical_score = sum(1 for keyword in logical_keywords if keyword in text_lower)
-        
-        # Classification logic
-        if symbolic_score > logical_score and symbolic_score >= 2:
-            return "symbolic"
-        elif logical_score > symbolic_score and logical_score >= 2:
-            return "logical"
-        else:
-            return "bridge"  # Mixed or unclear content goes to bridge memory
+        """Classify content via emergent centroids / measured bootstrap signals.
+
+        Replaces the old hardcoded keyword lists (which read Talk-page chatter
+        as 'symbolic' and decided content-free pages on noise). The full
+        result, including measured scores, is kept in _last_classification so
+        storage can persist the evidence for the migration engine.
+        """
+        from content_classifier import get_classifier
+        result = get_classifier(self.data_dir).classify(text)
+        self._last_classification = result
+        return result.label
     
     def _cognitive_health_check(self):
         """Check AI's cognitive health during learning."""
