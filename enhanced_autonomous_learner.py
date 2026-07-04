@@ -19,6 +19,7 @@ from collections import deque, defaultdict
 
 # Core system imports
 from unified_memory import get_unified_memory
+from persistent_url_queue import is_crawlable_url
 from memory_analytics import MemoryAnalyzer
 from evolution_anchor import EvolutionAnchor
 from web_parser import fetch_raw_html, extract_links_with_text_from_html, clean_html_to_text
@@ -873,8 +874,11 @@ class EnhancedAutonomousLearner:
             # Fetch content
             html_content = fetch_raw_html(url)
             if not html_content:
-                print("   ❌ Failed to fetch content")
-                self.crawl_orchestrator.record_failure(url_id, url, "Failed to fetch content")
+                # Pass the real error through so the queue can classify
+                # permanent (404/DNS) vs transient (timeout/5xx) failures
+                fetch_error = getattr(fetch_raw_html, 'last_error', None) or 'unknown error'
+                print(f"   ❌ Failed to fetch content ({fetch_error[:80]})")
+                self.crawl_orchestrator.record_failure(url_id, url, f"Failed to fetch content: {fetch_error}")
                 self._emit_crawl_event(url, 'fetch_failed', parent_url=url_info.get('source'))
                 return
             
@@ -1386,6 +1390,12 @@ class EnhancedAutonomousLearner:
         evaluated_links = []
         deferred_count = 0
         for link_url, anchor_text in links:
+            # Skip statically unfetchable/no-content URLs before any evaluation
+            # (also enforced at the persistent queue; this covers the
+            # in-session queue which bypasses it)
+            if not is_crawlable_url(link_url)[0]:
+                continue
+
             # Evaluate link for relevance and safety
             action, priority, reason = self._evaluate_link_for_learning(
                 link_url, anchor_text, parent_info

@@ -9,11 +9,14 @@ from urllib.parse import urljoin, urlparse
 DEFAULT_TIMEOUT = 10
 
 def fetch_raw_html(url, timeout=DEFAULT_TIMEOUT):
+    fetch_raw_html.last_error = None
     try:
         response = requests.get(url, timeout=timeout, headers={'User-Agent': 'CustomAIAutonomousLearner/1.0'})
         response.raise_for_status()
         return response.text
     except requests.exceptions.RequestException as e:
+        # Expose the real error so callers can classify permanent vs transient
+        fetch_raw_html.last_error = str(e)
         print(f"[WEB_PARSER] Error fetching raw HTML for {url}: {e}")
         return None
 
@@ -71,6 +74,41 @@ def sanitize_text_for_storage(text):
         text = re.sub(r'^From Wikipedia,?\s*the free encyclopedia\.?\s*', '', text).strip()
     elif 'From Wikipedia' in text[:300]:
         text = re.sub(r'^.*?From Wikipedia,?\s*the free encyclopedia\.?\s*', '', text, count=1).strip()
+
+    # Reject meta-page boilerplate: text that OPENS with a Wikipedia policy/
+    # maintenance banner is a Talk/Category/project page, not article content.
+    # (These were 30% of symbolic memory before this gate existed.)
+    meta_page_markers = (
+        "this article must adhere to the biographies of living persons",
+        "this is a tracking category",
+        "this page is an essay",
+        "essay on editing wikipedia",
+        "this is a wikipedia user page",
+        "this page is a redirect",
+        "pages in category",
+        "subcategories this category has",
+        "this category contains only the following",
+        "wikipedia:miscellany for deletion",
+    )
+    lowered_head = text[:250].lower()
+    if any(marker in lowered_head for marker in meta_page_markers):
+        return None
+    # Disambiguation page body
+    if re.search(r'\bmay (also )?refer to:', text[:200], re.IGNORECASE):
+        return None
+
+    # Strip cleanup banners that precede real article content
+    cleanup_banner_patterns = [
+        r'This article is written like [^.]*\.(\s*Please [^.]*\.)?',
+        r'This article needs additional citations[^.]*\.(\s*Please [^.]*\.)?',
+        r'This article has multiple issues\.[^.]*\.',
+        r'It contains the advice or opinions of one or more Wikipedia contributors\.[^.]*\.',
+        r'You can help Wikipedia by expanding it\.',
+        r'\(Learn how and when to remove this (template )?message\)',
+    ]
+    for pattern in cleanup_banner_patterns:
+        text = re.sub(pattern, ' ', text[:600], count=2) + text[600:]
+    text = text.strip()
 
     # Reject text under 20 meaningful characters
     if len(text) < 20:
