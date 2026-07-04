@@ -59,6 +59,92 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+# ============================================================================
+# URL CRAWLABILITY FILTER
+# Enforced at every enqueue point so unfetchable/no-content URLs never enter
+# the queue, regardless of which caller discovered them.
+# ============================================================================
+
+# MediaWiki non-article namespaces — navigation/meta pages, not knowledge content
+_WIKI_META_NAMESPACES = (
+    'category', 'talk', 'wikipedia', 'special', 'file', 'image', 'template',
+    'portal', 'help', 'draft', 'user', 'module', 'mediawiki', 'book',
+    'timedtext', 'gadget', 'gadget_definition',
+)
+
+# File extensions the text pipeline cannot parse
+_UNPARSEABLE_EXTENSIONS = (
+    '.pdf', '.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp', '.ico',
+    '.zip', '.gz', '.tar', '.bz2', '.7z', '.rar',
+    '.mp3', '.mp4', '.avi', '.mov', '.webm', '.ogg', '.wav',
+    '.ppt', '.pptx', '.doc', '.docx', '.xls', '.xlsx', '.csv',
+    '.css', '.js', '.woff', '.woff2', '.ttf',
+)
+
+# Pure redirect/resolver hosts — never serve content themselves
+_RESOLVER_HOSTS = ('doi.org', 'dx.doi.org')
+
+# Path fragments of CGI viewers/apps that never yield article text
+_UNFETCHABLE_PATH_FRAGMENTS = ('/cgi-bin/', 'jmol.php', 'action=edit', 'action=history')
+
+
+def is_crawlable_url(url: str) -> Tuple[bool, str]:
+    """Cheap static check: can this URL possibly yield storable text content?
+
+    Returns (True, '') or (False, reason). Operational filtering only —
+    judges fetchability and content format, never subject matter.
+    """
+    try:
+        parsed = urlparse(url)
+    except (ValueError, AttributeError):
+        return False, 'unparseable url'
+
+    if parsed.scheme not in ('http', 'https'):
+        return False, f'scheme {parsed.scheme or "none"}'
+
+    host = (parsed.netloc or '').lower()
+    path = (parsed.path or '').lower()
+
+    if host in _RESOLVER_HOSTS:
+        return False, 'redirect resolver host'
+
+    for fragment in _UNFETCHABLE_PATH_FRAGMENTS:
+        if fragment in path or fragment in (parsed.query or '').lower():
+            return False, f'unfetchable path ({fragment})'
+
+    for ext in _UNPARSEABLE_EXTENSIONS:
+        if path.endswith(ext):
+            return False, f'unparseable extension ({ext})'
+
+    # MediaWiki namespace pages: /wiki/Category:X, /wiki/Talk:X, /wiki/User_talk:X ...
+    if '/wiki/' in path:
+        page = path.split('/wiki/', 1)[1]
+        if ':' in page:
+            namespace = page.split(':', 1)[0].replace('%20', '_')
+            base_namespace = namespace[:-5] if namespace.endswith('_talk') else namespace
+            if base_namespace in _WIKI_META_NAMESPACES or namespace == 'talk':
+                return False, f'wiki meta namespace ({namespace})'
+        if '(disambiguation)' in page or '%28disambiguation%29' in page:
+            return False, 'disambiguation page'
+
+    return True, ''
+
+
+# Error-text markers meaning a retry can never succeed
+_PERMANENT_ERROR_MARKERS = (
+    '404', '403', '401', '410', '451',
+    'getaddrinfo failed', 'nameresolutionerror', 'name or service not known',
+    'certificate verify failed', 'unsupported url', 'invalid url',
+    'blocked by robots',
+)
+
+
+def is_permanent_error(error: str) -> bool:
+    """Classify an error message: permanent (don't retry) vs transient (retry)."""
+    lowered = (error or '').lower()
+    return any(marker in lowered for marker in _PERMANENT_ERROR_MARKERS)
+
+
 class PersistentURLQueue:
     """
     SQLite-backed priority queue for reliable URL crawling.
@@ -221,6 +307,11 @@ class PersistentURLQueue:
         Returns:
             True if added, False if already exists
         """
+        crawlable, filter_reason = is_crawlable_url(url)
+        if not crawlable:
+            logger.debug(f"Filtered at enqueue ({filter_reason}): {url}")
+            return False
+
         domain = self._get_domain(url)
         metadata_json = json.dumps(metadata) if metadata else None
 
@@ -263,6 +354,8 @@ class PersistentURLQueue:
         cursor = conn.cursor()
 
         for url, priority, depth in urls:
+            if not is_crawlable_url(url)[0]:
+                continue
             domain = self._get_domain(url)
 
             try:
@@ -303,6 +396,9 @@ class PersistentURLQueue:
         Returns:
             True if stored, False if URL already exists in queue
         """
+        if not is_crawlable_url(url)[0]:
+            return False
+
         domain = self._get_domain(url)
         meta = {}
         if reason:
@@ -465,7 +561,8 @@ class PersistentURLQueue:
 
         error_count = row[0] + 1
 
-        if error_count < self.MAX_RETRIES:
+        # Permanent errors (404, DNS failure, ...) can never succeed on retry
+        if error_count < self.MAX_RETRIES and not is_permanent_error(error):
             # Retry - reset to pending
             cursor.execute('''
                 UPDATE url_queue
@@ -486,6 +583,34 @@ class PersistentURLQueue:
 
         conn.commit()
         conn.close()
+
+    def prune_unfetchable(self) -> Dict[str, int]:
+        """Apply is_crawlable_url() to pending/deferred URLs, marking filtered
+        ones as failed. One-time hygiene after filter changes; safe to re-run."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute('SELECT id, url FROM url_queue WHERE status IN (?, ?)',
+                       (self.STATUS_PENDING, self.STATUS_DEFERRED))
+        rows = cursor.fetchall()
+
+        pruned_by_reason: Dict[str, int] = {}
+        pruned_ids = []
+        for url_id, url in rows:
+            crawlable, reason = is_crawlable_url(url)
+            if not crawlable:
+                pruned_ids.append((url_id, f'filtered: {reason}'))
+                bucket = reason.split('(')[0].strip()
+                pruned_by_reason[bucket] = pruned_by_reason.get(bucket, 0) + 1
+
+        cursor.executemany('''
+            UPDATE url_queue SET status = ?, last_error = ?, completed_timestamp = ?
+            WHERE id = ?
+        ''', [(self.STATUS_FAILED, err, time.time(), uid) for uid, err in pruned_ids])
+        conn.commit()
+        conn.close()
+
+        logger.info(f"Pruned {len(pruned_ids)}/{len(rows)} unfetchable URLs from queue")
+        return {'checked': len(rows), 'pruned': len(pruned_ids), 'by_reason': pruned_by_reason}
 
     def mark_blocked(self, url_id: int, reason: str = 'robots'):
         """
@@ -805,6 +930,9 @@ class PersistentURLQueue:
         if not ASYNC_AVAILABLE:
             raise RuntimeError("aiosqlite not available. Install with: pip install aiosqlite")
 
+        if not is_crawlable_url(url)[0]:
+            return False
+
         domain = self._get_domain(url)
         metadata_json = json.dumps(metadata) if metadata else None
 
@@ -950,7 +1078,7 @@ class PersistentURLQueue:
 
             error_count = row[0] + 1
 
-            if error_count < self.MAX_RETRIES:
+            if error_count < self.MAX_RETRIES and not is_permanent_error(error):
                 # Retry - reset to pending
                 await db.execute('''
                     UPDATE url_queue
