@@ -15,7 +15,7 @@ import hashlib
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Any
-from unified_memory import get_unified_memory
+from unified_memory import get_unified_memory, UnifiedMemory
 
 class CognitiveSnapshot:
     """A moment in time - who the AI was before it dared to change"""
