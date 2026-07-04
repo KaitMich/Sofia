@@ -422,43 +422,31 @@ class LearningProgressionTracker:
         understanding = self.conceptual_understanding[concept]
         current_level = understanding.understanding_level
         
-        # Base insight about improvement
+        # Base insight about improvement — always carries the measured change
         if understanding_change > 0.3:
-            insight = f"I understand {concept} much better now - this was a breakthrough moment"
+            insight = f"My understanding of {concept} jumped {understanding_change:+.2f} in one step (now {current_level:.2f}) - an unusually large measured gain"
         elif understanding_change > 0.1:
-            insight = f"My understanding of {concept} has improved significantly"
+            insight = f"My understanding of {concept} improved {understanding_change:+.2f} (now {current_level:.2f})"
         elif understanding_change > 0.05:
-            insight = f"I have a clearer grasp of {concept} now"
+            insight = f"My understanding of {concept} edged up {understanding_change:+.2f} (now {current_level:.2f})"
         else:
-            insight = f"My understanding of {concept} continues to develop"
+            insight = f"My understanding of {concept} changed {understanding_change:+.2f} (now {current_level:.2f})"
         
-        # Add depth information
-        depth_level = understanding.depth_level
-        if depth_level == "expert":
-            insight += " - I now have expert-level mastery"
-        elif depth_level == "conceptual":
-            insight += " - I now understand the underlying principles"
-        elif depth_level == "functional":
-            insight += " - I can now apply this knowledge practically"
-        
+        # Add depth classification (threshold label, not a mastery claim)
+        observations = len(understanding.understanding_trajectory)
+        insight += f" - depth classified as '{understanding.depth_level}' after {observations} observations"
+
         # Add comparison to previous state
-        if len(understanding.understanding_trajectory) > 1:
+        if observations > 1:
             previous_level = understanding.understanding_trajectory[-2]["understanding_level"]
             improvement = current_level - previous_level
-            
-            if improvement > 0.2:
-                insight += f". This represents substantial growth from my previous understanding"
-            elif improvement > 0.1:
-                insight += f". I've made solid progress since I first encountered this concept"
-        
-        # Add learning pattern information
-        if milestone.milestone_type == "breakthrough":
-            insight += ". This breakthrough opened up new ways of thinking about the topic"
-        elif milestone.milestone_type == "connection":
-            insight += ". I can now see how this connects to other areas of my knowledge"
-        elif milestone.milestone_type == "application":
-            insight += ". I now see practical applications I hadn't considered before"
-        
+            if abs(improvement) > 0.05:
+                insight += f". Change since previous observation: {improvement:+.2f}"
+
+        # Add milestone classification
+        if milestone.milestone_type:
+            insight += f". Milestone type: {milestone.milestone_type}"
+
         return insight
     
     def _update_understanding_map(self, concept: str, learning_context: Dict[str, Any]):
@@ -586,17 +574,18 @@ class LearningProgressionTracker:
         understanding_improvement = understanding.understanding_level - past_understanding
         confidence_improvement = understanding.confidence_level - past_confidence
         
-        # Generate comparison insight
+        # Generate comparison insight — always carries the measured trajectory
+        trajectory = f"({past_understanding:.2f} then, {understanding.understanding_level:.2f} now)"
         if understanding_improvement > 0.2:
-            comparison_insight = f"I understand {concept} much better now than I did before"
+            comparison_insight = f"My understanding of {concept} rose substantially {trajectory}"
         elif understanding_improvement > 0.1:
-            comparison_insight = f"My understanding of {concept} has improved noticeably"
+            comparison_insight = f"My understanding of {concept} improved {trajectory}"
         elif understanding_improvement > 0.05:
-            comparison_insight = f"I have a somewhat better grasp of {concept} now"
+            comparison_insight = f"My understanding of {concept} improved slightly {trajectory}"
         elif abs(understanding_improvement) <= 0.05:
-            comparison_insight = f"My understanding of {concept} has remained stable"
+            comparison_insight = f"My understanding of {concept} has remained stable {trajectory}"
         else:
-            comparison_insight = f"I'm still working to understand {concept} as well as I did before"
+            comparison_insight = f"My measured understanding of {concept} declined {trajectory}"
         
         return {
             "concept": concept,
@@ -1024,9 +1013,9 @@ class LearningProgressionTracker:
         message = f"{base_message} regarding {milestone.concept}. {milestone.description}"
         
         if milestone.understanding_change > 0.2:
-            message += " This was a significant breakthrough that substantially advanced my understanding."
+            message += f" Measured understanding change: {milestone.understanding_change:+.2f} - a large single-step gain."
         elif milestone.understanding_change > 0.1:
-            message += " This represents solid progress in my learning."
+            message += f" Measured understanding change: {milestone.understanding_change:+.2f}."
         
         return message
     
@@ -1211,11 +1200,11 @@ class LearningProgressionTracker:
             change = improvement["improvement"]
             
             if change > 0.2:
-                insights.append(f"I understand {concept} much better now - there's been a significant breakthrough")
+                insights.append(f"My understanding of {concept} improved {change:+.2f} recently - a large measured gain")
             elif change > 0.1:
-                insights.append(f"I understand {concept} better now - my grasp has noticeably improved")
+                insights.append(f"My understanding of {concept} improved {change:+.2f} recently")
             elif change > 0.05:
-                insights.append(f"I understand {concept} somewhat better now")
+                insights.append(f"My understanding of {concept} improved slightly ({change:+.2f})")
         
         # Add milestone-based insights
         recent_milestones = [m for m in self.learning_milestones if self._is_recent(m.timestamp, 3)]

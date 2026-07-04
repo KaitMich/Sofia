@@ -456,7 +456,11 @@ class EnhancedAutonomousLearner:
         
         # Reset session stats
         self.session_stats = {k: 0 for k in self.session_stats}
-        
+
+        # Snapshot store sizes so the session summary reports measured deltas,
+        # not internal counters that can drift from what was actually stored
+        self._session_start_counts = self._snapshot_store_counts()
+
         start_time = time.time()
         
         try:
@@ -1250,7 +1254,7 @@ class EnhancedAutonomousLearner:
             # Store in appropriate memory with learning context
             if content_type == "symbolic":
                 # Store as symbolic memory for meaningful/philosophical content
-                print(f"   💭 Storing in SYMBOLIC memory (meaning-based)")
+                print(f"   💭 Classified SYMBOLIC — stored in BRIDGE intake (migration places it later)")
                 item = {
                     'text': sanitized_text,
                     'source': source_url,
@@ -1262,7 +1266,7 @@ class EnhancedAutonomousLearner:
                 memory_result = self.unified_memory.store_decision(item, "FOLLOW_SYMBOLIC")
             elif content_type == "logical":
                 # Store as logic memory for analytical/research content
-                print(f"   🔍 Storing in LOGIC memory (analysis-based)")
+                print(f"   🔍 Classified LOGIC — stored in BRIDGE intake (migration places it later)")
                 item = {
                     'text': sanitized_text,
                     'source': source_url,
@@ -1274,7 +1278,7 @@ class EnhancedAutonomousLearner:
                 memory_result = self.unified_memory.store_decision(item, "FOLLOW_LOGIC")
             else:
                 # Store as bridge memory — unresolved content awaiting classification
-                print(f"   🌉 Storing in BRIDGE memory (unresolved, awaiting context)")
+                print(f"   🌉 Classified BRIDGE (unresolved) — stored in BRIDGE intake")
                 item = {
                     'text': sanitized_text,
                     'source': source_url,
@@ -1726,16 +1730,37 @@ class EnhancedAutonomousLearner:
             print(f"   ❌ Self-correction error: {str(e)[:50]}...")
             # Don't let self-correction errors break learning
     
+    def _snapshot_store_counts(self):
+        """Measure current store sizes (logic/symbolic/bridge/symbols) for delta reporting."""
+        counts = {'logic': 0, 'symbolic': 0, 'bridge': 0, 'symbols': 0}
+        try:
+            tri = self.unified_memory.get_counts()
+            for k in ('logic', 'symbolic', 'bridge'):
+                counts[k] = tri.get(k, 0)
+        except Exception:
+            pass
+        try:
+            counts['symbols'] = len(self.unified_memory.symbol_memory.load_symbol_memory())
+        except Exception:
+            pass
+        return counts
+
     def _finalize_learning_session(self, elapsed_time: float):
         """Finalize and save the learning session."""
         print(f"\\n🎯 MASSIVE LEARNING SESSION COMPLETE")
         print("=" * 50)
-        
+
         # Final stats
+        end_counts = self._snapshot_store_counts()
+        start_counts = getattr(self, '_session_start_counts', None) or dict(end_counts)
+        store_delta = {k: end_counts[k] - start_counts.get(k, end_counts[k]) for k in end_counts}
+        self._session_store_delta = store_delta
         print(f"⏱️ Duration: {elapsed_time/60:.1f} minutes")
         print(f"📊 URLs processed: {self.session_stats['urls_processed']}")
-        print(f"🧠 Chunks learned: {self.session_stats['chunks_learned']}")
-        print(f"💡 Symbols discovered: {self.session_stats['symbols_discovered']}")
+        print(f"🧠 Stored this session (measured): {store_delta['logic']:+d} logic, "
+              f"{store_delta['symbolic']:+d} symbolic, {store_delta['bridge']:+d} bridge")
+        print(f"💡 New symbols (measured): {store_delta['symbols']:+d}"
+              f" (symbol generation attempts: {self.session_stats['symbols_discovered']})")
         print(f"🔗 Links followed: {self.session_stats['links_followed']}")
         print(f"\n🛡️ LAYERED SECURITY STATS:")
         print(f"   • Robots.txt blocks: {self.session_stats['robots_blocks']}")
@@ -1765,6 +1790,7 @@ class EnhancedAutonomousLearner:
             'completed_at': datetime.now().isoformat(),
             'elapsed_time_minutes': elapsed_time / 60,
             'stats': self.session_stats,
+            'measured_store_deltas': getattr(self, '_session_store_delta', {}),
             'final_memory_stats': {**final_stats, 'unified_total': unified},
             'processed_domains': dict(self.domain_stats)
         }
