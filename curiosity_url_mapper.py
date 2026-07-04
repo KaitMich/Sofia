@@ -56,7 +56,10 @@ class CuriosityURLMapper:
         }
 
     def goals_to_seed_urls(self, goals: List[Dict[str, Any]], max_urls: int = 10) -> List[Tuple[str, float]]:
-        """
+        """DEPRECATED (July 2026): URL guessing — kept only for test compatibility.
+        Live targeting uses rank_candidates_by_curiosity over discovered links.
+
+        
         Convert learning goals to prioritized seed URLs.
         Extracts concepts from goal descriptions and generates Wikipedia URLs.
 
@@ -95,7 +98,10 @@ class CuriosityURLMapper:
         return result[:max_urls]
 
     def knowledge_gaps_to_urls(self, gaps: List[str], max_urls: int = 5) -> List[Tuple[str, float]]:
-        """
+        """DEPRECATED (July 2026): URL guessing — kept only for test compatibility.
+        Live targeting uses rank_candidates_by_curiosity over discovered links.
+
+        
         Convert knowledge gaps to URLs that could fill them.
 
         Args:
@@ -127,7 +133,10 @@ class CuriosityURLMapper:
         return result[:max_urls]
 
     def drive_to_exploration_urls(self, drive_name: str, satisfaction: float) -> List[Tuple[str, float]]:
-        """
+        """DEPRECATED (July 2026): URL guessing — kept only for test compatibility.
+        Live targeting uses rank_candidates_by_curiosity over discovered links.
+
+        
         Generate URLs to satisfy an unsatisfied drive.
 
         CHANGED March 27, 2026: No longer maps drives to hardcoded topics.
@@ -193,60 +202,114 @@ class CuriosityURLMapper:
         capitalized = [w.capitalize() for w in words]
         return '_'.join(capitalized)
 
+    @staticmethod
+    def _candidate_text(candidate: Dict[str, Any]) -> str:
+        """Text to embed for a candidate URL: its anchor text, or the
+        de-slugged URL tail (mechanical transform, not content knowledge)."""
+        anchor = candidate.get('anchor_text')
+        if anchor and len(anchor.strip()) >= 3:
+            return anchor.strip()
+        from urllib.parse import urlparse, unquote
+        tail = unquote(urlparse(candidate.get('url', '')).path).rstrip('/').rsplit('/', 1)[-1]
+        return tail.replace('_', ' ').replace('-', ' ').strip()
+
+    def rank_candidates_by_curiosity(self, curiosity_texts: List[str],
+                                     candidates: List[Dict[str, Any]],
+                                     max_urls: int = 20) -> List[Tuple[str, float, str]]:
+        """Rank discovered candidate URLs by cosine similarity to the
+        curiosity centroid (mean unit embedding of goal/gap/bridge texts).
+
+        This replaces string-formatting concepts into Wikipedia URL guesses
+        (which produced 404s like /wiki/Deepen). Targets can only be links
+        Sofia actually discovered; curiosity decides which of them matter.
+        """
+        if not curiosity_texts or not candidates:
+            return []
+        import numpy as np
+        from vector_engine import fuse_vectors
+
+        unit_vecs = []
+        for text in curiosity_texts[:40]:
+            vec, _ = fuse_vectors(text[:500])
+            if vec is None:
+                continue
+            v = np.asarray(vec, dtype=np.float32)
+            norm = np.linalg.norm(v)
+            if norm > 0:
+                unit_vecs.append(v / norm)
+        if not unit_vecs:
+            return []
+        centroid = np.mean(np.stack(unit_vecs), axis=0)
+        norm = np.linalg.norm(centroid)
+        if norm == 0:
+            return []
+        centroid /= norm
+
+        scored = []
+        for cand in candidates:
+            text = self._candidate_text(cand)
+            if len(text) < 3:
+                continue
+            vec, _ = fuse_vectors(text[:300])
+            if vec is None:
+                continue
+            v = np.asarray(vec, dtype=np.float32)
+            v_norm = np.linalg.norm(v)
+            if v_norm == 0:
+                continue
+            similarity = float((v / v_norm) @ centroid)
+            # map cosine [-1,1] -> [0,1] priority
+            scored.append((cand['url'], round((similarity + 1) / 2, 3), 'embedding_curiosity'))
+
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return scored[:max_urls]
+
     def generate_autonomous_seed_batch(self, curiosity_state: Dict[str, Any],
                                       progression_state: Dict[str, Any],
-                                      max_total_urls: int = 20) -> List[Tuple[str, float, str]]:
+                                      max_total_urls: int = 20,
+                                      candidates: List[Dict[str, Any]] = None,
+                                      extra_curiosity_texts: List[str] = None) -> List[Tuple[str, float, str]]:
         """
-        Generate a batch of seed URLs from curiosity and progression state.
+        Select seed URLs by ranking Sofia's own discovered links against her
+        curiosity centroid.
 
-        Primary entry point for autonomous learning. After hidden curriculum
-        removal, this generates URLs ONLY from:
-        1. Active learning goals (text-based concept extraction)
-        2. Knowledge gaps (from progression tracker)
+        The curiosity signal is built from real text: active goal
+        descriptions, knowledge-gap texts, and (via extra_curiosity_texts)
+        recent bridge residue — the content she could not yet resolve.
+        Candidates are links she discovered herself (queue pending/deferred).
 
-        Drive-based generation is disabled — drives alone cannot determine
-        URLs without existing knowledge to build on.
-
-        If no goals or gaps exist (empty knowledge state), returns empty list.
-        The caller should check for this and prompt for seed coordinates.
+        URL guessing is GONE: the old path string-formatted goal concepts
+        into https://en.wikipedia.org/wiki/{concept}, generating 404s like
+        /wiki/Deepen and /wiki/Behind. If there are no discovered candidates
+        or no curiosity texts, this returns [] and the caller falls back to
+        queue priority order or waits for seed coordinates.
 
         Returns:
-            List of (url, priority, source) tuples, or empty list if no
-            knowledge state exists to generate from.
+            List of (url, priority, source) tuples, possibly empty.
         """
-        all_urls = []
+        curiosity_texts: List[str] = []
 
-        # 1. URLs from active learning goals (highest priority)
-        active_goals = curiosity_state.get('active_learning_goals', [])
-        if active_goals:
-            goal_urls = self.goals_to_seed_urls(active_goals, max_urls=10)
-            all_urls.extend([(url, priority, 'learning_goal') for url, priority in goal_urls])
+        for goal in curiosity_state.get('active_learning_goals', []) or []:
+            description = goal.get('description') if isinstance(goal, dict) else None
+            if description:
+                curiosity_texts.append(str(description))
 
-        # 2. URLs from knowledge gaps (high priority)
         knowledge_gaps = (
             progression_state.get('knowledge_gaps', []) or
             progression_state.get('gaps_identified', []) or
             progression_state.get('learning_gaps', []) or
             []
         )
-        if knowledge_gaps:
-            gap_urls = self.knowledge_gaps_to_urls(knowledge_gaps, max_urls=5)
-            all_urls.extend([(url, priority, 'knowledge_gap') for url, priority in gap_urls])
+        curiosity_texts.extend(str(gap) for gap in knowledge_gaps if gap)
 
-        # 3. Drive-based generation DISABLED — was hidden curriculum
-        # Drives at 0.0 satisfaction with no knowledge state cannot determine
-        # what to explore. Seed coordinates fill this role for first session.
+        if extra_curiosity_texts:
+            curiosity_texts.extend(t for t in extra_curiosity_texts if t)
 
-        # Remove duplicates, keeping highest priority
-        seen_urls = {}
-        for url, priority, source in all_urls:
-            if url not in seen_urls or priority > seen_urls[url][0]:
-                seen_urls[url] = (priority, source)
+        if not candidates or not curiosity_texts:
+            return []
 
-        result = [(url, priority, source) for url, (priority, source) in seen_urls.items()]
-        result.sort(key=lambda x: x[1], reverse=True)
-
-        return result[:max_total_urls]
+        return self.rank_candidates_by_curiosity(curiosity_texts, candidates,
+                                                 max_urls=max_total_urls)
 
 
 if __name__ == "__main__":

@@ -22,6 +22,19 @@ from curiosity_url_mapper import CuriosityURLMapper
 from learning_progression_tracker import LearningProgressionTracker
 
 
+
+def _discovered_candidates():
+    """Simulated persistent-queue candidates: links Sofia discovered herself."""
+    return [
+        {"url": "https://en.wikipedia.org/wiki/Understanding", "anchor_text": "understanding and comprehension in cognition", "priority": 10},
+        {"url": "https://en.wikipedia.org/wiki/Knowledge", "anchor_text": "knowledge acquisition and epistemology", "priority": 9},
+        {"url": "https://en.wikipedia.org/wiki/Learning", "anchor_text": "learning processes and skill formation", "priority": 8},
+        {"url": "https://en.wikipedia.org/wiki/Curiosity", "anchor_text": "curiosity as a drive for exploration", "priority": 7},
+        {"url": "https://en.wikipedia.org/wiki/Pattern_recognition", "anchor_text": "pattern recognition in cognitive systems", "priority": 6},
+        {"url": "https://en.wikipedia.org/wiki/Ice_hockey", "anchor_text": "professional ice hockey league standings", "priority": 90},
+        {"url": "https://en.wikipedia.org/wiki/Lawn_care", "anchor_text": "lawn care and grass fertilizer schedules", "priority": 85},
+    ]
+
 def test_autonomous_url_generation():
     """Test autonomous URL generation from curiosity alone."""
     print("\n" + "=" * 70)
@@ -47,22 +60,28 @@ def test_autonomous_url_generation():
     # Get progression state
     progression_state = tracker.export_for_consciousness_system()
 
-    # Generate autonomous URL batch
-    url_batch = mapper.generate_autonomous_seed_batch(
+    # NEW CONTRACT (July 2026): without discovered candidates, no URLs are
+    # fabricated — the old path string-formatted goal words into wiki URLs
+    empty_batch = mapper.generate_autonomous_seed_batch(
         curiosity_state=curiosity_state,
         progression_state=progression_state,
         max_total_urls=10
     )
+    assert empty_batch == [], "Must not fabricate URLs without discovered candidates"
 
-    print(f"\n✅ Generated {len(url_batch)} autonomous URLs")
+    # With discovered candidates, goals rank them by embedding similarity
+    url_batch = mapper.generate_autonomous_seed_batch(
+        curiosity_state=curiosity_state,
+        progression_state=progression_state,
+        max_total_urls=10,
+        candidates=_discovered_candidates()
+    )
 
-    # Display results
-    print(f"\n   Top 5 URLs:")
+    print(f"\n✅ Ranked {len(url_batch)} autonomous URLs from discovered candidates")
     for i, (url, priority, source) in enumerate(url_batch[:5], 1):
         print(f"      {i}. [{priority:.2f}] ({source:20s}) {url}")
 
-    # Verify URLs are valid
-    assert len(url_batch) > 0, "Should generate at least 1 URL"
+    assert len(url_batch) > 0, "Should rank at least 1 discovered URL"
     assert all(url.startswith('http') for url, _, _ in url_batch), "All URLs should be valid HTTP/HTTPS"
     assert all(0 <= priority <= 1.0 for _, priority, _ in url_batch), "Priorities should be 0-1.0"
 
@@ -90,20 +109,20 @@ def test_curiosity_state_influence():
     url_batch = mapper.generate_autonomous_seed_batch(
         curiosity_state=curiosity_state,
         progression_state=progression_state,
-        max_total_urls=15
+        max_total_urls=15,
+        candidates=_discovered_candidates()
     )
 
-    # Check if URLs related to 'understanding' drive are prioritized
-    understanding_urls = [
-        (url, priority, source) for url, priority, source in url_batch
-        if 'drive_understanding' in source or 'learning_goal' in source
-    ]
+    print(f"\n✅ Ranked {len(url_batch)} discovered URLs")
+    for url, priority, _ in url_batch[:4]:
+        print(f"      [{priority:.2f}] {url}")
 
-    print(f"\n✅ Generated {len(url_batch)} total URLs")
-    print(f"✅ {len(understanding_urls)} URLs related to unsatisfied 'understanding' drive")
-
-    # Verify influence
-    assert len(understanding_urls) > 0, "Should generate URLs for unsatisfied drives"
+    # Influence check: cognition-related candidates must outrank unrelated
+    # high-queue-priority ones (hockey at priority 90, lawn care at 85)
+    assert len(url_batch) > 0, "Should rank discovered candidates"
+    top3 = " ".join(url for url, _, _ in url_batch[:3])
+    assert "Ice_hockey" not in top3 and "Lawn_care" not in top3, \
+        "Curiosity must outrank stale queue priority"
 
     # Check priority ordering
     priorities = [p for _, p, _ in url_batch]
@@ -222,9 +241,10 @@ def test_full_autonomous_cycle():
     url_batch = mapper.generate_autonomous_seed_batch(
         curiosity_state=curiosity_state,
         progression_state=progression_state,
-        max_total_urls=20
+        max_total_urls=20,
+        candidates=_discovered_candidates()
     )
-    print(f"   ✅ Generated {len(url_batch)} autonomous URLs")
+    print(f"   ✅ Ranked {len(url_batch)} autonomous URLs from discovered links")
 
     print("\n5️⃣ URLs are prioritized by internal drives...")
     print(f"   Top 3 autonomous targets:")
@@ -238,10 +258,10 @@ def test_full_autonomous_cycle():
     assert len(url_batch) >= 5, "Should generate sufficient URLs for autonomous learning"
     assert len(url_batch) <= 20, "Should respect max_total_urls limit"
 
-    # Check diversity of sources
+    # All targets come from embedding ranking over discovered links
     sources = set(source for _, _, source in url_batch)
     print(f"   ✅ URL sources: {sources}")
-    assert len(sources) >= 1, "Should have diverse URL sources (goals, gaps, drives)"
+    assert sources == {'embedding_curiosity'}, "Targets must come from embedding ranking"
 
     # Check priority distribution
     priorities = [p for _, p, _ in url_batch]

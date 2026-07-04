@@ -690,10 +690,16 @@ def test_group_a_complete_integration():
 
 def test_web_learning():
     """Test script for web learning with simple URLs
-    
+
     Source: test_web_learning.py
     """
-    
+    import os
+    import pytest
+    if os.environ.get("SOFIA_ALLOW_LIVE_CRAWL") != "1":
+        pytest.skip("Live web crawl writes to production data/ — set "
+                    "SOFIA_ALLOW_LIVE_CRAWL=1 to run deliberately "
+                    "(contaminated blank-start v2 on 2026-07-04)")
+
     try:
         from enhanced_autonomous_learner import start_massive_web_learning
         

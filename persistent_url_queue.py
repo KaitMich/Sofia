@@ -288,6 +288,37 @@ class PersistentURLQueue:
             for row in rows
         ]
 
+    def peek_candidates(self, limit: int = 150) -> List[Dict]:
+        """Read-only sample of pending+deferred URLs with anchor text.
+
+        Feeds embedding-based curiosity targeting: these are links Sofia
+        herself discovered in prior sessions, with the anchor text they
+        were discovered under (when recorded at defer time).
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT url, priority, depth, domain, metadata
+            FROM url_queue
+            WHERE status IN (?, ?)
+            ORDER BY priority DESC, added_timestamp ASC
+            LIMIT ?
+        ''', (self.STATUS_PENDING, self.STATUS_DEFERRED, limit))
+        rows = cursor.fetchall()
+        conn.close()
+
+        candidates = []
+        for url, priority, depth, domain, metadata in rows:
+            anchor = None
+            if metadata:
+                try:
+                    anchor = json.loads(metadata).get('anchor_text')
+                except (ValueError, AttributeError):
+                    pass
+            candidates.append({'url': url, 'priority': priority, 'depth': depth,
+                               'domain': domain, 'anchor_text': anchor})
+        return candidates
+
     # ========================================================================
     # SYNC METHODS (Original - Preserved for Backwards Compatibility)
     # ========================================================================
