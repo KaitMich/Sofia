@@ -218,10 +218,14 @@ class TrustDatabase:
         if result:
             trust_score = result[0]
         else:
-            # First time seeing this domain - initialize at neutral
-            trust_score = self.neutral_trust
+            # First time seeing this domain — initialize with TLD/seed priors
+            # and return what was actually seeded (previously returned neutral
+            # on first sight even when the seed said otherwise)
             self._init_domain(cursor, domain)
             conn.commit()
+            cursor.execute('SELECT trust_score FROM domain_trust WHERE domain = ?', (domain,))
+            seeded = cursor.fetchone()
+            trust_score = seeded[0] if seeded else self.neutral_trust
 
         conn.close()
         return trust_score
@@ -621,10 +625,16 @@ class TrustDatabase:
         """
         # If it looks like a URL, parse it
         if '://' in domain_or_url:
-            return urlparse(domain_or_url).netloc.lower()
+            domain = urlparse(domain_or_url).netloc.lower()
+        else:
+            domain = domain_or_url.lower().strip()
 
-        # Otherwise treat as domain
-        return domain_or_url.lower().strip()
+        # www.example.com and example.com are the same publisher — without
+        # this, seeded trust for example.com never matches www lookups and
+        # the two rows accumulate divergent trust histories
+        if domain.startswith('www.'):
+            domain = domain[4:]
+        return domain
 
 
 # Testing function
