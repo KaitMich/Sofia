@@ -338,12 +338,33 @@ class EnhancedAutonomousLearner:
         # Get current learning progression state
         progression_state = self.progression_tracker.export_for_consciousness_system()
 
-        # Generate prioritized URLs using the curiosity → URL mapper
+        # Candidate pool: links Sofia herself discovered in prior sessions
+        try:
+            candidates = self.crawl_orchestrator.url_queue.peek_candidates(limit=150)
+        except Exception:
+            candidates = []
+
+        # Bridge residue is her strongest curiosity signal — content she
+        # could not yet resolve. Recent samples steer the curiosity centroid.
+        bridge_texts = []
+        try:
+            bridge_texts = [item.get('text', '')[:300]
+                            for item in list(self.unified_memory.bridge_memory)[-20:]
+                            if item.get('text')]
+        except Exception:
+            pass
+
+        # Rank discovered candidates against the curiosity centroid
         url_batch = self.url_mapper.generate_autonomous_seed_batch(
             curiosity_state=curiosity_state,
             progression_state=progression_state,
-            max_total_urls=max_urls
+            max_total_urls=max_urls,
+            candidates=candidates,
+            extra_curiosity_texts=bridge_texts,
         )
+        if url_batch:
+            print(f"   Ranked {len(candidates)} discovered links against curiosity centroid "
+                  f"({len(bridge_texts)} bridge texts in signal)")
 
         # Fallback: if no URLs generated from goals/gaps, check persistent queue.
         # These are URLs Sofia herself queued during prior sessions —
