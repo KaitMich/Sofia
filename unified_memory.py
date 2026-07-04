@@ -12,6 +12,7 @@ This replaces 6 separate memory files with a single, cohesive system.
 """
 
 import json
+import re
 import shutil
 import numpy as np
 import hashlib
@@ -60,6 +61,20 @@ class TripartiteMemory:
         self.logic_memory = self._load_safe("logic_memory.json")
         self.symbolic_memory = self._load_safe("symbolic_memory.json")
         self.bridge_memory = self._load_safe("bridge_memory.json")
+        self._rebuild_text_index()
+
+    @staticmethod
+    def _text_key(text):
+        """Hash of whitespace/case-normalized text — near-duplicate identity."""
+        normalized = re.sub(r'\s+', ' ', (text or '').lower()).strip()
+        return hashlib.md5(normalized.encode('utf-8')).hexdigest()
+
+    def _rebuild_text_index(self):
+        """Rebuild the normalized-text dedup index over all three stores."""
+        self._text_index = {}
+        for store in (self.logic_memory, self.symbolic_memory, self.bridge_memory):
+            for existing_item in store:
+                self._text_index.setdefault(self._text_key(existing_item.get('text', '')), existing_item)
         
     def _load_safe(self, filename):
         """Load with backup recovery and error handling"""
@@ -129,15 +144,16 @@ class TripartiteMemory:
             except Exception:
                 pass  # Embedding is computed lazily if not available now
 
-            # Check for duplicates across ALL stores (not just target)
-            item_text = item.get('text', '')
-            for store in [self.bridge_memory, self.logic_memory, self.symbolic_memory]:
-                for existing_item in store:
-                    if existing_item.get('text', '') == item_text:
-                        existing_item['last_updated'] = item['stored_at']
-                        return
+            # Near-duplicate check across ALL stores via normalized-text index
+            # (catches whitespace/case variants the old exact match missed, in O(1))
+            key = self._text_key(item.get('text', ''))
+            existing_item = self._text_index.get(key)
+            if existing_item is not None:
+                existing_item['last_updated'] = item['stored_at']
+                return
 
             # All new items go to bridge — migration engine handles placement
+            self._text_index[key] = item
             self.bridge_memory.append(item)
             return  # Explicit return after bridge append
 
@@ -210,7 +226,8 @@ class TripartiteMemory:
             self.logic_memory = []
             self.symbolic_memory = []
             self.bridge_memory = []
-    
+            self._rebuild_text_index()
+
     def remove_duplicates(self):
         """Remove duplicate entries from all memory stores based on text content"""
         with self.lock:
@@ -218,32 +235,33 @@ class TripartiteMemory:
             self.logic_memory = self._deduplicate_memory(self.logic_memory)
             self.symbolic_memory = self._deduplicate_memory(self.symbolic_memory)
             self.bridge_memory = self._deduplicate_memory(self.bridge_memory)
-            
+            self._rebuild_text_index()
+
             # Save cleaned memories
             self.save_all()
-            
+
             return self.get_counts()
-    
+
     def _deduplicate_memory(self, memory_list):
-        """Remove duplicates from a memory list, keeping the most recent"""
+        """Remove near-duplicates from a memory list, keeping the most recent"""
         seen_texts = {}
         deduplicated = []
-        
+
         for item in memory_list:
-            text = item.get('text', '')
-            if text not in seen_texts:
-                seen_texts[text] = item
+            text_key = self._text_key(item.get('text', ''))
+            if text_key not in seen_texts:
+                seen_texts[text_key] = item
                 deduplicated.append(item)
             else:
                 # Keep the one with the most recent timestamp
-                existing_time = seen_texts[text].get('stored_at', '')
+                existing_time = seen_texts[text_key].get('stored_at', '')
                 current_time = item.get('stored_at', '')
                 if current_time > existing_time:
                     # Replace with more recent version
-                    idx = deduplicated.index(seen_texts[text])
+                    idx = deduplicated.index(seen_texts[text_key])
                     deduplicated[idx] = item
-                    seen_texts[text] = item
-        
+                    seen_texts[text_key] = item
+
         return deduplicated
 
 # ============================================================================
@@ -623,7 +641,11 @@ class VectorMemory:
         self.data_dir = Path(data_dir)
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.file_path = self.data_dir / "vector_memory.json"
-        
+        self.backup_path = self.data_dir / "vector_memory.json.backup"
+        # RAM cache of (file mtime, entries, normalized matrix, row->entry map);
+        # mtime keying keeps multiple instances and processes coherent
+        self._matrix_cache = None
+
         # Initialize security components
         try:
             self.quarantine = UserMemoryQuarantine()
@@ -636,20 +658,29 @@ class VectorMemory:
             self.viz_prep = None
 
     def _load_memory(self) -> List[Dict[str, Any]]:
-        """Load vector memory from disk"""
-        if self.file_path.exists() and self.file_path.stat().st_size > 0:
+        """Load vector memory from disk, recovering from backup on corruption"""
+        for path in (self.file_path, self.backup_path):
             try:
-                with open(self.file_path, "r", encoding="utf-8") as f:
-                    return json.load(f)
-            except json.JSONDecodeError:
-                print(f"⚠️ Vector memory file corrupted, starting fresh.")
-                return []
+                if path.exists() and path.stat().st_size > 0:
+                    with open(path, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    if path == self.backup_path:
+                        print("🔄 Recovered vector memory from backup")
+                        shutil.copy2(self.backup_path, self.file_path)
+                    return data
+            except (json.JSONDecodeError, OSError) as e:
+                print(f"⚠️ Error loading {path.name}: {e}")
         return []
 
     def _save_memory(self, memory_data: List[Dict[str, Any]]):
-        """Save vector memory to disk"""
-        with open(self.file_path, "w", encoding="utf-8") as f:
+        """Atomic save (temp + rename) with backup of the previous good state"""
+        temp = self.file_path.with_suffix('.tmp')
+        with open(temp, "w", encoding="utf-8") as f:
             json.dump(memory_data, f, indent=2, ensure_ascii=False)
+        if self.file_path.exists() and self.file_path.stat().st_size > 0:
+            shutil.copy2(self.file_path, self.backup_path)
+        temp.replace(self.file_path)
+        self._matrix_cache = None
 
     def store_vector(self, text: str, source_url: Optional[str] = None,
                      source_type: str = "unknown", learning_phase: int = 0,
@@ -731,44 +762,72 @@ class VectorMemory:
             "message": "Vector stored successfully"
         }
 
+    def _get_matrix(self):
+        """Entries plus row-normalized embedding matrix, cached on file mtime.
+
+        Loading and normalizing happens once per file change instead of once
+        per query; cosine similarity then reduces to one matrix-vector product.
+        """
+        mtime = self.file_path.stat().st_mtime_ns if self.file_path.exists() else -1
+        if self._matrix_cache is not None and self._matrix_cache[0] == mtime:
+            return self._matrix_cache[1], self._matrix_cache[2], self._matrix_cache[3]
+
+        memory = self._load_memory()
+        rows, row_entries = [], []
+        expected_dim = None
+        for entry in memory:
+            vec = entry.get('vector')
+            if not vec:
+                continue
+            if expected_dim is None:
+                expected_dim = len(vec)
+            if len(vec) != expected_dim:
+                continue  # skip malformed rows rather than fail the whole matrix
+            rows.append(vec)
+            row_entries.append(entry)
+
+        if rows:
+            matrix = np.asarray(rows, dtype=np.float32)
+            norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+            norms[norms == 0] = 1.0
+            matrix = matrix / norms
+        else:
+            matrix = np.zeros((0, 0), dtype=np.float32)
+
+        self._matrix_cache = (mtime, memory, matrix, row_entries)
+        return memory, matrix, row_entries
+
     def retrieve_similar_vectors(self, query_text: str, top_n: int = 5,
                                  include_quarantined: bool = False,
                                  similarity_threshold: float = 0.0) -> List[Tuple[float, Dict]]:
         """Retrieve similar vectors with quarantine filtering"""
         if not query_text or not query_text.strip():
             return []
-        
+
         query_vec, debug = fuse_vectors(query_text)
         if query_vec is None:
             return []
-        
-        query_vec_np = np.array(query_vec).reshape(1, -1)
-        memory = self._load_memory()
-        
-        # Filter candidates
-        candidates = []
-        for entry in memory:
+
+        _, matrix, row_entries = self._get_matrix()
+        if matrix.size == 0:
+            return []
+
+        query = np.asarray(query_vec, dtype=np.float32)
+        if query.shape[0] != matrix.shape[1]:
+            return []
+        query_norm = np.linalg.norm(query)
+        if query_norm == 0:
+            return []
+        similarities = matrix @ (query / query_norm)
+
+        results = []
+        for row, entry in enumerate(row_entries):
             if entry.get('quarantined', False) and not include_quarantined:
                 continue
-            if not entry.get('vector') or len(entry['vector']) == 0:
-                continue
-            candidates.append(entry)
-        
-        if not candidates:
-            return []
-        
-        # Calculate similarities
-        results = []
-        for entry in candidates:
-            try:
-                entry_vec = np.array(entry['vector']).reshape(1, -1)
-                similarity = cosine_similarity(query_vec_np, entry_vec)[0][0]
-                
-                if similarity >= similarity_threshold:
-                    results.append((float(similarity), entry))
-            except Exception as e:
-                continue
-        
+            similarity = float(similarities[row])
+            if similarity >= similarity_threshold:
+                results.append((similarity, entry))
+
         results.sort(key=lambda x: x[0], reverse=True)
         return results[:top_n]
 
@@ -1326,15 +1385,21 @@ class UnifiedMemory:
 # CONVENIENCE FUNCTIONS FOR BACKWARD COMPATIBILITY
 # ============================================================================
 
-# Global instance for backward compatibility
-_global_memory = None
+# Shared instances, one per resolved data directory. Multiple in-process
+# copies of the same stores drift apart and clobber each other's saves —
+# every consumer must come through here rather than UnifiedMemory() directly.
+_memory_instances: Dict[str, "UnifiedMemory"] = {}
+_memory_instances_lock = RLock()
 
 def get_unified_memory(data_dir="data"):
-    """Get or create the global unified memory instance"""
-    global _global_memory
-    if _global_memory is None:
-        _global_memory = UnifiedMemory(data_dir)
-    return _global_memory
+    """Get or create the shared UnifiedMemory instance for a data directory"""
+    key = str(Path(data_dir).resolve())
+    with _memory_instances_lock:
+        instance = _memory_instances.get(key)
+        if instance is None:
+            instance = UnifiedMemory(data_dir)
+            _memory_instances[key] = instance
+        return instance
 
 # Legacy function aliases for backward compatibility
 def store_vector(*args, **kwargs):

@@ -487,8 +487,8 @@ class SelfModificationEngine:
         """
         try:
             # Import unified memory for cluster analysis
-            from unified_memory import UnifiedMemory
-            unified_memory = UnifiedMemory(self.data_dir)
+            from unified_memory import get_unified_memory
+            unified_memory = get_unified_memory(self.data_dir)
             
             # Get memory statistics
             stats = unified_memory.get_memory_statistics()

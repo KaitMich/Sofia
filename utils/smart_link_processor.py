@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 from datetime import datetime
 
 from web_parser import fetch_raw_html, extract_links_with_text_from_html, clean_html_to_text
-from unified_memory import UnifiedMemory
+from unified_memory import get_unified_memory
 from linguistic_warfare import check_for_warfare
 from quarantine_layer import should_quarantine_input
 from memory_analytics import MemoryAnalyzer
@@ -25,7 +25,7 @@ class SmartLinkProcessor:
     """
     
     def __init__(self, data_dir: str = "data"):
-        self.unified_memory = UnifiedMemory(data_dir)
+        self.unified_memory = get_unified_memory(data_dir)
         self.analyzer = MemoryAnalyzer(self.unified_memory, data_dir)
         self.data_dir = data_dir
         

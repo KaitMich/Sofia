@@ -15,7 +15,7 @@ import hashlib
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Any
-from unified_memory import UnifiedMemory
+from unified_memory import get_unified_memory
 
 class CognitiveSnapshot:
     """A moment in time - who the AI was before it dared to change"""
@@ -114,7 +114,7 @@ class EvolutionAnchor:
         """
         try:
             # Capture the current state of the AI's mind
-            unified_memory = UnifiedMemory(self.data_dir)
+            unified_memory = get_unified_memory(self.data_dir)
             
             memory_state = {
                 'tripartite_counts': unified_memory.get_memory_counts(),
@@ -219,7 +219,7 @@ class EvolutionAnchor:
         """
         try:
             if not current_stats:
-                unified_memory = UnifiedMemory(self.data_dir)
+                unified_memory = get_unified_memory(self.data_dir)
                 current_health = self._assess_current_health(unified_memory)
                 current_signature = self._capture_cognitive_signature(unified_memory)
             else:
@@ -362,7 +362,7 @@ class EvolutionAnchor:
                 print("❌ Snapshot integrity compromised - cannot restore")
                 return False
             
-            unified_memory = UnifiedMemory(self.data_dir)
+            unified_memory = get_unified_memory(self.data_dir)
             
             if preserve_recent_learning:
                 # Capture recent valuable learning before restoration

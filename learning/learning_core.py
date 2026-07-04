@@ -38,7 +38,7 @@ except ImportError:
 try:
     from memory_optimizer import process_web_url_placeholder, recompute_adaptive_link_weights
     from evolution_anchor import EvolutionAnchor
-    from unified_memory import UnifiedMemory, generate_self_diagnostic_voice
+    from unified_memory import get_unified_memory, generate_self_diagnostic_voice
     from memory_analytics import MemoryAnalyzer
     MEMORY_SYSTEMS_AVAILABLE = True
 except ImportError:
@@ -62,7 +62,7 @@ class LearningCore:
         
         # Initialize advanced learning systems (from ai_learning_session.py)
         if MEMORY_SYSTEMS_AVAILABLE:
-            self.unified_memory = UnifiedMemory(str(data_dir))
+            self.unified_memory = get_unified_memory(str(data_dir))
             self.evolution_anchor = EvolutionAnchor(str(data_dir))
             self.analyzer = MemoryAnalyzer(self.unified_memory, str(data_dir))
         
