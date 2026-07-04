@@ -298,24 +298,25 @@ class ImmuneSystem:
             confidence = 0.8  # High confidence when nothing found
             reasoning.append("No page-level threats detected - HTML structure and quality appear safe")
 
-        # Factor in domain trust (low trust increases threat score, high trust dampens it)
-        if domain_trust is not None:
-            if domain_trust < 0.5 and not is_academic:
-                trust_penalty = (0.5 - domain_trust) * 0.4  # Max 0.2 penalty
-                overall_threat_score = min(1.0, overall_threat_score + trust_penalty)
-                reasoning.append(f"Low domain trust ({domain_trust:.2f}) increases caution")
-            elif domain_trust >= 0.8 or is_academic:
-                # Dampen threat score for high-trust or academic domains
-                overall_threat_score *= 0.5  # Significant dampening
-                reasoning.append(f"Source trusted/academic ({domain_trust:.2f}) dampens threat score")
+        # Trust adjusts TOLERANCE (the decision thresholds), never the evidence
+        # score itself. The old low-trust penalty here fed a self-reinforcing
+        # spiral: low trust -> inflated threat -> block -> lower trust. The
+        # threat score is now purely content/structure evidence.
+        block_threshold, review_threshold = 0.7, 0.4
+        if is_academic or (domain_trust is not None and domain_trust >= 0.8):
+            block_threshold, review_threshold = 0.85, 0.55
+            reasoning.append(f"Trusted/academic source ({domain_trust if domain_trust is not None else 'n/a'}) — higher block tolerance")
+        elif domain_trust is not None and domain_trust <= 0.2:
+            block_threshold, review_threshold = 0.6, 0.3
+            reasoning.append(f"Low-trust source ({domain_trust:.2f}) — lower block tolerance")
 
         # Determine recommendation
-        if overall_threat_score >= 0.7:
+        if overall_threat_score >= block_threshold:
             recommendation = 'BLOCK'
-            reasoning.append(f"BLOCK: High risk assessment ({overall_threat_score:.2f})")
-        elif overall_threat_score >= 0.4:
+            reasoning.append(f"BLOCK: High risk assessment ({overall_threat_score:.2f} >= {block_threshold})")
+        elif overall_threat_score >= review_threshold:
             recommendation = 'REVIEW'
-            reasoning.append(f"REVIEW: Moderate risk assessment ({overall_threat_score:.2f})")
+            reasoning.append(f"REVIEW: Moderate risk assessment ({overall_threat_score:.2f} >= {review_threshold})")
         else:
             recommendation = 'ALLOW'
             reasoning.append(f"ALLOW: Low risk assessment ({overall_threat_score:.2f})")

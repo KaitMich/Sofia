@@ -1009,74 +1009,64 @@ class EnhancedAutonomousLearner:
                 trigger_patterns=trigger_patterns
             )
 
-            # Handle immune system recommendations
-            # Skip immune trust adjustments for high-trust domains (>0.8) or academic sources
-            if domain_trust > 0.8 or is_academic:
-                if domain_trust > 0.8:
-                    print(f"   ✅ Skipping immune trust adjustments for high-trust domain ({domain_trust:.2f})")
+            # Handle immune system recommendations — the verdict applies to
+            # EVERY source: trust already sets the tolerance thresholds inside
+            # the immune system, so there is no skip path for trusted domains.
+            # Blocks do NOT adjust trust: penalizing trust for a block that
+            # low trust helped cause was the death spiral (197/597 domains
+            # locked at zero). Trust moves on content evidence only.
+            if immune_assessment.recommendation == 'BLOCK':
+                print(f"   🛡️ BLOCKED by immune system (threat: {immune_assessment.overall_threat_score:.2f})")
+                print(f"      Reason: {immune_assessment.reasoning[0] if immune_assessment.reasoning else 'High threat score'}")
+
+                self.session_stats['immune_blocks'] += 1
+
+                # Record block in orchestrator
+                self.crawl_orchestrator.record_blocked(url_id, url, reason='immune')
+                _block_event = {
+                    'url': url,
+                    'status': 'immune_blocked',
+                    'parent_url': url_info.get('source'),
+                    'threat_score': immune_assessment.overall_threat_score,
+                    'text_preview': text_content[:500] if text_content else None,
+                    'block_category': self._derive_block_category_from_immune(
+                        immune_assessment.threat_signals),
+                    'block_signals': self._serialize_immune_signals(
+                        immune_assessment.threat_signals),
+                    'block_reasoning': immune_assessment.reasoning,
+                    'block_confidence': immune_assessment.confidence,
+                    'domain_trust_at_block': domain_trust,
+                    'session_id': self.session_id,
+                    'timestamp': datetime.now(timezone.utc).isoformat(),
+                }
+                self._emit_crawl_event(**{k: v for k, v in _block_event.items()
+                                          if k not in ('session_id', 'timestamp')})
+                try:
+                    self.quarantine_store.quarantine_item(_block_event)
+                except Exception:
+                    pass  # Quarantine must never break learning
+                return
+
+            elif immune_assessment.recommendation == 'REVIEW':
+                reasons = "; ".join([r for r in immune_assessment.reasoning if "ALLOW" not in r and "REVIEW" not in r])
+                print(f"   ⚠️ FLAGGED for review (threat: {immune_assessment.overall_threat_score:.2f})")
+                if reasons:
+                    print(f"      Reasoning: {reasons}")
+                # No trust penalty for moderate threat — REVIEW means continue processing,
+                # not penalize. Penalizing here caused a compounding decay spiral for new
+                # domains that couldn't recover on +0.02/page reward asymmetry.
+
+            elif immune_assessment.overall_threat_score < 0.4:
+                # Clean page — reward with trust increase (content evidence).
+                # This is now the ONLY upward path besides academic markers,
+                # and it applies to unknown domains too, so they can earn
+                # their way up from the neutral prior.
+                if is_academic:
+                    self.trust_db.adjust_trust(domain, +0.10, "Autonomous academic verification: high quality content")
+                    print(f"      🎓 Academic trust boost applied (+0.10)")
                 else:
-                    print(f"   ✅ Skipping immune trust adjustments for autonomous academic source")
-                    
-                # Still record decision but don't adjust trust or block
-                if immune_assessment.recommendation == 'BLOCK':
-                    print(f"   ℹ️ Immune would have blocked (threat: {immune_assessment.overall_threat_score:.2f}) but source trusted")
-                elif immune_assessment.recommendation == 'REVIEW':
-                    print(f"   ℹ️ Immune flagged for review (threat: {immune_assessment.overall_threat_score:.2f}) but source trusted")
-            else:
-                # Normal immune handling for lower-trust domains
-                if immune_assessment.recommendation == 'BLOCK':
-                    print(f"   🛡️ BLOCKED by immune system (threat: {immune_assessment.overall_threat_score:.2f})")
-                    print(f"      Reason: {immune_assessment.reasoning[0] if immune_assessment.reasoning else 'High threat score'}")
-
-                    # Adjust trust downward
-                    self.trust_db.adjust_trust(domain, -0.1, f"Page blocked: {immune_assessment.reasoning[0]}")
-                    self.session_stats['immune_blocks'] += 1
-                    self.session_stats['trust_adjustments'] += 1
-
-                    # Record block in orchestrator
-                    self.crawl_orchestrator.record_blocked(url_id, url, reason='immune')
-                    _block_event = {
-                        'url': url,
-                        'status': 'immune_blocked',
-                        'parent_url': url_info.get('source'),
-                        'threat_score': immune_assessment.overall_threat_score,
-                        'text_preview': text_content[:500] if text_content else None,
-                        'block_category': self._derive_block_category_from_immune(
-                            immune_assessment.threat_signals),
-                        'block_signals': self._serialize_immune_signals(
-                            immune_assessment.threat_signals),
-                        'block_reasoning': immune_assessment.reasoning,
-                        'block_confidence': immune_assessment.confidence,
-                        'domain_trust_at_block': domain_trust,
-                        'session_id': self.session_id,
-                        'timestamp': datetime.now(timezone.utc).isoformat(),
-                    }
-                    self._emit_crawl_event(**{k: v for k, v in _block_event.items()
-                                              if k not in ('session_id', 'timestamp')})
-                    try:
-                        self.quarantine_store.quarantine_item(_block_event)
-                    except Exception:
-                        pass  # Quarantine must never break learning
-                    return
-
-                elif immune_assessment.recommendation == 'REVIEW':
-                    reasons = "; ".join([r for r in immune_assessment.reasoning if "ALLOW" not in r and "REVIEW" not in r])
-                    print(f"   ⚠️ FLAGGED for review (threat: {immune_assessment.overall_threat_score:.2f})")
-                    if reasons:
-                        print(f"      Reasoning: {reasons}")
-                    # No trust penalty for moderate threat — REVIEW means continue processing,
-                    # not penalize. Penalizing here caused a compounding decay spiral for new
-                    # domains that couldn't recover on +0.02/page reward asymmetry.
-
-                elif immune_assessment.overall_threat_score < 0.4:
-                    # Low-to-moderate threat - reward with trust increase
-                    # SIGNIFICANT BOOST for academic content to accelerate trust learning
-                    if is_academic:
-                        self.trust_db.adjust_trust(domain, +0.10, "Autonomous academic verification: high quality content")
-                        print(f"      🎓 Academic trust boost applied (+0.10)")
-                    else:
-                        self.trust_db.adjust_trust(domain, +0.02, "Clean page: low threat score")
-                    self.session_stats['trust_adjustments'] += 1
+                    self.trust_db.adjust_trust(domain, +0.02, "Clean page: low threat score")
+                self.session_stats['trust_adjustments'] += 1
 
             # Ethical awareness check (doesn't block, just notes)
             from ethical_awareness import assess_content_ethics
@@ -1144,17 +1134,14 @@ class EnhancedAutonomousLearner:
                 'is_academic': is_academic
             }
 
-            # Skip warfare check for high-trust domains (>0.8)
-            if domain_trust > 0.8:
-                print(f"   ✅ Skipping warfare check for high-trust domain ({domain_trust:.2f})")
-                should_quarantine = False
-                warfare_analysis = {}
-            else:
-                # Use updated detector that accepts context
-                from linguistic_warfare import LinguisticWarfareDetector
-                detector = LinguisticWarfareDetector(data_dir=self.data_dir)
-                warfare_analysis = detector.analyze_text_for_warfare(text_content, context=warfare_context)
-                should_quarantine = warfare_analysis['defense_strategy']['strategy'] in ['full_quarantine', 'selective_quarantine']
+            # Warfare check runs for every source — the detector receives
+            # domain_trust/is_academic via context and calibrates itself.
+            # High-trust domains previously skipped this entirely, which is
+            # exactly how boilerplate slipped into memory unexamined.
+            from linguistic_warfare import LinguisticWarfareDetector
+            detector = LinguisticWarfareDetector(data_dir=self.data_dir)
+            warfare_analysis = detector.analyze_text_for_warfare(text_content, context=warfare_context)
+            should_quarantine = warfare_analysis['defense_strategy']['strategy'] in ['full_quarantine', 'selective_quarantine']
 
             if should_quarantine:
                 # Extract actual threat type from threats_detected list
@@ -1211,31 +1198,41 @@ class EnhancedAutonomousLearner:
 
             # Domain and domain_trust already retrieved above for warfare check
 
-            # Generate embedding for corroboration (using unified_memory's embedding)
+            # Generate embedding for corroboration. NOTE: this previously
+            # called unified_memory._get_embedding, a method that never
+            # existed — every corroboration decision ever made ran on a
+            # np.random.rand(384) fallback vector.
             import numpy as np
+            embedding = None
             try:
-                embedding = self.unified_memory._get_embedding(text_content[:500])  # First 500 chars
+                from vector_engine import fuse_vectors
+                vec, _debug = fuse_vectors(text_content[:500])  # First 500 chars
+                if vec is not None:
+                    embedding = np.asarray(vec, dtype=np.float32)
             except Exception:
-                # If embedding fails, generate simple hash-based pseudo-embedding
-                embedding = np.random.rand(384)  # Fallback
+                embedding = None
 
-            # Check corroboration status (skip for high-trust domains >0.8)
-            if domain_trust > 0.8:
-                print(f"   ✅ Skipping corroboration for high-trust domain ({domain_trust:.2f})")
-                # High-trust domains bypass corroboration - proceed with original classification
+            # Corroboration applies to every source. Trust changes what a
+            # single sighting is worth, not whether the sighting is recorded —
+            # the old high-trust skip left the corroboration DB blind to
+            # exactly the content she ingested most.
+            if embedding is None:
+                # No fingerprint, nothing to corroborate against. Never
+                # substitute a random vector (it poisons the sighting DB).
+                print(f"   ⚠️ Embedding failed — corroboration skipped for this chunk")
             else:
                 corroboration_result = self.corroboration_engine.get_corroboration_score(embedding)
 
-                if not corroboration_result.ready_to_commit:
-                    # Not enough corroboration - record sighting
-                    self.corroboration_engine.record_sighting(
-                        fact_text=text_content[:500],
-                        fact_embedding=embedding,
-                        source_url=source_url,
-                        trust_score=domain_trust
-                    )
-                    
-                    # AUTONOMOUS LEARNING BOOST: 
+                # Always record the sighting so future corroboration has data
+                self.corroboration_engine.record_sighting(
+                    fact_text=text_content[:500],
+                    fact_embedding=embedding,
+                    source_url=source_url,
+                    trust_score=domain_trust
+                )
+
+                if not corroboration_result.ready_to_commit and domain_trust <= 0.8:
+                    # AUTONOMOUS LEARNING BOOST:
                     # Instead of rejecting, move to BRIDGE for future verification
                     # Only reject if threat score is very high or sightings=0 AND trust is low
                     if corroboration_result.total_sightings > 0 or domain_trust >= 0.5:
@@ -1246,6 +1243,8 @@ class EnhancedAutonomousLearner:
                         self.session_stats['corroboration_deferrals'] += 1
                         self._emit_crawl_event(source_url, 'deferred', parent_url=url_info.get('source'))
                         return False  # Strictly defer low-trust single-sighting facts
+                elif not corroboration_result.ready_to_commit:
+                    print(f"   ℹ️ Single sighting accepted on source trust ({domain_trust:.2f}); sighting recorded for corroboration")
 
             # Final text quality gate before storage
             from web_parser import sanitize_text_for_storage
@@ -1299,19 +1298,15 @@ class EnhancedAutonomousLearner:
                                    text_preview=sanitized_text[:80],
                                    logic_sim=l_sim, symbolic_sim=s_sim)
 
-            # Record successful commit as corroborated sighting
-            self.corroboration_engine.record_sighting(
-                fact_text=text_content[:500],
-                fact_embedding=embedding,
-                source_url=source_url,
-                trust_score=domain_trust
-            )
+            # Sighting was already recorded at the corroboration gate above
+            # (recording here again double-counted every stored chunk)
 
             # Update session topic centroid for adaptive link gating
             try:
-                content_vec = np.array(embedding) if not isinstance(embedding, np.ndarray) else embedding
-                if content_vec is not None and np.any(content_vec != 0):
-                    self._update_session_centroid(content_vec)
+                if embedding is not None:
+                    content_vec = np.array(embedding) if not isinstance(embedding, np.ndarray) else embedding
+                    if np.any(content_vec != 0):
+                        self._update_session_centroid(content_vec)
             except Exception:
                 pass  # Centroid update is non-critical
 
