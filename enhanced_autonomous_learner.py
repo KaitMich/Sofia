@@ -18,7 +18,7 @@ from urllib.parse import urlparse, urljoin
 from collections import deque, defaultdict
 
 # Core system imports
-from unified_memory import UnifiedMemory
+from unified_memory import get_unified_memory
 from memory_analytics import MemoryAnalyzer
 from evolution_anchor import EvolutionAnchor
 from web_parser import fetch_raw_html, extract_links_with_text_from_html, clean_html_to_text
@@ -59,7 +59,7 @@ class EnhancedAutonomousLearner:
         self.session_dir.mkdir(parents=True, exist_ok=True)
         
         # Core brain components
-        self.unified_memory = UnifiedMemory(data_dir)
+        self.unified_memory = get_unified_memory(data_dir)
         self.analyzer = MemoryAnalyzer(self.unified_memory, data_dir)
         self.evolution_anchor = EvolutionAnchor(data_dir)
         self.progression_tracker = LearningProgressionTracker(data_dir)

@@ -13,7 +13,7 @@ from typing import List, Dict, Any, Optional
 
 from memory_optimizer import process_web_url_placeholder, recompute_adaptive_link_weights
 from evolution_anchor import EvolutionAnchor
-from unified_memory import UnifiedMemory, generate_self_diagnostic_voice
+from unified_memory import get_unified_memory, generate_self_diagnostic_voice
 from memory_analytics import MemoryAnalyzer
 
 class AILearningSession:
@@ -33,7 +33,7 @@ class AILearningSession:
         self.session_dir.mkdir(parents=True, exist_ok=True)
         
         # Initialize core systems
-        self.unified_memory = UnifiedMemory(data_dir)
+        self.unified_memory = get_unified_memory(data_dir)
         self.evolution_anchor = EvolutionAnchor(data_dir)
         self.analyzer = MemoryAnalyzer(self.unified_memory, data_dir)
         

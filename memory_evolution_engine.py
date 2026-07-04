@@ -5,7 +5,7 @@ from pathlib import Path
 from datetime import datetime
 
 # Import all our components
-from unified_memory import UnifiedMemory
+from unified_memory import get_unified_memory
 from adaptive_migration import AdaptiveThresholds, MigrationEngine
 from reverse_migration import ReverseMigrationAuditor
 from weight_evolution import WeightEvolver
@@ -48,7 +48,7 @@ class MemoryEvolutionEngine:
         }
         
         # Initialize all components
-        self.memory = UnifiedMemory(data_dir=data_dir)
+        self.memory = get_unified_memory(data_dir)
         
         # Create bridge for enhanced compatibility
         if BRIDGE_AVAILABLE:
