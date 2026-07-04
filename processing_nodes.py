@@ -95,20 +95,15 @@ def _update_symbol_cooccurrence(symbolic_node_output):
     # Optional: print(f"    [COOCCURRENCE] Updated for symbols: {unique_matched_symbols}")
 
 # Legacy function - now redirects to unified weight system
-def evaluate_link_with_confidence_gates(logic_score, symbolic_score, logic_scale=10.0, sym_scale=5.0):
+def evaluate_link_with_confidence_gates(logic_score, symbolic_score, logic_scale=2.0, sym_scale=1.0):
     """
     DEPRECATED: Use UnifiedWeightSystem instead.
-    Legacy wrapper for backward compatibility.
+    Delegates to the canonical implementation in adaptive_migration so the
+    live classifier and the migration engine can never judge on divergent
+    scales again (this copy previously defaulted 10.0/5.0 vs 2.0/1.0).
     """
-    print("WARNING: evaluate_link_with_confidence_gates is deprecated. Use UnifiedWeightSystem.")
-    
-    # Quick decision for backward compatibility
-    if logic_score * 2.0 > symbolic_score * 1.0:
-        return "FOLLOW_LOGIC", logic_score
-    elif symbolic_score * 1.0 > logic_score * 2.0:
-        return "FOLLOW_SYMBOLIC", symbolic_score
-    else:
-        return "FOLLOW_HYBRID", (logic_score + symbolic_score) / 2
+    from adaptive_migration import evaluate_link_with_confidence_gates as _canonical
+    return _canonical(logic_score, symbolic_score, logic_scale, sym_scale)
 
 def detect_content_type(text_input: str, spacy_nlp_instance=None) -> str:
     if not text_input or not isinstance(text_input, str):
