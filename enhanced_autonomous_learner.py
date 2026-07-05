@@ -3287,18 +3287,30 @@ def activate_seed_coordinates(seed_ids: List[str] = None, data_dir: str = "data"
     with open(manifest_path, 'r', encoding='utf-8') as f:
         manifest = json.load(f)
 
-    available = manifest.get('available_seeds', [])
+    # Collect seeds from both manifest formats:
+    #   v1: flat top-level 'available_seeds' list
+    #   v2.0 (March 2026): seeds grouped under question_* sections
+    # (This function silently found ZERO seeds in v2.0 manifests and printed
+    # a misleading 'already activated' message.)
+    available = list(manifest.get('available_seeds', []))
+    for section in manifest.values():
+        if isinstance(section, dict) and isinstance(section.get('seeds'), list):
+            available.extend(section['seeds'])
+
+    if not available:
+        print("Manifest contains no seeds at all — check its format.")
+        return None
 
     # Filter to requested seeds (or all unactivated)
     if seed_ids is not None:
-        targets = [s for s in available if s['id'] in seed_ids and not s['activated']]
+        targets = [s for s in available if s['id'] in seed_ids and not s.get('activated')]
         if not targets:
             print("No matching unactivated seeds found for IDs:", seed_ids)
             return None
     else:
-        targets = [s for s in available if not s['activated']]
+        targets = [s for s in available if not s.get('activated')]
         if not targets:
-            print("All seeds in manifest have already been activated.")
+            print(f"All {len(available)} seeds in manifest have already been activated.")
             print("Sofia's curiosity state should drive subsequent learning.")
             return None
 
