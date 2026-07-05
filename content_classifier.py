@@ -29,7 +29,6 @@ logs can show the evidence instead of an unexplained label.
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
-import json
 import re
 
 import numpy as np
@@ -61,37 +60,38 @@ class GroundedClassifier:
     # Centroid signal (emergent)
     # ------------------------------------------------------------------
 
-    def _load_store_embeddings(self, filename: str) -> List[np.ndarray]:
-        path = self.data_dir / filename
-        try:
-            items = json.load(open(path, encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            return []
-        vecs = []
-        for item in items:
-            emb = item.get("embedding")
-            if emb:
-                vecs.append(np.asarray(emb, dtype=np.float32))
-        return vecs
-
     def _get_centroids(self):
-        """Unit-norm centroids of the logic and symbolic stores, or None."""
-        logic_vecs = self._load_store_embeddings("logic_memory.json")
-        symbolic_vecs = self._load_store_embeddings("symbolic_memory.json")
-        key = (len(logic_vecs), len(symbolic_vecs))
+        """Unit-norm centroids of the logic and symbolic stores, or None.
+
+        Reuses the migration engine's compute_cluster_stats over the shared
+        in-RAM UnifiedMemory instance — one centroid implementation for the
+        whole system, no separate JSON reads here.
+        """
+        try:
+            from unified_memory import get_unified_memory
+            from adaptive_bridge_migration import compute_cluster_stats
+            memory = get_unified_memory(str(self.data_dir))
+            logic_items = memory.tripartite.logic_memory
+            symbolic_items = memory.tripartite.symbolic_memory
+        except Exception:
+            return None
+
+        key = (len(logic_items), len(symbolic_items))
         if self._centroid_cache_key == key:
             return self._centroid_cache
 
-        if len(logic_vecs) < self.min_items or len(symbolic_vecs) < self.min_items:
+        if len(logic_items) < self.min_items or len(symbolic_items) < self.min_items:
             self._centroid_cache, self._centroid_cache_key = None, key
             return None
 
-        def unit_centroid(vecs):
-            m = np.mean(np.stack(vecs), axis=0)
-            n = np.linalg.norm(m)
-            return m / n if n > 0 else None
+        def unit_centroid(items):
+            centroid = compute_cluster_stats(items).centroid
+            if centroid is None:
+                return None
+            norm = np.linalg.norm(centroid)
+            return centroid / norm if norm > 0 else None
 
-        lc, sc = unit_centroid(logic_vecs), unit_centroid(symbolic_vecs)
+        lc, sc = unit_centroid(logic_items), unit_centroid(symbolic_items)
         self._centroid_cache = (lc, sc) if lc is not None and sc is not None else None
         self._centroid_cache_key = key
         return self._centroid_cache
