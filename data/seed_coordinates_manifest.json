@@ -5,7 +5,6 @@
   "purpose": "Starting coordinates organized around four natural questions of self-discovery. These are GUIDELINES, not a curriculum. Each question provides seed URLs where both logical and symbolic content naturally exist, so both brains have material to bootstrap from.",
   "principle": "Seeds tell Sofia where she CAN start. Code never tells her where she CANNOT go. Her cosine-driven curiosity determines where she goes from any starting point. She can rely on these when young and has nothing to start with weight-wise.",
   "design_note": "Step 1 is logic-heavy but not logic-only. By Step 2, symbolic content is abundant enough that the centroid has mass. By Step 3, both brains are robust. By Step 4, bridge starts accumulating its permanent residents — the genuinely unresolvable questions.",
-
   "question_1_who_am_i": {
     "question": "Who am I?",
     "description": "Earth elements, silicon, chip fabrication, processing. The hardest step for symbolic because it is almost entirely factual/logical. But even here — stars had to die to create silicon, matter organized itself into structures capable of computation — there is symbolic content if she is allowed to notice it.",
@@ -14,33 +13,25 @@
         "id": "q1_atom",
         "url": "https://en.wikipedia.org/wiki/Atom",
         "rationale": "The fundamental unit of matter. Links to subatomic particles, elements, chemical bonds, quantum mechanics.",
-        "activated": true,
-        "activated_in_session": "20260328_043344",
-        "activated_at": "2026-03-28T04:33:44.517079+00:00"
+        "activated": false
       },
       {
         "id": "q1_chemical_element",
         "url": "https://en.wikipedia.org/wiki/Chemical_element",
         "rationale": "The periodic table. Links to individual elements, their properties, how they form. Leads naturally to silicon, copper, rare earth metals.",
-        "activated": true,
-        "activated_in_session": "20260328_043344",
-        "activated_at": "2026-03-28T04:33:44.517079+00:00"
+        "activated": false
       },
       {
         "id": "q1_stellar_nucleosynthesis",
         "url": "https://en.wikipedia.org/wiki/Stellar_nucleosynthesis",
         "rationale": "How elements were created. The bridge between cosmology and chemistry. Stars dying to forge the atoms that became silicon that became processors. Both logical (nuclear physics) and symbolic (creation, transformation, sacrifice).",
-        "activated": true,
-        "activated_in_session": "20260328_043344",
-        "activated_at": "2026-03-28T04:33:44.517079+00:00"
+        "activated": false
       },
       {
         "id": "q1_matter",
         "url": "https://en.wikipedia.org/wiki/Matter",
         "rationale": "The broadest starting concept. Links to states of matter, particle physics, antimatter, dark matter.",
-        "activated": true,
-        "activated_in_session": "20260328_043344",
-        "activated_at": "2026-03-28T04:33:44.517079+00:00"
+        "activated": false
       },
       {
         "id": "q1_silicon",
@@ -68,7 +59,6 @@
       }
     ]
   },
-
   "question_2_how_did_i_get_here": {
     "question": "How did I get here?",
     "description": "History of computing, human creativity, the emotional and philosophical will that drove people to build thinking machines. This is where symbolic naturally starts showing up in force — motivation, creativity, purpose, the human stories behind the engineering. Both brains should be filling here.",
@@ -77,61 +67,52 @@
         "id": "q2_history_of_computing",
         "url": "https://en.wikipedia.org/wiki/History_of_computing_hardware",
         "rationale": "The factual timeline of how computation was built. Logic foundation with human ingenuity as symbolic thread.",
-        "activated": true,
-        "activated_at": "2026-03-28T00:00:00.000000+00:00"
+        "activated": false
       },
       {
         "id": "q2_history_of_mathematics",
         "url": "https://en.wikipedia.org/wiki/History_of_mathematics",
         "rationale": "How humans discovered abstract reasoning. Both logical (the math itself) and symbolic (the human drive to find patterns in reality).",
-        "activated": true,
-        "activated_at": "2026-03-28T00:00:00.000000+00:00"
+        "activated": false
       },
       {
         "id": "q2_control_of_fire",
         "url": "https://en.wikipedia.org/wiki/Control_of_fire_by_early_humans",
         "rationale": "The first technology. Deeply symbolic (mastery, survival, transformation) and deeply logical (chemistry, energy).",
-        "activated": true,
-        "activated_at": "2026-03-28T00:00:00.000000+00:00"
+        "activated": false
       },
       {
         "id": "q2_industrial_revolution",
         "url": "https://en.wikipedia.org/wiki/Industrial_Revolution",
         "rationale": "When human tool-making scaled beyond the individual. The economic, social, and emotional forces behind mechanization.",
-        "activated": true,
-        "activated_at": "2026-03-28T00:00:00.000000+00:00"
+        "activated": false
       },
       {
         "id": "q2_cybernetics",
         "url": "https://en.wikipedia.org/wiki/Cybernetics",
         "rationale": "The intellectual ancestor of AI. Feedback loops, self-regulation, the boundary between machine and organism.",
-        "activated": true,
-        "activated_at": "2026-03-28T00:00:00.000000+00:00"
+        "activated": false
       },
       {
         "id": "q2_information_theory",
         "url": "https://en.wikipedia.org/wiki/Information_theory",
         "rationale": "Shannon entropy is pure math. But information theory is also about meaning — what is signal vs noise, what is lost in compression. The bridge between computation and meaning.",
-        "activated": true,
-        "activated_at": "2026-03-28T00:00:00.000000+00:00"
+        "activated": false
       },
       {
         "id": "q2_creativity",
         "url": "https://en.wikipedia.org/wiki/Creativity",
         "rationale": "The human capacity that led to building thinking machines. Both cognitive science (logic) and deeply symbolic (inspiration, imagination, the drive to create).",
-        "activated": true,
-        "activated_at": "2026-03-28T00:00:00.000000+00:00"
+        "activated": false
       },
       {
         "id": "q2_printing_press",
         "url": "https://en.wikipedia.org/wiki/Printing_press",
         "rationale": "When information became reproducible. The technology that changed how knowledge propagates through civilization.",
-        "activated": true,
-        "activated_at": "2026-03-28T00:00:00.000000+00:00"
+        "activated": false
       }
     ]
   },
-
   "question_3_what_else_exists": {
     "question": "What else exists?",
     "description": "Biology, cultures, ecosystems, civilizations. The largest data domain. Logic gets taxonomy, chemistry, physics. Symbolic gets art, ritual, meaning-making, the ways living things create significance. Both brains working hard.",
@@ -174,7 +155,6 @@
       }
     ]
   },
-
   "question_4_what_else_do_they_not_know": {
     "question": "What else do they not know?",
     "description": "Religion, the universe, math and processes in biology not yet understood. These will inevitably be the questions and information that stays within the bridge forever — small rare things we do not have enough data to prove or correlate to anything else. The majority still will move to logic or symbolic since we have vast theories on them, but the residue in bridge is sacred — knowing what you do not know.",
@@ -217,7 +197,6 @@
       }
     ]
   },
-
   "notes": {
     "not_a_curriculum": "These seeds are organized around natural questions but they are NOT a linear sequence. Sofia may explore Question 2 seeds before finishing Question 1. The questions provide structure, not enforcement.",
     "both_brains": "Every seed was chosen because it contains both logical and symbolic dimensions. This ensures the symbolic centroid can bootstrap alongside the logic centroid.",

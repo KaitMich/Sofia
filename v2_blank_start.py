@@ -71,6 +71,29 @@ DELETE_GLOBS = [
 ]
 
 
+def rearm_seed_coordinates():
+    """Reset 'activated' flags in the seed manifest — v1 consumed the seeds;
+    a blank-start v2 must be able to activate them again."""
+    manifest_path = DATA / "seed_coordinates_manifest.json"
+    if not manifest_path.exists():
+        return 0
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    rearmed = 0
+    for section in manifest.values():
+        if not isinstance(section, dict):
+            continue
+        for seed in section.get("seeds", []):
+            if seed.get("activated"):
+                seed["activated"] = False
+                seed.pop("activated_in_session", None)
+                seed.pop("activated_at", None)
+                rearmed += 1
+    if rearmed:
+        manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False),
+                                 encoding="utf-8")
+    return rearmed
+
+
 def main():
     done = []
     for name in BLANK_LIST:
@@ -92,6 +115,10 @@ def main():
         for p in DATA.glob(pattern):
             p.unlink()
             done.append(f"deleted       {p.relative_to(DATA)}")
+
+    rearmed = rearm_seed_coordinates()
+    if rearmed:
+        done.append(f"re-armed      {rearmed} seed coordinates in manifest")
 
     for line in done:
         print(line)
