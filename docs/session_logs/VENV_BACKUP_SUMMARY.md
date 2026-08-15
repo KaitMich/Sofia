@@ -82,7 +82,7 @@ python -m spacy download en_core_web_sm
 
 ```bash
 # Navigate to project
-cd "/mnt/c/Users/kaitl/Documents/Core-Project - Copy"
+cd "/path/to/sofia"
 
 # Create new venv
 python -m venv venv

@@ -576,11 +576,10 @@ sophia/
 │   │   └── SYSTEM_STATUS_AUDIT.md
 │   │
 │   ├── technical/                 [Reference files]
-│   │   ├── JSON_FILES_MASTER_REFERENCE.md
-│   │   └── full_file_list.txt
+│   │   └── JSON_FILES_MASTER_REFERENCE.md
 │   │
 │   ├── history/                   [12 development journey docs]
-│   └── session_logs/              [15 work session logs]
+│   └── session_logs/              [20 work session logs]
 │
 └── ARCHIVE (archive/)
     └── [Previous versions, deprecated code]

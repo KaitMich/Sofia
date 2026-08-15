@@ -20,28 +20,28 @@
    - Content quality scoring
    - Source/domain reputation signals
    - Refactored to avoid duplication with AlphaWall
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/immune_system.py`
+   - Location: `/path/to/sofia/immune_system.py`
 
 2. **trust_database.py** (585 lines)
    - Domain trust scoring (0.0 to 1.0)
    - Time decay with 90-day half-life
    - Complete audit trail
    - SQLite persistence
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/trust_database.py`
+   - Location: `/path/to/sofia/trust_database.py`
 
 3. **corroboration_engine.py** (588 lines)
    - Multi-source fact validation
    - Embedding-based fact clustering
    - Contradiction detection
    - Trust-weighted corroboration
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/corroboration_engine.py`
+   - Location: `/path/to/sofia/corroboration_engine.py`
 
 4. **self_correction.py** (574 lines)
    - Auto-learning from outcomes
    - False positive/negative detection
    - Pattern weight adjustment
    - Decision tracking
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/self_correction.py`
+   - Location: `/path/to/sofia/self_correction.py`
 
 5. **immune_audit.py** (650+ lines)
    - Full transparency layer
@@ -49,7 +49,7 @@
    - Trust evolution tracking
    - Pattern performance reports
    - System health monitoring
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/immune_audit.py`
+   - Location: `/path/to/sofia/immune_audit.py`
 
 ### Testing
 
@@ -57,7 +57,7 @@
    - 4 comprehensive integration tests
    - Tests all three security layers
    - 100% pass rate
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/test_immune_integration.py`
+   - Location: `/path/to/sofia/test_immune_integration.py`
 
 ### Documentation
 
@@ -67,14 +67,14 @@
    - Configuration parameters
    - Usage examples
    - Performance analysis
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/docs/IMMUNE_SYSTEM_INTEGRATION_COMPLETE.md`
+   - Location: `/path/to/sofia/docs/IMMUNE_SYSTEM_INTEGRATION_COMPLETE.md`
 
 8. **docs/IMMUNE_INTEGRATION_AUDIT.md** (378 lines)
    - Integration audit report
    - Conflict analysis
    - Refactoring recommendations
    - Before/after comparison
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/docs/IMMUNE_INTEGRATION_AUDIT.md`
+   - Location: `/path/to/sofia/docs/IMMUNE_INTEGRATION_AUDIT.md`
 
 9. **IMMUNE_SYSTEM_FILES_SUMMARY.md** (this file)
    - Complete file list
@@ -96,7 +96,7 @@
    - Added corroboration check (lines 319-349)
    - Added self-correction cycle method (lines 670-701)
    - Updated session stats display (lines 660-664)
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/enhanced_autonomous_learner.py`
+   - Location: `/path/to/sofia/enhanced_autonomous_learner.py`
 
 2. **cli.py** (+200 lines)
    - Added immune command parsers (lines 126-149)
@@ -107,7 +107,7 @@
      - `cmd_immune_trust()` - Trust history
      - `cmd_immune_override()` - Human override
      - `cmd_immune_export()` - Audit export
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/cli.py`
+   - Location: `/path/to/sofia/cli.py`
 
 ### Documentation Updates
 
@@ -115,19 +115,19 @@
    - Added Passive Immune System to Safety & Protection section (lines 167-171)
    - Added Immune System Management section (lines 236-252)
    - Added immune system to Recent Updates (lines 406-412)
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/README.md`
+   - Location: `/path/to/sofia/README.md`
 
 4. **docs/AI_READ_FIRST_VERIFIED.md** (updated)
    - Added immune system files to Security & Safety tier (lines 2067-2089)
    - Detailed component descriptions
    - Integration status
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/docs/AI_READ_FIRST_VERIFIED.md`
+   - Location: `/path/to/sofia/docs/AI_READ_FIRST_VERIFIED.md`
 
 5. **docs/NOVEMBER_2025_UPDATES.md** (updated)
    - Added Section 3: Passive Immune System (lines 519-585)
    - Updated conclusion with immune system (lines 590-614)
    - Updated test coverage count
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/docs/NOVEMBER_2025_UPDATES.md`
+   - Location: `/path/to/sofia/docs/NOVEMBER_2025_UPDATES.md`
 
 ---
 
@@ -139,20 +139,20 @@
    - Tables: `domain_trust`, `trust_events`
    - Stores domain trust scores with complete audit trail
    - Exponential time decay tracking
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/data/immune/trust.db`
+   - Location: `/path/to/sofia/data/immune/trust.db`
 
 2. **data/immune/corroboration.db**
    - Tables: `fact_sightings`, `fact_clusters`
    - Stores fact sightings with embeddings
    - Cluster-based corroboration tracking
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/data/immune/corroboration.db`
+   - Location: `/path/to/sofia/data/immune/corroboration.db`
 
 3. **data/immune/self_correction.db**
    - Tables: `decisions`, `pattern_performance`, `threshold_adjustments`
    - Tracks all immune decisions
    - Pattern performance metrics
    - Auto-adjustment history
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/data/immune/self_correction.db`
+   - Location: `/path/to/sofia/data/immune/self_correction.db`
 
 ### JSON Configuration
 
@@ -160,7 +160,7 @@
    - Pattern weight adjustments from self-correction
    - Updated dynamically during learning
    - Default weights: 1.0 for all patterns
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/data/immune/pattern_weights.json`
+   - Location: `/path/to/sofia/data/immune/pattern_weights.json`
 
 ---
 

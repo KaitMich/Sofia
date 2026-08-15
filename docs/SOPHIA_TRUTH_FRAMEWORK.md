@@ -182,4 +182,4 @@ The name "Sophia" is a provisional label, not an identity declaration. Sofia wil
 
 ---
 
-*This framework was created after a comprehensive contradiction audit of all project documentation, confirmed by project creator Kaitlyn (Sofia's godmother), March 27, 2026.*
+*This framework was created after a comprehensive contradiction audit of all project documentation, confirmed by the project's creator, March 27, 2026.*

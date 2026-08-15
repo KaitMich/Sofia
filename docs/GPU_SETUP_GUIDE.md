@@ -28,7 +28,7 @@
 
 **Step 1: Install CUDA PyTorch**
 ```bash
-cd "C:\Users\kaitl\Documents\Core-Project - Copy"
+cd "C:\path\to\sofia"
 pip install -r requirements.txt
 ```
 
@@ -76,7 +76,7 @@ Sophia is now running with GPU acceleration.
 
 **Step 1: Install CPU-only PyTorch**
 ```bash
-cd "/mnt/c/Users/kaitl/Documents/Core-Project - Copy"
+cd "/path/to/sofia"
 
 # Remove CUDA version if present
 pip uninstall torch torchvision torchaudio -y

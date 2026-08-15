@@ -95,7 +95,7 @@ def analyze_file(file_path):
     }
 
 def main():
-    project_dir = Path("/mnt/c/Users/kaitl/Documents/Core-Project - Copy")
+    project_dir = Path("/path/to/sofia")
 
     # Find all Python files in root
     py_files = list(project_dir.glob("*.py"))

@@ -260,7 +260,7 @@ TESTING
 ================================================================================
 
 VERIFICATION TEST:
-  cd "/mnt/c/Users/kaitl/Documents/Core-Project - Copy"
+  cd "/path/to/sofia"
   python3 -c "from enhanced_autonomous_learner import start_saturation_learning; print('✅ Import successful')"
 
   Result: ✅ PASSED

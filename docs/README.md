@@ -12,7 +12,7 @@
 > ASSOCIATIVE_EMERGENCE_SUMMARY.txt, AUDIT_SUMMARY_TABLE.txt, CONFLICT_MATRIX.txt,
 > Order_In_Choas_Claude_Gemini.md, technical/SOPHIA SUMMARY.txt,
 > technical/NEWREADTHIS.txt, technical/JSONSUMMARY.txt,
-> technical/JSON_FILES_MASTER_REFERENCE.md, technical/full_file_list.txt,
+> technical/JSON_FILES_MASTER_REFERENCE.md,
 > technical/README.md, technical/research_papers/CHAOS_REGULARIZED_OPTIMIZATION.md
 
 # Documentation Directory
@@ -83,7 +83,6 @@ docs/
 │   ├── NEWREADTHIS.txt                 # Current system status (265 lines)
 │   ├── JSONSUMMARY.txt                 # JSON catalog (265 lines)
 │   ├── JSON_FILES_MASTER_REFERENCE.md  # Complete JSON documentation
-│   ├── full_file_list.txt              # Complete file listing
 │   ├── CORESUMMARY.odt                 # Core summary (formatted document)
 │   └── Sophia AI... Briefing.odt       # Technical briefing (formatted document)
 │
@@ -228,7 +227,6 @@ Located in [`technical/`](technical/) directory:
 - **NEWREADTHIS.txt** - Current system status and integration progress (265 lines)
 - **JSONSUMMARY.txt** - Catalog of all 120+ JSON files (265 lines)
 - **JSON_FILES_MASTER_REFERENCE.md** - Complete documentation of all JSON files
-- **full_file_list.txt** - Complete project file listing
 
 **OpenDocument Format:**
 - **CORESUMMARY.odt** - Core system summary (formatted, 48 KB)
@@ -360,7 +358,6 @@ See [`session_logs/README.md`](session_logs/README.md) for complete index.
 - **SOPHIA SUMMARY.txt** - Complete technical briefing (555 lines)
 - **NEWREADTHIS.txt** - Current system status (265 lines)
 - **JSONSUMMARY.txt** - JSON file catalog (265 lines)
-- **full_file_list.txt** - Complete file listing (449 files)
 
 ### OpenDocument Files (.odt)
 - CORESUMMARY.odt - Core summary (formatted, 48 KB)

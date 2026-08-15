@@ -3,8 +3,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
 Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
 
-PS C:\Users\kaitl> cd "C:\Users\kaitl\Documents\Core-Project - Copy"
-PS C:\Users\kaitl\Documents\Core-Project - Copy> python enhanced_autonomous_learner.py
+PS C:\path\to> cd "C:\path\to\sofia"
+PS C:\path\to\sofia> python enhanced_autonomous_learner.py
 ✅ GPU Configuration:
    Device: NVIDIA GeForce RTX 4070 SUPER
    VRAM: 12.9 GB
@@ -848,4 +848,4 @@ Running adaptive migration...
    Drift detected: True
 
    Queue reprioritized: 5000/91075 pending URLs reordered by topic relevance (dc=1.00)
-PS C:\Users\kaitl\Documents\Core-Project - Copy> be
+PS C:\path\to\sofia> be

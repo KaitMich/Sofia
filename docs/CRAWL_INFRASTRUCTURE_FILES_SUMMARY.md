@@ -19,7 +19,7 @@
    - Crawl-delay directive extraction
    - User-agent: "SophiaAutonomousLearner/1.0"
    - Complete access check audit trail
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/robots_txt_manager.py`
+   - Location: `/path/to/sofia/robots_txt_manager.py`
 
 2. **domain_rate_limiter.py** (402 lines)
    - Per-domain rate limiting (3s minimum)
@@ -27,7 +27,7 @@
    - Random jitter (0.5-1.5s) to avoid patterns
    - SQLite persistence for crash recovery
    - Complete request history
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/domain_rate_limiter.py`
+   - Location: `/path/to/sofia/domain_rate_limiter.py`
 
 3. **persistent_url_queue.py** (528 lines)
    - SQLite-backed priority queue
@@ -36,7 +36,7 @@
    - Status tracking (6 states)
    - Automatic retry with exponential backoff (max 3 retries)
    - Domain-aware ordering
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/persistent_url_queue.py`
+   - Location: `/path/to/sofia/persistent_url_queue.py`
 
 4. **crawl_orchestrator.py** (358 lines)
    - Integration layer coordinating all components
@@ -44,7 +44,7 @@
    - Post-crawl recording (success/failure/blocked)
    - Domain round-robin for load distribution
    - Comprehensive health checks
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/crawl_orchestrator.py`
+   - Location: `/path/to/sofia/crawl_orchestrator.py`
 
 ### Testing
 
@@ -54,7 +54,7 @@
    - 100% pass rate
    - Real URL testing (Wikipedia)
    - Crash recovery testing
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/test_crawl_infrastructure.py`
+   - Location: `/path/to/sofia/test_crawl_infrastructure.py`
 
 ### Documentation
 
@@ -66,7 +66,7 @@
    - Performance characteristics
    - Ethical crawling best practices
    - Troubleshooting guide
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/docs/CRAWL_INFRASTRUCTURE.md`
+   - Location: `/path/to/sofia/docs/CRAWL_INFRASTRUCTURE.md`
 
 7. **CRAWL_INFRASTRUCTURE_FILES_SUMMARY.md** (this file)
    - Complete file list
@@ -91,7 +91,7 @@
    - Added crawl failure recording (line 363)
    - Added immune block recording with orchestrator (line 309)
    - Added crawl stats to session summary (lines 770-774)
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/enhanced_autonomous_learner.py`
+   - Location: `/path/to/sofia/enhanced_autonomous_learner.py`
 
 2. **cli.py** (+~250 lines)
    - Added 6 command parsers (lines 151-174):
@@ -109,7 +109,7 @@
      - `cmd_crawl_clear()` - Clear old/all URLs
      - `cmd_robots_check()` - Check specific URL
      - `cmd_crawl_health()` - Run health diagnostics
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/cli.py`
+   - Location: `/path/to/sofia/cli.py`
 
 ### Documentation Updates
 
@@ -117,14 +117,14 @@
    - Added "Crawl Infrastructure Management" section (lines 254-273)
    - Added 6 CLI command examples
    - Updated Recent Updates with crawl infrastructure (lines 427-433)
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/README.md`
+   - Location: `/path/to/sofia/README.md`
 
 4. **docs/NOVEMBER_2025_UPDATES.md** (updated)
    - Added Section 11: Crawl Infrastructure (lines 588-872)
    - Detailed implementation documentation
    - Updated conclusion with crawl infrastructure (lines 875-904)
    - Updated test coverage count (40 tests total)
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/docs/NOVEMBER_2025_UPDATES.md`
+   - Location: `/path/to/sofia/docs/NOVEMBER_2025_UPDATES.md`
 
 ---
 
@@ -139,14 +139,14 @@ All databases stored in `data/crawl/`:
    - Stores robots.txt content with 24-hour expiry
    - Complete audit trail of all access checks
    - Tracks fetch status and errors
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/data/crawl/robots_cache.db`
+   - Location: `/path/to/sofia/data/crawl/robots_cache.db`
 
 2. **data/crawl/rate_limiter.db**
    - Tables: `domain_requests`, `request_history`
    - Stores per-domain rate limiting state
    - Complete request history for analytics
    - Tracks crawl delays and timing
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/data/crawl/rate_limiter.db`
+   - Location: `/path/to/sofia/data/crawl/rate_limiter.db`
 
 3. **data/crawl/url_queue.db**
    - Table: `url_queue`
@@ -154,7 +154,7 @@ All databases stored in `data/crawl/`:
    - Status tracking (6 states)
    - Retry counter and error logging
    - Source URL tracking
-   - Location: `/mnt/c/Users/kaitl/Documents/Core-Project - Copy/data/crawl/url_queue.db`
+   - Location: `/path/to/sofia/data/crawl/url_queue.db`
 
 ---
 

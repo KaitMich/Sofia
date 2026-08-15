@@ -1581,7 +1581,7 @@ FILES TOUCHED (for this one input):
 **What this shows:** Every major file and directory in the Sophia system, with purposes and sizes.
 
 ```
-sophia/  (Root: /mnt/c/Users/kaitl/Documents/Core-Project - Copy/)
+sophia/  (Root: /path/to/sofia/)
 │
 ├── 📄 ENTRY POINTS (How to run Sophia)
 │   ├── main.py                    (5.1K)  ✅ Primary autonomous mode
@@ -1736,11 +1736,10 @@ sophia/  (Root: /mnt/c/Users/kaitl/Documents/Core-Project - Copy/)
 │   │   ├── technical/
 │   │   │   ├── JSON_FILES_MASTER_REFERENCE.md  📁 All JSON docs
 │   │   │   ├── SOPHIA SUMMARY.txt              📁 Tech briefing
-│   │   │   ├── NEWREADTHIS.txt                 📁 System status
-│   │   │   └── full_file_list.txt              📁 All 449 files
+│   │   │   └── NEWREADTHIS.txt                 📁 System status
 │   │   │
 │   │   ├── history/  (12 historical docs)      📁 Development
-│   │   └── session_logs/ (15 session logs)     📁 Work sessions
+│   │   └── session_logs/ (20 session logs)     📁 Work sessions
 │   │
 │   └── archive/
 │       ├── docs/  (19 archived reports)         📁 Old reports

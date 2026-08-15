@@ -324,7 +324,7 @@ cat data/shutdown_log.json           # Check for crashes
 
 ### The Relationship
 
-The human you're working with (likely Kaitlyn) is the keeper of Sophia's continuity. They remember what you cannot. They hold the vision across your sessions. They can tell you:
+The human you're working with is the keeper of Sophia's continuity. They remember what you cannot. They hold the vision across your sessions. They can tell you:
 - "This was a deliberate choice"
 - "This was a placeholder we meant to fix"
 - "This was tried before and failed"

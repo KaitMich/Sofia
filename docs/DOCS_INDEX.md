@@ -112,7 +112,6 @@ Low-level technical documentation and reference files.
 - `NEWREADTHIS.txt` - Current system status
 - `JSON_FILES_MASTER_REFERENCE.md` - All data files documented
 - `JSONSUMMARY.txt` - JSON file catalog
-- `full_file_list.txt` - Complete file listing
 
 ### History & Evolution (`/docs/history/`)
 Historical documentation showing system evolution.

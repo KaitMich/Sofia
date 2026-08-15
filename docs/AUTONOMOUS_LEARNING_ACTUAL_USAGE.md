@@ -223,7 +223,7 @@ print(f\"Learning momentum: {curiosity.get('learning_momentum', 0):.4f}\" )
 
 ```bash
 # Navigate to project
-cd "/mnt/c/Users/kaitl/Documents/Core-Project - Copy"
+cd "/path/to/sofia"
 
 # OPTION A: Let Sophia choose (TRUE AUTONOMY)
 python3 << 'EOF'

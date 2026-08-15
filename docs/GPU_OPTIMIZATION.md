@@ -177,7 +177,7 @@ inputs = gpu.move_inputs_to_device(inputs)
 **On Windows (production):**
 
 ```bash
-cd "C:\Users\kaitl\Documents\Core-Project - Copy"
+cd "C:\path\to\sofia"
 python benchmark_emotion_gpu.py
 ```
 
@@ -500,7 +500,7 @@ The emotion detection system is now GPU-accelerated and ready for production use
 **Test vector embeddings:**
 
 ```bash
-cd "/mnt/c/Users/kaitl/Documents/Core-Project - Copy"
+cd "/path/to/sofia"
 python benchmark_vector_gpu.py
 ```
 

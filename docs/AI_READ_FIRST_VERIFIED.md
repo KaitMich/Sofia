@@ -53,19 +53,7 @@
 **Status:** Truth framework correcting false claims across the system
 **Why:** Without this, you will inherit false assumptions about emergence, identity, and values
 
-### 1. `/docs/technical/full_file_list.txt`
-**Status:** VERIFIED - File exists
-**Why:** Complete inventory of all 449 files in the system
-**What you'll learn:**
-- Every Python script and its location
-- All 140+ JSON data files
-- Documentation structure
-- Archive locations
-- Complete file organization
-
-**Read this first** so you understand the scope and structure of what you're maintaining.
-
-### 2. `/docs/technical/JSON_FILES_MASTER_REFERENCE.md`
+### 1. `/docs/technical/JSON_FILES_MASTER_REFERENCE.md`
 **Status:** VERIFIED - File exists
 **Why:** Comprehensive documentation of all JSON data files
 **What you'll learn:**

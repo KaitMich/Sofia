@@ -357,7 +357,7 @@ print(result['next_phase_query'])
 
 **Test 2: Run Test Suite**
 ```bash
-cd "/mnt/c/Users/kaitl/Documents/Core-Project - Copy"
+cd "/path/to/sofia"
 python test_saturation_learning.py
 ```
 

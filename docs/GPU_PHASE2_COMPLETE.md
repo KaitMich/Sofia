@@ -209,7 +209,7 @@ model = SentenceTransformer(model_name, device=device)
 ### Test on Windows (Production)
 
 ```bash
-cd "C:\Users\kaitl\Documents\Core-Project - Copy"
+cd "C:\path\to\sofia"
 
 # Check configuration
 python -c "from gpu_config import get_gpu_config; get_gpu_config()"
@@ -237,7 +237,7 @@ Overall statistics (device: cuda:0):
 ### Test on WSL (Development)
 
 ```bash
-cd "/mnt/c/Users/kaitl/Documents/Core-Project - Copy"
+cd "/path/to/sofia"
 
 # Benchmark vector operations
 python benchmark_vector_gpu.py

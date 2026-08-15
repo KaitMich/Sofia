@@ -101,12 +101,6 @@
 **Why Here:** Root location for validators to access semantic rules
 **Used By:** deep_semantic_validator.py, semantic validation systems
 
-### sophia_ai_module_manifest.json
-**Location:** `/Core-Project - Copy/sophia_ai_module_manifest.json`
-**Purpose:** Module manifest defining system components and their relationships
-**Why Here:** Root location as central registry of all system modules
-**Used By:** Module loaders, system orchestration, integration systems
-
 ### symbol_data.json
 **Location:** `/Core-Project - Copy/symbol_data.json`
 **Purpose:** Core symbol definitions and metadata
@@ -118,16 +112,6 @@
 **Purpose:** Historical record of validation tests and results
 **Why Here:** Root location for tracking system validation over time
 **Used By:** Validation systems, testing frameworks
-
----
-
-## Configuration & Settings
-
-### .claude/settings.local.json
-**Location:** `/Core-Project - Copy/.claude/settings.local.json`
-**Purpose:** Local Claude Code IDE settings
-**Why Here:** Hidden directory (.claude/) for IDE-specific configuration
-**Used By:** Claude Code IDE
 
 ---
 
@@ -1116,7 +1100,6 @@
 - data/evolution_anchors/: 1 file
 - data/data/ (duplicate): 2 files
 - temp_test_dir/: 4 files
-- .claude/: 1 file
 - data/immune/: 2 SQLite databases (NON-JSON)
 - data/logs/session_reports/: Multiple .md files (NON-JSON)
 

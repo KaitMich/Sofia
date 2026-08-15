@@ -108,7 +108,7 @@ This uses preset curiosity drives to generate learning targets. Note: these driv
 
 ```bash
 # Navigate to project directory
-cd "/mnt/c/Users/kaitl/Documents/Core-Project - Copy"
+cd "/path/to/sofia"
 
 # Run autonomous learning session
 python3 -c "

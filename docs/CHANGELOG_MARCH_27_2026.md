@@ -108,14 +108,6 @@ Every `.md` and `.txt` file in docs/, archive/, utils/, optional_features/, and 
 
 ---
 
-## Memory Files
-- **~/.claude/projects/.../memory/user_kaitlyn.md** — User profile
-- **~/.claude/projects/.../memory/project_sofia_core_philosophy.md** — Core philosophy (blank start, learning spiral, anti-obsession)
-- **~/.claude/projects/.../memory/feedback_no_hardcoding_identity.md** — Critical design rule
-- **~/.claude/projects/.../memory/project_session_march27_2026.md** — Session progress tracker
-
----
-
 ## March 28, 2026 Addendum: Scaffolding vs. Curriculum Distinction
 
 ### Problem Discovered

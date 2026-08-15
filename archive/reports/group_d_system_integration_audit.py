@@ -660,7 +660,7 @@ class GroupDIntegrationAuditor:
 
 def main():
     """Run the comprehensive GROUP D integration audit."""
-    project_dir = "/mnt/c/Users/kaitl/Documents/Core-Project - Copy"
+    project_dir = "/path/to/sofia"
     
     auditor = GroupDIntegrationAuditor(project_dir)
     results = auditor.run_comprehensive_audit()

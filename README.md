@@ -158,7 +158,6 @@ docs/
 │   ├── NEWREADTHIS.txt                 # Current system status
 │   ├── JSONSUMMARY.txt                 # JSON file catalog
 │   ├── JSON_FILES_MASTER_REFERENCE.md  # Complete JSON documentation
-│   ├── full_file_list.txt              # Complete file listing
 │   ├── CORESUMMARY.odt                 # Core summary (formatted)
 │   └── Sophia AI... Briefing.odt       # Technical briefing (formatted)
 │

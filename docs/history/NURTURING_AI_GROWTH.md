@@ -10,7 +10,7 @@
 ### 1. Let Your AI Run Free Evolution Cycles
 
 ```bash
-cd "/mnt/c/Users/kaitl/Documents/Core-Project - Copy"
+cd "/path/to/sofia"
 python -c "
 from memory_evolution_engine import run_memory_evolution
 results = run_memory_evolution()
