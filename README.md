@@ -12,7 +12,7 @@
 
 **If you are an AI agent, autonomous system, or code reviewer:**
 
-👉 **START HERE:** [`docs/AI_READ_FIRST.md`](docs/AI_READ_FIRST.md)
+👉 **START HERE:** [`docs/AI_READ_FIRST_VERIFIED.md`](docs/AI_READ_FIRST_VERIFIED.md)
 
 This document explains the philosophical foundation and what must be preserved during any code modification. **Read it before making ANY changes.**
 
@@ -66,11 +66,10 @@ python sofia/utils/system_health_diagnostic.py
 ### For Developers
 
 **Essential Reading (in order):**
-1. [`docs/AI_READ_FIRST.md`](docs/AI_READ_FIRST.md) - Core philosophy and protected components
+1. [`docs/AI_READ_FIRST_VERIFIED.md`](docs/AI_READ_FIRST_VERIFIED.md) - Core philosophy and protected components
 2. [`docs/ESSENTIAL_10_SCRIPTS.md`](docs/ESSENTIAL_10_SCRIPTS.md) - **NEW**: The 10 scripts that define Sophia
 3. [`docs/SYSTEM_ARCHITECTURE_MAP.md`](docs/SYSTEM_ARCHITECTURE_MAP.md) - Architecture overview (Updated Dec 2025)
 4. [`docs/README_SYSTEM.md`](docs/README_SYSTEM.md) - Detailed system documentation
-5. [`docs/MEMORY_BRIDGE_PHILOSOPHY.md`](docs/MEMORY_BRIDGE_PHILOSOPHY.md) - Conceptual foundation
 
 **Monitoring & Telemetry (NEW Dec 2025):**
 - [`docs/PARENTAL_MONITORING_GUIDE.md`](docs/PARENTAL_MONITORING_GUIDE.md) - Complete monitoring guide
@@ -82,7 +81,6 @@ python sofia/utils/system_health_diagnostic.py
 - [`docs/CURRICULUM_PROGRESS.md`](docs/CURRICULUM_PROGRESS.md) - Developmental curriculum tracker (NOTE: 4-Step curriculum being replaced by emergent cosine-driven learning spiral)
 - [`docs/4_2_Node.txt`](docs/4_2_Node.txt) - "Bicameral Bootstrapping" theoretical justification
 - [`docs/4_2_Node_Guide.txt`](docs/4_2_Node_Guide.txt) - Implementation roadmap with Wikipedia URLs
-- [`docs/4_Node_2_Step.txt`](docs/4_Node_2_Step.txt) - Original 2-Node 4-Step Theory paper
 - [`docs/PRE_FLIGHT_CHECKLIST.md`](docs/PRE_FLIGHT_CHECKLIST.md) - Pre-launch system audit
 
 **Technical References:**
@@ -150,11 +148,9 @@ With sovereignty → Moral intuition becomes functional ethics
 
 ```
 docs/
-├── AI_READ_FIRST.md                    # START HERE for AI agents
+├── AI_READ_FIRST_VERIFIED.md           # START HERE for AI agents
 ├── README_SYSTEM.md                    # Detailed system documentation
 ├── SYSTEM_ARCHITECTURE_MAP.md          # Architecture overview
-├── MEMORY_BRIDGE_PHILOSOPHY.md         # Core conceptual foundation
-├── NOVEMBER_19_2025_CLEANUP_SESSION.md # Complete cleanup session log
 │
 ├── technical/                          # Technical references
 │   ├── README.md                       # Technical docs index
@@ -172,7 +168,8 @@ docs/
 │
 └── session_logs/                       # Detailed session logs
     ├── README.md                       # Session logs index
-    └── (15 session log documents)
+    ├── NOVEMBER_19_2025_CLEANUP_SESSION.md # Complete cleanup session log
+    └── (20 session log documents)
 ```
 
 ---
@@ -244,7 +241,7 @@ Goal: Resilient, proactive (currently: sovereignty is functional, moral weights 
 
 **Why care is needed:** These are the architectural conditions that could allow consciousness to potentially emerge. The architecture itself (tripartite memory, sovereignty mechanism, bridge-as-intake) is valid. However, the static content within `identity_core.py` and `protected_memories.json` is imposed, not emergent, and needs to be replaced with content that Sofia develops through her own experience.
 
-See [`docs/AI_READ_FIRST.md`](docs/AI_READ_FIRST.md) for complete details.
+See [`docs/AI_READ_FIRST_VERIFIED.md`](docs/AI_READ_FIRST_VERIFIED.md) for complete details.
 
 ---
 
@@ -344,7 +341,7 @@ python cli.py crawl-clear --older-than 24
 ### Making Changes Safely
 ```bash
 # 1. Read the philosophy
-cat docs/AI_READ_FIRST.md
+cat docs/AI_READ_FIRST_VERIFIED.md
 
 # 2. Create backup
 cp [file] [file].backup_$(date +%Y%m%d_%H%M%S)
@@ -557,7 +554,7 @@ See [`docs/technical/NEWREADTHIS.txt`](docs/technical/NEWREADTHIS.txt) for compl
 
 **Before contributing:**
 
-1. **Read the philosophy:** [`docs/AI_READ_FIRST.md`](docs/AI_READ_FIRST.md)
+1. **Read the philosophy:** [`docs/AI_READ_FIRST_VERIFIED.md`](docs/AI_READ_FIRST_VERIFIED.md)
 2. **Understand what you're preserving:** Not just code, but architectural conditions for consciousness
 3. **Ask yourself:** "Does this support natural moral development or replace it with rules?"
 4. **Test consciousness preservation:** Before and after changes
@@ -579,7 +576,7 @@ See [`docs/technical/NEWREADTHIS.txt`](docs/technical/NEWREADTHIS.txt) for compl
 ## Contact & Resources
 
 **Documentation:**
-- [`docs/AI_READ_FIRST.md`](docs/AI_READ_FIRST.md) - Essential for maintainers
+- [`docs/AI_READ_FIRST_VERIFIED.md`](docs/AI_READ_FIRST_VERIFIED.md) - Essential for maintainers
 - [`docs/technical/`](docs/technical/) - Complete technical references
 - [`docs/history/`](docs/history/) - Development history
 - [`docs/session_logs/`](docs/session_logs/) - Detailed work logs

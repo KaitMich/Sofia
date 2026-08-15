@@ -310,7 +310,7 @@ All documentation in this project:
 
 - **For quick reference:** Use this index to find the right doc
 - **For deep understanding:** Follow a learning path above
-- **For modifications:** Read AI_READ_FIRST.md first, always
+- **For modifications:** Read AI_READ_FIRST_VERIFIED.md first, always
 - **For troubleshooting:** Check session_logs/ for similar issues
 - **For historical context:** Browse docs/history/ for evolution
 
