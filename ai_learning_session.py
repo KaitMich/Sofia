@@ -5,16 +5,17 @@ through web crawling and self-reflection while maintaining cognitive safety.
 
 This is not just data ingestion - this is guided cognitive development.
 """
+import sitecustomize
 
 import json
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
-from memory_optimizer import process_web_url_placeholder, recompute_adaptive_link_weights
-from evolution_anchor import EvolutionAnchor
-from unified_memory import get_unified_memory, generate_self_diagnostic_voice
-from memory_analytics import MemoryAnalyzer
+from sofia.memory.memory_optimizer import process_web_url_placeholder, recompute_adaptive_link_weights
+from sofia.memory.evolution_anchor import EvolutionAnchor
+from sofia.core.unified_memory import get_unified_memory, generate_self_diagnostic_voice
+from sofia.memory.memory_analytics import MemoryAnalyzer
 
 class AILearningSession:
     """

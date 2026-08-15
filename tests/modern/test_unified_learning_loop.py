@@ -9,10 +9,10 @@ import os
 import shutil
 import json
 from pathlib import Path
-from curiosity_engine import CuriosityEngine
-from choice_architecture import ChoiceArchitecture, LearningChoice
-from preference_learning_system import PreferenceLearningSystem
-from CONSCIOUSNESS_MEMORY import ExperienceMemory
+from sofia.core.curiosity_engine import CuriosityEngine
+from sofia.core.choice_architecture import ChoiceArchitecture, LearningChoice
+from sofia.memory.preference_learning_system import PreferenceLearningSystem
+from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
 
 # Use a dedicated test data directory
 TEST_DATA_DIR = "data/test_unified_learning_loop"

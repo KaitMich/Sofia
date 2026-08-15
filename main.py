@@ -1,3 +1,4 @@
+import sitecustomize
 import sys
 import re
 import asyncio
@@ -10,21 +11,21 @@ orchestrator = get_unified_orchestration_system()
 data_manager = DataManager()
 
 # Legacy imports for compatibility
-from parser import parse_input, extract_symbolic_units, parse_with_emotion
-from web_parser import process_web_url
-from unified_memory import VectorMemory
+from sofia.utils.parser import parse_input, extract_symbolic_units, parse_with_emotion
+from sofia.crawler.web_parser import process_web_url
+from sofia.core.unified_memory import VectorMemory
 vector_memory = VectorMemory()
 # cluster_vectors_and_plot moved to unified_symbol_system if needed
-from unified_memory import log_trail, add_emotions
-from trail_graph import show_trail_graph
-from emotion_handler import predict_emotions
-from unified_symbol_system import UnifiedSymbolSystem
+from sofia.core.unified_memory import log_trail, add_emotions
+from sofia.utils.trail_graph import show_trail_graph
+from sofia.utils.emotion_handler import predict_emotions
+from sofia.core.unified_symbol_system import UnifiedSymbolSystem
 symbol_system = UnifiedSymbolSystem()
 
 # Graph tools
-from symbol_drift_plot import show_symbol_drift
-from symbol_emotion_cluster import show_emotion_clusters
-from symbol_cluster import cluster_vectors_and_plot
+from sofia.utils.symbol_drift_plot import show_symbol_drift
+from sofia.core.symbol_emotion_cluster import show_emotion_clusters
+from sofia.core.symbol_cluster import cluster_vectors_and_plot
 
 
 def is_url(text):
@@ -279,7 +280,7 @@ async def show_system_status():
     # Add comprehensive memory status
     print("\n🧠 Memory Inventory:")
     try:
-        from unified_memory import get_unified_memory
+        from sofia.core.unified_memory import get_unified_memory
         memory = get_unified_memory()
         stats = memory.get_unified_stats()
         

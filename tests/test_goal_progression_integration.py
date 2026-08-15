@@ -4,8 +4,8 @@ GROUP B Integration Test: Goal Prioritization ↔ Learning Progression Tracker
 Tests the bidirectional integration between goal prioritization and learning progression tracking.
 """
 
-from goal_prioritization import GoalPrioritizationEngine, LearningGoal
-from learning_progression_tracker import LearningProgressionTracker
+from sofia.core.goal_prioritization import GoalPrioritizationEngine, LearningGoal
+from sofia.utils.learning_progression_tracker import LearningProgressionTracker
 import json
 from datetime import datetime, timezone
 

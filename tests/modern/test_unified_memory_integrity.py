@@ -10,8 +10,8 @@ import shutil
 import json
 import numpy as np
 from pathlib import Path
-from unified_memory import TripartiteMemory
-from adaptive_bridge_migration import AdaptiveMigrationEngine, get_or_compute_embedding
+from sofia.core.unified_memory import TripartiteMemory
+from sofia.memory.adaptive_bridge_migration import AdaptiveMigrationEngine, get_or_compute_embedding
 
 # Use a dedicated test data directory
 TEST_DATA_DIR = "data/test_memory_integrity"

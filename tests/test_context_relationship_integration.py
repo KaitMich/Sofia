@@ -4,8 +4,8 @@ GROUP B Integration Test: Context Engine ↔ Relationship Tracker
 Tests the bidirectional integration between context analysis and relationship tracking.
 """
 
-from context_engine import ContextEngine
-from relationship_tracker import RelationshipTracker
+from sofia.core.context_engine import ContextEngine
+from sofia.core.relationship_tracker import RelationshipTracker
 import json
 from datetime import datetime, timezone
 

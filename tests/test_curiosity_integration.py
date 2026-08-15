@@ -8,8 +8,8 @@ def test_curiosity_integration():
     
     try:
         # Test 1: Import and initialize
-        from curiosity_engine import CuriosityEngine
-        from learning_progression_tracker import LearningProgressionTracker
+        from sofia.core.curiosity_engine import CuriosityEngine
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
         
         curiosity = CuriosityEngine()
         progression = LearningProgressionTracker()

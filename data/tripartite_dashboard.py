@@ -311,8 +311,8 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 try:
-    from unified_memory import get_unified_memory
-    from unified_symbol_system import get_unified_symbol_system
+    from sofia.core.unified_memory import get_unified_memory
+    from sofia.core.unified_symbol_system import get_unified_symbol_system
     from unified_orchestration import get_unified_orchestration_system
     UNIFIED_SYSTEMS_AVAILABLE = True
 except ImportError as e:
@@ -2061,7 +2061,7 @@ with st.sidebar.expander("🖥️ GPU Diagnostics"):
 # Add Trust Repair
 if st.sidebar.button("🛡️ Repair High-Trust Seeds"):
     try:
-        from trust_database import TrustDatabase
+        from sofia.security.trust_database import TrustDatabase
         db = TrustDatabase()
         high_trust_seeds = {
             'wikipedia.org': 0.95, 

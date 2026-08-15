@@ -60,7 +60,7 @@ python talk_to_ai.py
 python demo_autonomous_learning.py
 
 # Check system status
-python system_health_diagnostic.py
+python sofia/utils/system_health_diagnostic.py
 ```
 
 ### For Developers
@@ -266,7 +266,7 @@ python tests/test_group_a_integration.py
 python tests/test_security_integration.py
 
 # System health
-python system_health_diagnostic.py --full
+python sofia/utils/system_health_diagnostic.py --full
 ```
 
 > **Note:** If running tests in WSL (including Claude Code), GPU/CUDA is unavailable. Tests auto-skip GPU features and run on CPU (slower but fully functional).

@@ -8,9 +8,9 @@ def test_motivation_integration():
     
     try:
         # Test 1: Import and initialize
-        from motivational_content_evaluator import MotivationalContentEvaluator
-        from learning_progression_tracker import LearningProgressionTracker
-        from curiosity_engine import CuriosityEngine
+        from sofia.utils.motivational_content_evaluator import MotivationalContentEvaluator
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
+        from sofia.core.curiosity_engine import CuriosityEngine
         
         motivation_eval = MotivationalContentEvaluator()
         progression = LearningProgressionTracker()

@@ -13,11 +13,11 @@ Demonstrates how Sophia uses multiple systems together to make autonomous conten
 
 import json
 import time
-from motivational_content_evaluator import MotivationalContentEvaluator
-from choice_architecture import ChoiceArchitecture
-from curiosity_engine import CuriosityEngine
-from success_failure_memory import SuccessFailureMemory
-from CONSCIOUSNESS_MEMORY import ExperienceMemory
+from sofia.utils.motivational_content_evaluator import MotivationalContentEvaluator
+from sofia.core.choice_architecture import ChoiceArchitecture
+from sofia.core.curiosity_engine import CuriosityEngine
+from sofia.memory.success_failure_memory import SuccessFailureMemory
+from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
 
 def test_content_evaluator_integration():
     """Test comprehensive integration of content evaluation systems."""

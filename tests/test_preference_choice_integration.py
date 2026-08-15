@@ -4,8 +4,8 @@ GROUP B Integration Test: Preference Learning System ↔ Choice Architecture
 Tests the bidirectional integration between preference learning and autonomous choice making.
 """
 
-from preference_learning_system import PreferenceLearningSystem
-from choice_architecture import ChoiceArchitecture
+from sofia.memory.preference_learning_system import PreferenceLearningSystem
+from sofia.core.choice_architecture import ChoiceArchitecture
 import json
 
 def test_preference_choice_bidirectional_integration():

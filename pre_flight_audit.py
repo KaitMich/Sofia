@@ -11,6 +11,7 @@ Runs comprehensive checks on:
 - Configuration and dependencies
 - Recent session status
 """
+import sitecustomize
 
 import os
 import sys

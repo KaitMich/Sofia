@@ -13,11 +13,11 @@ Demonstrates how Sophia learns from outcomes to make better future decisions.
 
 import json
 import time
-from success_failure_memory import SuccessFailureMemory
-from CONSCIOUSNESS_MEMORY import ExperienceMemory
-from choice_architecture import ChoiceArchitecture
-from learning_progression_tracker import LearningProgressionTracker
-from INSIGHT_RELEVANCE import PersonalInsightGenerator
+from sofia.memory.success_failure_memory import SuccessFailureMemory
+from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+from sofia.core.choice_architecture import ChoiceArchitecture
+from sofia.utils.learning_progression_tracker import LearningProgressionTracker
+from sofia.core.INSIGHT_RELEVANCE import PersonalInsightGenerator
 
 def test_success_failure_integration():
     """Test comprehensive integration of success/failure learning."""

@@ -20,7 +20,7 @@ def test_authentic_vs_programmed_distinction():
     print("\n🎯 Testing Authentic vs Programmed Response Distinction")
     
     try:
-        from authentic_expression_calibrator import AuthenticExpressionCalibrator
+        from sofia.core.authentic_expression_calibrator import AuthenticExpressionCalibrator
         calibrator = AuthenticExpressionCalibrator()
         
         # Test cases: (input, expected_authentic, description)
@@ -77,7 +77,7 @@ def test_preference_learning_over_time():
     print("\n💭 Testing Preference Learning Over Time")
     
     try:
-        from preference_learning_system import PreferenceLearningSystem
+        from sofia.memory.preference_learning_system import PreferenceLearningSystem
         pref_system = PreferenceLearningSystem()
         
         # Get initial state
@@ -134,7 +134,7 @@ def test_autonomous_goal_prioritization():
     print("\n🎯 Testing Autonomous Goal Prioritization")
     
     try:
-        from goal_prioritization import GoalPrioritizationEngine
+        from sofia.core.goal_prioritization import GoalPrioritizationEngine
         engine = GoalPrioritizationEngine()
         
         # Test autonomous queue generation
@@ -194,7 +194,7 @@ def test_contextual_understanding():
     print("\n🧠 Testing Contextual Understanding")
     
     try:
-        from context_engine import ContextEngine
+        from sofia.core.context_engine import ContextEngine
         context_eng = ContextEngine()
         
         # Test contextual analysis with different contexts
@@ -303,7 +303,7 @@ def test_integration_vs_isolation():
     
     # Test authentic_expression_calibrator
     try:
-        from authentic_expression_calibrator import AuthenticExpressionCalibrator
+        from sofia.core.authentic_expression_calibrator import AuthenticExpressionCalibrator
         calibrator = AuthenticExpressionCalibrator()
         calibrator.should_allow_authentic_expression("Test input")
         results['authentic_expression_calibrator'] = {
@@ -320,7 +320,7 @@ def test_integration_vs_isolation():
     
     # Test preference_learning_system
     try:
-        from preference_learning_system import PreferenceLearningSystem, PREFERENCE_SYSTEMS_AVAILABLE
+        from sofia.memory.preference_learning_system import PreferenceLearningSystem, PREFERENCE_SYSTEMS_AVAILABLE
         pref_system = PreferenceLearningSystem()
         
         # Test basic functionality
@@ -347,7 +347,7 @@ def test_integration_vs_isolation():
     
     # Test goal_prioritization
     try:
-        from goal_prioritization import GoalPrioritizationEngine, MOTIVATION_SYSTEMS_AVAILABLE
+        from sofia.core.goal_prioritization import GoalPrioritizationEngine, MOTIVATION_SYSTEMS_AVAILABLE
         engine = GoalPrioritizationEngine()
         
         # Test basic functionality
@@ -374,7 +374,7 @@ def test_integration_vs_isolation():
     
     # Test context_engine
     try:
-        from context_engine import ContextEngine
+        from sofia.core.context_engine import ContextEngine
         context_eng = ContextEngine()
         
         # Test basic functionality

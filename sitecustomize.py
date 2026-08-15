@@ -1,26 +1,34 @@
-# sitecustomize.py - Global Python customization for torch compatibility
+# sitecustomize.py - Global Python customization
 """
-This module is automatically imported by Python on startup to ensure
-the torch.classes.__path__ fix is applied before any modules import torch.
-This prevents the Streamlit file watcher "path._path" error during hot reloads.
-
-Place this file in your project root or site-packages directory.
+Explicitly imported by each entry-point script (not relied on to auto-load --
+CPython does not reliably auto-import a bare sitecustomize.py sitting in a
+script's own directory; that mechanism only fires for one placed in an actual
+site-packages directory). Import this first, before anything else:
+1. Reconfigures stdout and stderr to UTF-8 to prevent Windows console encoding errors.
+2. Applies the torch.classes.__path__ fix before any modules import torch.
 """
 
+import sys
+
+# 1. UTF-8 Console / Stream Reconfiguration for Windows
+try:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    if hasattr(sys.stderr, "reconfigure"):
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
+# 2. PyTorch Streamlit Hot-Reload Compatibility
 try:
     import torch
     import types
-    
-    # Ensure torch.classes exists and has empty __path__ to prevent Streamlit watcher issues
+
     if not hasattr(torch, "classes"):
         torch.classes = types.ModuleType("torch.classes")
-    
-    # Always reset __path__ to empty list to prevent file watcher conflicts
+
     torch.classes.__path__ = []
-    
 except ImportError:
-    # torch not available - no action needed
     pass
-except Exception as e:
-    # Silently handle any other errors during initialization
+except Exception:
     pass

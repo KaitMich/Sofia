@@ -169,7 +169,7 @@ def test_brain_metrics_health_analysis() -> Dict[str, Any]:
     result = {"passed": False, "score": 0.0, "errors": []}
     
     try:
-        from brain_metrics import BrainMetrics
+        from sofia.memory.brain_metrics import BrainMetrics
         
         # Initialize brain metrics
         brain_metrics = BrainMetrics()
@@ -276,7 +276,7 @@ def test_memory_optimizer_performance() -> Dict[str, Any]:
     result = {"passed": False, "score": 0.0, "errors": []}
     
     try:
-        from memory_optimizer import optimize_unified_memory_performance, perform_predictive_memory_optimization
+        from sofia.memory.memory_optimizer import optimize_unified_memory_performance, perform_predictive_memory_optimization
         
         # Test unified memory performance optimization
         optimization_report = optimize_unified_memory_performance()
@@ -321,7 +321,7 @@ def test_episodic_memory_integration() -> Dict[str, Any]:
     result = {"passed": False, "score": 0.0, "errors": []}
     
     try:
-        from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
+        from sofia.core.CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
         
         # Initialize episodic memory system
         episodic_system = EpisodicMemorySystem()
@@ -362,7 +362,7 @@ def test_memory_health_dashboard() -> Dict[str, Any]:
     
     try:
         from memory_maintenance import get_memory_health_dashboard
-        from brain_metrics import BrainMetrics
+        from sofia.memory.brain_metrics import BrainMetrics
         
         # Test dashboard generation
         dashboard = get_memory_health_dashboard()
@@ -404,9 +404,9 @@ def test_end_to_end_memory_health() -> Dict[str, Any]:
     result = {"passed": False, "score": 0.0, "errors": []}
     
     try:
-        from brain_metrics import BrainMetrics
+        from sofia.memory.brain_metrics import BrainMetrics
         from memory_maintenance import MemoryMaintenanceManager
-        from memory_optimizer import optimize_unified_memory_performance
+        from sofia.memory.memory_optimizer import optimize_unified_memory_performance
         
         # Step 1: Health analysis
         brain_metrics = BrainMetrics()

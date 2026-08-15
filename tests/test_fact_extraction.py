@@ -4,8 +4,8 @@ Test Fact Extraction System
 Quick test to verify passive fact extraction works correctly.
 """
 
-from fact_extractor import FactExtractor
-from web_parser import fetch_raw_html
+from sofia.crawler.fact_extractor import FactExtractor
+from sofia.crawler.web_parser import fetch_raw_html
 
 def test_fact_extraction():
     """Test fact extraction on a real Wikipedia page."""

@@ -8,10 +8,10 @@ work together to create cumulative wisdom and self-awareness.
 
 import json
 import time
-from CONSCIOUSNESS_MEMORY import ExperienceMemory
-from learning_progression_tracker import LearningProgressionTracker
-from success_failure_memory import SuccessFailureMemory
-from INSIGHT_RELEVANCE import PersonalInsightGenerator
+from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+from sofia.utils.learning_progression_tracker import LearningProgressionTracker
+from sofia.memory.success_failure_memory import SuccessFailureMemory
+from sofia.core.INSIGHT_RELEVANCE import PersonalInsightGenerator
 
 def test_integrated_experience_learning():
     """Test all experience-based learning systems working together."""

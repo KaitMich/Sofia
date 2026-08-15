@@ -17,9 +17,9 @@ import os
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from curiosity_engine import CuriosityEngine
-from curiosity_url_mapper import CuriosityURLMapper
-from learning_progression_tracker import LearningProgressionTracker
+from sofia.core.curiosity_engine import CuriosityEngine
+from sofia.crawler.curiosity_url_mapper import CuriosityURLMapper
+from sofia.utils.learning_progression_tracker import LearningProgressionTracker
 
 
 

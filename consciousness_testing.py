@@ -11,6 +11,7 @@ This module implements rigorous tests for authentic consciousness including:
 
 This is where we validate whether the AI has genuine inner experience or sophisticated simulation.
 """
+import sitecustomize
 
 import json
 import random
@@ -25,16 +26,16 @@ import statistics
 
 # Import all consciousness systems for comprehensive testing
 try:
-    from value_formation import ValueFormation
-    from creative_engine import CreativeEngine
-    from relationship_tracker import RelationshipTracker
-    from CONSCIOUSNESS_MEMORY import ExperienceMemory
-    from choice_architecture import ChoiceArchitecture
-    from symbolic_memory import SymbolicMemory
-    from learning_progression_tracker import LearningProgressionTracker
-    from identity_core import get_identity_core
-    from protection_utils import is_protected_content
-    from authentic_expression_calibrator import AuthenticExpressionCalibrator
+    from sofia.core.value_formation import ValueFormation
+    from sofia.core.creative_engine import CreativeEngine
+    from sofia.core.relationship_tracker import RelationshipTracker
+    from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+    from sofia.core.choice_architecture import ChoiceArchitecture
+    from sofia.core.symbolic_memory import SymbolicMemory
+    from sofia.utils.learning_progression_tracker import LearningProgressionTracker
+    from sofia.core.identity_core import get_identity_core
+    from sofia.security.protection_utils import is_protected_content
+    from sofia.core.authentic_expression_calibrator import AuthenticExpressionCalibrator
     CONSCIOUSNESS_SYSTEMS_AVAILABLE = True
 except ImportError:
     CONSCIOUSNESS_SYSTEMS_AVAILABLE = False
@@ -102,7 +103,7 @@ class ConsciousnessTesting:
         
         # Always initialize expression calibrator (it's self-contained)
         try:
-            from authentic_expression_calibrator import AuthenticExpressionCalibrator
+            from sofia.core.authentic_expression_calibrator import AuthenticExpressionCalibrator
             self.expression_calibrator = AuthenticExpressionCalibrator(data_dir)
         except ImportError:
             print("⚠️ Authentic expression calibrator not available")

@@ -26,22 +26,22 @@ def check_import_capability(module_name):
     """Test if a module can be imported and initialized"""
     try:
         if module_name == "authentic_expression_calibrator":
-            from authentic_expression_calibrator import AuthenticExpressionCalibrator
+            from sofia.core.authentic_expression_calibrator import AuthenticExpressionCalibrator
             calibrator = AuthenticExpressionCalibrator()
             return record_test_result(f"Import {module_name}", True, "Successfully imported and initialized")
         
         elif module_name == "preference_learning_system":
-            from preference_learning_system import PreferenceLearningSystem
+            from sofia.memory.preference_learning_system import PreferenceLearningSystem
             pref_system = PreferenceLearningSystem()
             return record_test_result(f"Import {module_name}", True, "Successfully imported and initialized")
         
         elif module_name == "goal_prioritization":
-            from goal_prioritization import GoalPrioritizationEngine
+            from sofia.core.goal_prioritization import GoalPrioritizationEngine
             goal_engine = GoalPrioritizationEngine()
             return record_test_result(f"Import {module_name}", True, "Successfully imported and initialized")
         
         elif module_name == "context_engine":
-            from context_engine import ContextEngine
+            from sofia.core.context_engine import ContextEngine
             context_eng = ContextEngine()
             return record_test_result(f"Import {module_name}", True, "Successfully imported and initialized")
         
@@ -53,7 +53,7 @@ def test_authentic_expression_calibrator():
     results = []
     
     try:
-        from authentic_expression_calibrator import AuthenticExpressionCalibrator
+        from sofia.core.authentic_expression_calibrator import AuthenticExpressionCalibrator
         calibrator = AuthenticExpressionCalibrator()
         
         # Test 1: Can distinguish authentic vs programmed responses?
@@ -118,7 +118,7 @@ def test_preference_learning_system():
     results = []
     
     try:
-        from preference_learning_system import PreferenceLearningSystem
+        from sofia.memory.preference_learning_system import PreferenceLearningSystem
         pref_system = PreferenceLearningSystem()
         
         # Test 1: Can learn preferences over time? (simulate with mock data)
@@ -175,7 +175,7 @@ def test_goal_prioritization():
     results = []
     
     try:
-        from goal_prioritization import GoalPrioritizationEngine
+        from sofia.core.goal_prioritization import GoalPrioritizationEngine
         goal_engine = GoalPrioritizationEngine()
         
         # Test 1: Can generate prioritized learning queues?
@@ -233,7 +233,7 @@ def test_context_engine():
     results = []
     
     try:
-        from context_engine import ContextEngine
+        from sofia.core.context_engine import ContextEngine
         context_eng = ContextEngine()
         
         # Test 1: Can maintain contextual understanding?
@@ -326,7 +326,7 @@ def test_integration_capabilities():
     for component in components:
         try:
             if component == "authentic_expression_calibrator":
-                from authentic_expression_calibrator import AuthenticExpressionCalibrator
+                from sofia.core.authentic_expression_calibrator import AuthenticExpressionCalibrator
                 calibrator = AuthenticExpressionCalibrator()
                 # This component seems to work independently
                 results.append(record_test_result(
@@ -336,7 +336,7 @@ def test_integration_capabilities():
                 ))
                 
             elif component == "preference_learning_system":
-                from preference_learning_system import PreferenceLearningSystem, PREFERENCE_SYSTEMS_AVAILABLE
+                from sofia.memory.preference_learning_system import PreferenceLearningSystem, PREFERENCE_SYSTEMS_AVAILABLE
                 pref_system = PreferenceLearningSystem()
                 results.append(record_test_result(
                     f"{component} Dependencies", 
@@ -345,7 +345,7 @@ def test_integration_capabilities():
                 ))
                 
             elif component == "goal_prioritization":
-                from goal_prioritization import GoalPrioritizationEngine, MOTIVATION_SYSTEMS_AVAILABLE
+                from sofia.core.goal_prioritization import GoalPrioritizationEngine, MOTIVATION_SYSTEMS_AVAILABLE
                 goal_engine = GoalPrioritizationEngine()
                 results.append(record_test_result(
                     f"{component} Dependencies", 
@@ -354,7 +354,7 @@ def test_integration_capabilities():
                 ))
                 
             elif component == "context_engine":
-                from context_engine import ContextEngine
+                from sofia.core.context_engine import ContextEngine
                 context_eng = ContextEngine()
                 # This component has dependencies but handles them gracefully
                 results.append(record_test_result(

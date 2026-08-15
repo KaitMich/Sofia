@@ -46,10 +46,10 @@ def test_complete_choice_architecture():
     # Initialize all systems
     print("\n🔧 Initializing choice systems...")
     try:
-        from choice_architecture import ChoiceArchitecture
-        from preference_learning_system import PreferenceLearningSystem
-        from CURIOSITY_MOTIVATION import CuriosityDrivenDiscovery
-        from INSIGHT_RELEVANCE import PersonalRelevanceScorer
+        from sofia.core.choice_architecture import ChoiceArchitecture
+        from sofia.memory.preference_learning_system import PreferenceLearningSystem
+        from sofia.core.CURIOSITY_MOTIVATION import CuriosityDrivenDiscovery
+        from sofia.core.INSIGHT_RELEVANCE import PersonalRelevanceScorer
         
         choice_arch = ChoiceArchitecture()
         pref_system = PreferenceLearningSystem()
@@ -163,11 +163,11 @@ def test_success_failure_integration():
     # Initialize systems
     print("\n🔧 Initializing integrated systems...")
     try:
-        from success_failure_memory import SuccessFailureMemory
-        from CONSCIOUSNESS_MEMORY import ExperienceMemory
-        from choice_architecture import ChoiceArchitecture
-        from learning_progression_tracker import LearningProgressionTracker
-        from INSIGHT_RELEVANCE import PersonalInsightGenerator
+        from sofia.memory.success_failure_memory import SuccessFailureMemory
+        from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+        from sofia.core.choice_architecture import ChoiceArchitecture
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
+        from sofia.core.INSIGHT_RELEVANCE import PersonalInsightGenerator
         
         sf_memory = SuccessFailureMemory()
         experience_memory = ExperienceMemory()
@@ -272,10 +272,10 @@ def test_content_evaluator_integration():
     # Initialize systems
     print("\n🔧 Initializing integrated evaluation systems...")
     try:
-        from CURIOSITY_MOTIVATION import MotivationalContentEvaluator, CuriosityEngine
-        from choice_architecture import ChoiceArchitecture
-        from success_failure_memory import SuccessFailureMemory
-        from CONSCIOUSNESS_MEMORY import ExperienceMemory
+        from sofia.core.CURIOSITY_MOTIVATION import MotivationalContentEvaluator, CuriosityEngine
+        from sofia.core.choice_architecture import ChoiceArchitecture
+        from sofia.memory.success_failure_memory import SuccessFailureMemory
+        from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
         
         content_evaluator = MotivationalContentEvaluator()
         choice_architecture = ChoiceArchitecture()
@@ -355,10 +355,10 @@ def test_value_system_integration():
     # Initialize systems
     print("\n🔧 Initializing value development systems...")
     try:
-        from value_formation import ValueFormation
-        from choice_architecture import ChoiceArchitecture
-        from CONSCIOUSNESS_MEMORY import ExperienceMemory
-        from success_failure_memory import SuccessFailureMemory
+        from sofia.core.value_formation import ValueFormation
+        from sofia.core.choice_architecture import ChoiceArchitecture
+        from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+        from sofia.memory.success_failure_memory import SuccessFailureMemory
         
         value_formation = ValueFormation()
         choice_architecture = ChoiceArchitecture()
@@ -484,12 +484,12 @@ def test_creative_synthesis_integration():
     # Initialize systems
     print("\n🔧 Initializing creative synthesis systems...")
     try:
-        from creative_engine import CreativeEngine
-        from value_formation import ValueFormation
-        from choice_architecture import ChoiceArchitecture
-        from CONSCIOUSNESS_MEMORY import ExperienceMemory
-        from success_failure_memory import SuccessFailureMemory
-        from CURIOSITY_MOTIVATION import CuriosityEngine
+        from sofia.core.creative_engine import CreativeEngine
+        from sofia.core.value_formation import ValueFormation
+        from sofia.core.choice_architecture import ChoiceArchitecture
+        from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+        from sofia.memory.success_failure_memory import SuccessFailureMemory
+        from sofia.core.CURIOSITY_MOTIVATION import CuriosityEngine
         
         creative_engine = CreativeEngine()
         value_formation = ValueFormation()
@@ -590,8 +590,8 @@ def test_group_d_integration():
         results["tests_run"] += 1
         
         try:
-            from creative_engine import CreativeEngine
-            from unified_memory import get_unified_memory
+            from sofia.core.creative_engine import CreativeEngine
+            from sofia.core.unified_memory import get_unified_memory
             
             # Setup memory with test symbols
             unified_memory = get_unified_memory()
@@ -686,7 +686,7 @@ def test_group_e_integration():
         results["tests_run"] += 1
         
         try:
-            from cluster_namer import cluster_memory, cluster_symbols, assign_cluster_names
+            from sofia.utils.cluster_namer import cluster_memory, cluster_symbols, assign_cluster_names
             
             # Test basic K-means clustering
             test_memory_data = [
@@ -723,7 +723,7 @@ def test_group_e_integration():
         results["tests_run"] += 1
         
         try:
-            from INSIGHT_RELEVANCE import PatternRecognitionEngine as PatternRecognitionSystem
+            from sofia.core.INSIGHT_RELEVANCE import PatternRecognitionEngine as PatternRecognitionSystem
             
             pattern_system = PatternRecognitionSystem(tmpdir)
             

@@ -37,10 +37,10 @@ def test_integrated_experience_learning():
     print("\n🔧 Initializing systems...")
     
     try:
-        from CONSCIOUSNESS_MEMORY import ExperienceMemory
-        from learning_progression_tracker import LearningProgressionTracker
-        from success_failure_memory import SuccessFailureMemory
-        from INSIGHT_RELEVANCE import PersonalInsightGenerator
+        from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
+        from sofia.memory.success_failure_memory import SuccessFailureMemory
+        from sofia.core.INSIGHT_RELEVANCE import PersonalInsightGenerator
         
         exp_memory = ExperienceMemory()
         progression_tracker = LearningProgressionTracker()
@@ -212,7 +212,7 @@ def test_brain_metrics_health_analysis() -> Dict[str, Any]:
     result = {"passed": False, "score": 0.0, "errors": []}
     
     try:
-        from brain_metrics import BrainMetrics
+        from sofia.memory.brain_metrics import BrainMetrics
         
         # Initialize brain metrics
         brain_metrics = BrainMetrics()
@@ -374,7 +374,7 @@ def test_group_c_runtime_integration():
     # Test 1: Episodic Memory Creation and Retrieval
     print("\n1. Testing Episodic Memory System...")
     try:
-        from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
+        from sofia.core.CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
         
         em = EpisodicMemorySystem()
         test_results["components_tested"].append("episodic_memory")
@@ -412,7 +412,7 @@ def test_group_c_runtime_integration():
     # Test 2: Brain Metrics Analysis
     print("\n2. Testing Brain Metrics System...")
     try:
-        from brain_metrics import BrainMetrics
+        from sofia.memory.brain_metrics import BrainMetrics
         
         bm = BrainMetrics()
         test_results["components_tested"].append("brain_metrics")

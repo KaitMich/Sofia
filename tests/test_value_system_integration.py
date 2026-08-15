@@ -15,10 +15,10 @@ Demonstrates how Sophia develops personal ethics and uses them for autonomous de
 import json
 import time
 from datetime import datetime, timezone, timedelta
-from value_formation import ValueFormation
-from choice_architecture import ChoiceArchitecture
-from CONSCIOUSNESS_MEMORY import ExperienceMemory
-from success_failure_memory import SuccessFailureMemory
+from sofia.core.value_formation import ValueFormation
+from sofia.core.choice_architecture import ChoiceArchitecture
+from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+from sofia.memory.success_failure_memory import SuccessFailureMemory
 
 def test_value_system_integration():
     """Test comprehensive integration of value development and moral reasoning."""

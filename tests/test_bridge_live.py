@@ -62,8 +62,8 @@ def main():
 
     # Import and run reclassifier
     try:
-        from bridge_reclassifier import BridgeReclassifier
-        from unified_memory import TripartiteMemory
+        from sofia.memory.bridge_reclassifier import BridgeReclassifier
+        from sofia.core.unified_memory import TripartiteMemory
 
         # Create simple memory wrapper
         class SimpleMemory:

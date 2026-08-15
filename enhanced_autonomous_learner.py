@@ -6,6 +6,7 @@ Enhanced autonomous learning system that can:
 3. Context-aware link evaluation and discovery
 4. Full integration with security and cognitive safeguards
 """
+import sitecustomize
 
 import time
 import random
@@ -18,33 +19,33 @@ from urllib.parse import urlparse, urljoin
 from collections import deque, defaultdict
 
 # Core system imports
-from unified_memory import get_unified_memory
-from persistent_url_queue import is_crawlable_url
-from memory_analytics import MemoryAnalyzer
-from evolution_anchor import EvolutionAnchor
-from web_parser import fetch_raw_html, extract_links_with_text_from_html, clean_html_to_text
-from fact_extractor import extract_facts_passive, FactExtractor
-from linguistic_warfare import check_for_warfare
-from quarantine_layer import should_quarantine_input
-from learning_progression_tracker import LearningProgressionTracker
-from curiosity_engine import CuriosityEngine
-from INSIGHT_RELEVANCE import PersonalInsightGenerator
-from motivational_content_evaluator import MotivationalContentEvaluator
-from vector_engine import embed_text, fuse_vectors
-from adaptive_bridge_migration import compute_cluster_stats, cosine_sim
+from sofia.core.unified_memory import get_unified_memory
+from sofia.crawler.persistent_url_queue import is_crawlable_url
+from sofia.memory.memory_analytics import MemoryAnalyzer
+from sofia.memory.evolution_anchor import EvolutionAnchor
+from sofia.crawler.web_parser import fetch_raw_html, extract_links_with_text_from_html, clean_html_to_text
+from sofia.crawler.fact_extractor import extract_facts_passive, FactExtractor
+from sofia.security.linguistic_warfare import check_for_warfare
+from sofia.security.quarantine_layer import should_quarantine_input
+from sofia.utils.learning_progression_tracker import LearningProgressionTracker
+from sofia.core.curiosity_engine import CuriosityEngine
+from sofia.core.INSIGHT_RELEVANCE import PersonalInsightGenerator
+from sofia.utils.motivational_content_evaluator import MotivationalContentEvaluator
+from sofia.utils.vector_engine import embed_text, fuse_vectors
+from sofia.memory.adaptive_bridge_migration import compute_cluster_stats, cosine_sim
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Immune system imports
-from immune_system import ImmuneSystem
-from trust_database import TrustDatabase
-from corroboration_engine import CorroborationEngine
-from self_correction import SelfCorrection
-from quarantine_store import QuarantineStore
+from sofia.security.immune_system import ImmuneSystem
+from sofia.security.trust_database import TrustDatabase
+from sofia.security.corroboration_engine import CorroborationEngine
+from sofia.security.self_correction import SelfCorrection
+from sofia.security.quarantine_store import QuarantineStore
 
 # Crawl infrastructure imports
-from crawl_orchestrator import CrawlOrchestrator
-from curiosity_url_mapper import CuriosityURLMapper
+from sofia.crawler.crawl_orchestrator import CrawlOrchestrator
+from sofia.crawler.curiosity_url_mapper import CuriosityURLMapper
 
 class EnhancedAutonomousLearner:
     """
@@ -182,7 +183,7 @@ class EnhancedAutonomousLearner:
         self.future_queue_path = self.data_dir / "future_learning_queue.json"
 
         # Register migration cleanup with shutdown system
-        from shutdown_manager import register_cleanup as _register_cleanup
+        from sofia.utils.shutdown_manager import register_cleanup as _register_cleanup
         _register_cleanup(self._run_migration_cleanup, "bridge_migration", priority=2)
 
         print("✅ Enhanced Autonomous Learner ready for massive learning!")
@@ -1157,7 +1158,7 @@ class EnhancedAutonomousLearner:
             # domain_trust/is_academic via context and calibrates itself.
             # High-trust domains previously skipped this entirely, which is
             # exactly how boilerplate slipped into memory unexamined.
-            from linguistic_warfare import LinguisticWarfareDetector
+            from sofia.security.linguistic_warfare import LinguisticWarfareDetector
             detector = LinguisticWarfareDetector(data_dir=self.data_dir)
             warfare_analysis = detector.analyze_text_for_warfare(text_content, context=warfare_context)
             should_quarantine = warfare_analysis['defense_strategy']['strategy'] in ['full_quarantine', 'selective_quarantine']
@@ -1230,7 +1231,7 @@ class EnhancedAutonomousLearner:
             import numpy as np
             embedding = None
             try:
-                from vector_engine import fuse_vectors
+                from sofia.utils.vector_engine import fuse_vectors
                 vec, _debug = fuse_vectors(text_content[:500])  # First 500 chars
                 if vec is not None:
                     embedding = np.asarray(vec, dtype=np.float32)
@@ -1272,7 +1273,7 @@ class EnhancedAutonomousLearner:
                     print(f"   ℹ️ Single sighting accepted on source trust ({domain_trust:.2f}); sighting recorded for corroboration")
 
             # Final text quality gate before storage
-            from web_parser import sanitize_text_for_storage
+            from sofia.crawler.web_parser import sanitize_text_for_storage
             sanitized_text = sanitize_text_for_storage(text_content[:2000])
             if not sanitized_text:
                 print(f"   ⏭️  Skipped: content failed quality gate (garbage/fragments)")
@@ -1347,7 +1348,7 @@ class EnhancedAutonomousLearner:
             # Content stored successfully — everything below is non-critical
             # Symbol generation is a bonus, not required for learning
             try:
-                from unified_memory import generate_symbol_from_context
+                from sofia.core.unified_memory import generate_symbol_from_context
                 emotions = self._predict_content_emotions(text_content)
                 keywords = self._extract_keywords(text_content)
                 if keywords:
@@ -1682,7 +1683,7 @@ class EnhancedAutonomousLearner:
         result, including measured scores, is kept in _last_classification so
         storage can persist the evidence for the migration engine.
         """
-        from content_classifier import get_classifier
+        from sofia.utils.content_classifier import get_classifier
         result = get_classifier(self.data_dir).classify(text)
         self._last_classification = result
         return result.label
@@ -1826,7 +1827,7 @@ class EnhancedAutonomousLearner:
         # All content entered bridge during this session — now check if
         # any items have sufficient cosine gravity to migrate to logic/symbolic
         try:
-            from adaptive_bridge_migration import AdaptiveMigrationEngine
+            from sofia.memory.adaptive_bridge_migration import AdaptiveMigrationEngine
             migration_engine = AdaptiveMigrationEngine(
                 self.unified_memory.tripartite if hasattr(self.unified_memory, 'tripartite') else self.unified_memory,
                 data_dir=str(self.data_dir)
@@ -1893,7 +1894,7 @@ class EnhancedAutonomousLearner:
 
     def _run_migration_cleanup(self):
         try:
-            from adaptive_bridge_migration import AdaptiveMigrationEngine
+            from sofia.memory.adaptive_bridge_migration import AdaptiveMigrationEngine
             engine = AdaptiveMigrationEngine(
                 self.unified_memory.tripartite, str(self.data_dir))
             engine.check_and_migrate([])
@@ -2760,7 +2761,7 @@ class EnhancedAutonomousLearner:
             self.saturation_state['vector_drift'].append(content_vec)
 
         # Final text quality gate before storage
-        from web_parser import sanitize_text_for_storage
+        from sofia.crawler.web_parser import sanitize_text_for_storage
         sanitized_text = sanitize_text_for_storage(text_content[:2000])
         if not sanitized_text:
             print(f"   ⏭️  Skipped: content failed quality gate (garbage/fragments)")
@@ -2799,7 +2800,7 @@ class EnhancedAutonomousLearner:
             emotions = self._predict_content_emotions(text_content)
             keywords = self._extract_keywords(text_content)
             if keywords:
-                from unified_memory import generate_symbol_from_context
+                from sofia.core.unified_memory import generate_symbol_from_context
                 new_symbol = generate_symbol_from_context(text_content, keywords, emotions)
                 if new_symbol:
                     self.session_stats['symbols_discovered'] += 1
@@ -3144,7 +3145,7 @@ class EnhancedAutonomousLearner:
 
         # Run adaptive migration after saturation session
         try:
-            from adaptive_bridge_migration import AdaptiveMigrationEngine
+            from sofia.memory.adaptive_bridge_migration import AdaptiveMigrationEngine
             mem = self.unified_memory.tripartite if hasattr(self.unified_memory, 'tripartite') else self.unified_memory
             migration_engine = AdaptiveMigrationEngine(mem, data_dir=str(self.data_dir))
 
@@ -3165,7 +3166,7 @@ class EnhancedAutonomousLearner:
 
         # Create consciousness memory of this learning session
         try:
-            from CONSCIOUSNESS_MEMORY import ConsciousnessMemorySystem
+            from sofia.core.CONSCIOUSNESS_MEMORY import ConsciousnessMemorySystem
             cms = ConsciousnessMemorySystem(self.data_dir)
             experience_data = {
                 'type': 'saturation_learning',

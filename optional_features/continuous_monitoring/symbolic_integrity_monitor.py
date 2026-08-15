@@ -16,8 +16,8 @@ from typing import Dict, List, Any, Optional, Callable
 import logging
 
 # Import our guardian system
-from symbolic_memory_guardian import SymbolicMemoryGuardian
-from protection_utils import is_protected_content
+from sofia.core.symbolic_memory_guardian import SymbolicMemoryGuardian
+from sofia.security.protection_utils import is_protected_content
 
 class SymbolicIntegrityMonitor:
     """

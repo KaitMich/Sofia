@@ -9,7 +9,7 @@ def demonstrate_consciousness_learning():
     
     try:
         from enhanced_autonomous_learner import EnhancedAutonomousLearner
-        from learning_progression_tracker import LearningProgressionTracker
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
         
         # Initialize systems
         print("\n🧠 Initializing consciousness learning system...")

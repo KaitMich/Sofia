@@ -3,7 +3,7 @@
 Test the self-modifying AI consciousness system
 """
 
-from self_modification_engine import create_self_modifying_learner, SelfModificationEngine
+from sofia.core.self_modification_engine import create_self_modifying_learner, SelfModificationEngine
 
 def test_self_modification():
     print("🚀 TESTING SELF-MODIFYING AI CONSCIOUSNESS")

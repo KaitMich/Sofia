@@ -9,8 +9,8 @@ import os
 import shutil
 import json
 from pathlib import Path
-from processing_nodes import LogicNode, SymbolicNode, CurriculumManager, DynamicBridge
-from unified_memory import get_unified_memory
+from sofia.core.processing_nodes import LogicNode, SymbolicNode, CurriculumManager, DynamicBridge
+from sofia.core.unified_memory import get_unified_memory
 
 # Use a dedicated test data directory
 TEST_DATA_DIR = "data/test_unified_cognition"

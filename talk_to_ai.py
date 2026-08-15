@@ -1,3 +1,4 @@
+import sitecustomize
 # talk_to_ai.py - Complete Interactive AI System with Response Generation
 
 import sys
@@ -10,29 +11,29 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 
 # Import all your amazing components
-from alphawall import AlphaWall
+from sofia.security.alphawall import AlphaWall
 try:
-    from adaptive_quarantine_layer import AdaptiveQuarantine
+    from sofia.security.adaptive_quarantine_layer import AdaptiveQuarantine
     print("✅ Adaptive quarantine loaded successfully!")
 except ImportError as e:
     print(f"⚠️ Could not load adaptive quarantine: {e}")
     print("   Falling back to base quarantine...")
-    from quarantine_layer import UserMemoryQuarantine as AdaptiveQuarantine
-from linguistic_warfare import LinguisticWarfareDetector, check_for_warfare
+    from sofia.security.quarantine_layer import UserMemoryQuarantine as AdaptiveQuarantine
+from sofia.security.linguistic_warfare import LinguisticWarfareDetector, check_for_warfare
 try:
     from utils.link_evaluator import EnhancedLinkEvaluator
 except ImportError:
-    from link_evaluator import EnhancedLinkEvaluator
+    from sofia.utils.link_evaluator import EnhancedLinkEvaluator
 try:
     from utils.visualization_prep import VisualizationPrep
 except ImportError:
-    from visualization_prep import VisualizationPrep
-from processing_nodes import initialize_processing_nodes
-from weight_evolution import WeightEvolver
-from memory_optimizer import recompute_adaptive_link_weights
+    from sofia.utils.visualization_prep import VisualizationPrep
+from sofia.core.processing_nodes import initialize_processing_nodes
+from sofia.memory.weight_evolution import WeightEvolver
+from sofia.memory.memory_optimizer import recompute_adaptive_link_weights
 
 # Import vector operations for direct memory access
-from vector_memory import retrieve_similar_vectors as vm_retrieve_similar_vectors
+from sofia.memory.vector_memory import retrieve_similar_vectors as vm_retrieve_similar_vectors
 
 # Initialize all components
 print("🔧 Initializing processing nodes with security modules...")

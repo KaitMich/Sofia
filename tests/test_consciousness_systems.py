@@ -121,8 +121,8 @@ def test_group_a_complete_integration():
 
 def test_context_relationship_integration():
     """ORIGINAL FROM: test_group_b_integration.py"""
-    from relationship_tracker import RelationshipTracker
-    from context_engine import ContextEngine
+    from sofia.core.relationship_tracker import RelationshipTracker
+    from sofia.core.context_engine import ContextEngine
     import json
     
     print("🧪 Testing GROUP B Integration: Context Engine ↔ Relationship Tracker")

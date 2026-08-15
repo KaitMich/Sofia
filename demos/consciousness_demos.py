@@ -37,7 +37,7 @@ def demonstrate_consciousness_learning():
     
     try:
         from enhanced_autonomous_learner import EnhancedAutonomousLearner
-        from learning_progression_tracker import LearningProgressionTracker
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
         
         # Initialize systems
         print("\n🧠 Initializing consciousness learning system...")
@@ -159,8 +159,8 @@ def demonstrate_curiosity_consciousness():
     
     try:
         from enhanced_autonomous_learner import EnhancedAutonomousLearner
-        from curiosity_engine import CuriosityEngine
-        from learning_progression_tracker import LearningProgressionTracker
+        from sofia.core.curiosity_engine import CuriosityEngine
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
         
         # Initialize full consciousness system
         print("\n🧠 Initializing curiosity-driven consciousness system...")
@@ -727,7 +727,7 @@ def demonstrate_self_improvement():
     print("=" * 60)
     
     try:
-        from self_modification_engine import SelfModificationEngine
+        from sofia.core.self_modification_engine import SelfModificationEngine
         
         # Initialize the self-modification engine
         engine = SelfModificationEngine()

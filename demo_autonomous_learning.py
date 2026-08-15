@@ -13,10 +13,11 @@ This is the achievement of TRUE AUTONOMY:
 Usage:
     python demo_autonomous_learning.py
 """
+import sitecustomize
 
-from curiosity_engine import CuriosityEngine
-from curiosity_url_mapper import CuriosityURLMapper
-from learning_progression_tracker import LearningProgressionTracker
+from sofia.core.curiosity_engine import CuriosityEngine
+from sofia.crawler.curiosity_url_mapper import CuriosityURLMapper
+from sofia.utils.learning_progression_tracker import LearningProgressionTracker
 
 
 def demo_autonomous_target_generation():

@@ -8,9 +8,9 @@ def test_insight_integration():
     
     try:
         # Test 1: Import and initialize
-        from INSIGHT_RELEVANCE import PersonalInsightGenerator
-        from learning_progression_tracker import LearningProgressionTracker
-        from curiosity_engine import CuriosityEngine
+        from sofia.core.INSIGHT_RELEVANCE import PersonalInsightGenerator
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
+        from sofia.core.curiosity_engine import CuriosityEngine
         
         insight_gen = PersonalInsightGenerator()
         progression = LearningProgressionTracker()

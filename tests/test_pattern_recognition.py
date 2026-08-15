@@ -13,11 +13,11 @@ Demonstrates Sophia's ability to synthesize knowledge across domains.
 
 import json
 import time
-from INSIGHT_RELEVANCE import PatternRecognitionEngine as PatternRecognitionSystem
-from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
-from CONSCIOUSNESS_MEMORY import ExperienceMemory
-from learning_progression_tracker import LearningProgressionTracker
-from INSIGHT_RELEVANCE import PersonalInsightGenerator
+from sofia.core.INSIGHT_RELEVANCE import PatternRecognitionEngine as PatternRecognitionSystem
+from sofia.core.CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
+from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+from sofia.utils.learning_progression_tracker import LearningProgressionTracker
+from sofia.core.INSIGHT_RELEVANCE import PersonalInsightGenerator
 
 def test_pattern_recognition():
     """Test cross-experience synthesis capabilities."""

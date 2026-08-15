@@ -41,7 +41,7 @@ def test_learning_progression_awareness():
     # Initialize tracker
     print("\n🔧 Initializing Learning Progression Tracker...")
     try:
-        from learning_progression_tracker import LearningProgressionTracker
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
         tracker = LearningProgressionTracker()
         print("  ✅ Tracker initialized with enhanced self-assessment capabilities")
     except ImportError as e:
@@ -129,10 +129,10 @@ def test_pattern_recognition():
     print("\n🔧 Initializing Pattern Recognition System...")
     try:
         from pattern_recognition import PatternRecognitionSystem
-        from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
-        from CONSCIOUSNESS_MEMORY import ExperienceMemory
-        from learning_progression_tracker import LearningProgressionTracker
-        from personal_insight_generator import PersonalInsightGenerator
+        from sofia.core.CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
+        from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
+        from sofia.utils.personal_insight_generator import PersonalInsightGenerator
         
         pattern_system = PatternRecognitionSystem()
         print("  ✅ Pattern recognition initialized with cross-memory integration")
@@ -250,9 +250,9 @@ def test_pattern_recognition_basic():
     print("\n🔧 Initializing Pattern Recognition System...")
     try:
         from pattern_recognition import PatternRecognitionSystem, RecognizedPattern, AhaMoment
-        from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
-        from CONSCIOUSNESS_MEMORY import ExperienceMemory
-        from learning_progression_tracker import LearningProgressionTracker
+        from sofia.core.CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
+        from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
         
         pattern_system = PatternRecognitionSystem()
         print("  ✅ Pattern recognition initialized")
@@ -331,7 +331,7 @@ def test_progression_integration():
     
     try:
         # Test 1: Import and initialize
-        from learning_progression_tracker import LearningProgressionTracker
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
         tracker = LearningProgressionTracker()
         print("✅ Learning progression tracker initialized")
         
@@ -401,8 +401,8 @@ def test_curiosity_integration():
     
     try:
         # Test 1: Import and initialize
-        from curiosity_engine import CuriosityEngine
-        from learning_progression_tracker import LearningProgressionTracker
+        from sofia.core.curiosity_engine import CuriosityEngine
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
         
         curiosity = CuriosityEngine()
         progression = LearningProgressionTracker()
@@ -479,9 +479,9 @@ def test_insight_integration():
     
     try:
         # Test 1: Import and initialize
-        from personal_insight_generator import PersonalInsightGenerator
-        from learning_progression_tracker import LearningProgressionTracker
-        from curiosity_engine import CuriosityEngine
+        from sofia.utils.personal_insight_generator import PersonalInsightGenerator
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
+        from sofia.core.curiosity_engine import CuriosityEngine
         
         insight_gen = PersonalInsightGenerator()
         progression = LearningProgressionTracker()
@@ -553,9 +553,9 @@ def test_motivation_integration():
     
     try:
         # Test 1: Import and initialize
-        from motivational_content_evaluator import MotivationalContentEvaluator
-        from learning_progression_tracker import LearningProgressionTracker
-        from curiosity_engine import CuriosityEngine
+        from sofia.utils.motivational_content_evaluator import MotivationalContentEvaluator
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
+        from sofia.core.curiosity_engine import CuriosityEngine
         
         motivation_eval = MotivationalContentEvaluator()
         progression = LearningProgressionTracker()

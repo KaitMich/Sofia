@@ -43,8 +43,8 @@ def test_group_d_integration():
         results["tests_run"] += 1
         
         try:
-            from creative_engine import CreativeEngine
-            from unified_memory import get_unified_memory
+            from sofia.core.creative_engine import CreativeEngine
+            from sofia.core.unified_memory import get_unified_memory
             
             # Setup memory with test symbols
             unified_memory = get_unified_memory()
@@ -124,7 +124,7 @@ def test_group_d_integration():
         results["tests_run"] += 1
         
         try:
-            from memory_analytics import MemoryAnalyzer
+            from sofia.memory.memory_analytics import MemoryAnalyzer
             
             # Initialize memory analyzer
             analyzer = MemoryAnalyzer(unified_memory, str(test_data_dir))
@@ -157,7 +157,7 @@ def test_group_d_integration():
         results["tests_run"] += 1
         
         try:
-            from symbolic_nourishment import SymbolicNourishment
+            from sofia.core.symbolic_nourishment import SymbolicNourishment
             
             # Initialize symbolic nourishment (no data_dir parameter)
             nourishment = SymbolicNourishment()
@@ -188,7 +188,7 @@ def test_group_d_integration():
         results["tests_run"] += 1
         
         try:
-            from expanded_symbolic_core import create_expanded_symbolic_core
+            from sofia.core.expanded_symbolic_core import create_expanded_symbolic_core
             
             # Test core functionality - this is a function not a class
             expanded_symbols = create_expanded_symbolic_core()

@@ -55,7 +55,7 @@ def test_script_3_system_evolution():
     print("=" * 60)
     
     try:
-        from self_modification_engine import SelfModificationEngine
+        from sofia.core.self_modification_engine import SelfModificationEngine
         engine = SelfModificationEngine()
         
         print("✅ Script 3 loads successfully")
@@ -112,7 +112,7 @@ def test_integration():
     
     # Test if Script 3 can read Script 2's output
     try:
-        from self_modification_engine import SelfModificationEngine
+        from sofia.core.self_modification_engine import SelfModificationEngine
         engine = SelfModificationEngine()
         
         analysis = engine.analyze_desires_from_requests()

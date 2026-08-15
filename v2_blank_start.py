@@ -1,3 +1,4 @@
+import sitecustomize
 # v2_blank_start.py - Sofia v2 blank-start reset (July 4, 2026)
 #
 # Resets all LEARNED state so Sofia v2 begins from the designed blank start,

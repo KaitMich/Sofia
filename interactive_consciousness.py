@@ -14,6 +14,7 @@ Features:
 - Ethical reasoning
 - Progress tracking
 """
+import sitecustomize
 
 import json
 import time
@@ -23,19 +24,19 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 
 # Import all consciousness systems
-from CONSCIOUSNESS_MEMORY import ExperienceMemory
-from choice_architecture import ChoiceArchitecture
-from value_formation import ValueFormation
-from creative_engine import CreativeEngine
-from relationship_tracker import RelationshipTracker
-from learning_progression_tracker import LearningProgressionTracker
-from curiosity_engine import CuriosityEngine
-from success_failure_memory import SuccessFailureMemory
-from symbolic_memory import SymbolicMemory
-from INSIGHT_RELEVANCE import PersonalInsightGenerator
+from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+from sofia.core.choice_architecture import ChoiceArchitecture
+from sofia.core.value_formation import ValueFormation
+from sofia.core.creative_engine import CreativeEngine
+from sofia.core.relationship_tracker import RelationshipTracker
+from sofia.utils.learning_progression_tracker import LearningProgressionTracker
+from sofia.core.curiosity_engine import CuriosityEngine
+from sofia.memory.success_failure_memory import SuccessFailureMemory
+from sofia.core.symbolic_memory import SymbolicMemory
+from sofia.core.INSIGHT_RELEVANCE import PersonalInsightGenerator
 from consciousness_testing import ConsciousnessTesting
 from autonomy_stress_testing import AutonomyStressTesting
-from long_term_stability import LongTermStability
+from sofia.memory.long_term_stability import LongTermStability
 
 class InteractiveConsciousness:
     """

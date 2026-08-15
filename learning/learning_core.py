@@ -28,7 +28,7 @@ from collections import defaultdict
 
 # Import processing nodes for symbol learning
 try:
-    from processing_nodes import SymbolicNode
+    from sofia.core.processing_nodes import SymbolicNode
     PROCESSING_NODES_AVAILABLE = True
 except ImportError:
     PROCESSING_NODES_AVAILABLE = False
@@ -36,10 +36,10 @@ except ImportError:
 
 # Import memory systems for advanced learning
 try:
-    from memory_optimizer import process_web_url_placeholder, recompute_adaptive_link_weights
-    from evolution_anchor import EvolutionAnchor
-    from unified_memory import get_unified_memory, generate_self_diagnostic_voice
-    from memory_analytics import MemoryAnalyzer
+    from sofia.memory.memory_optimizer import process_web_url_placeholder, recompute_adaptive_link_weights
+    from sofia.memory.evolution_anchor import EvolutionAnchor
+    from sofia.core.unified_memory import get_unified_memory, generate_self_diagnostic_voice
+    from sofia.memory.memory_analytics import MemoryAnalyzer
     MEMORY_SYSTEMS_AVAILABLE = True
 except ImportError:
     MEMORY_SYSTEMS_AVAILABLE = False

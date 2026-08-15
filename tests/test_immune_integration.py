@@ -14,9 +14,9 @@ from pathlib import Path
 
 # Test imports
 try:
-    from immune_system import ImmuneSystem
-    from trust_database import TrustDatabase
-    from corroboration_engine import CorroborationEngine
+    from sofia.security.immune_system import ImmuneSystem
+    from sofia.security.trust_database import TrustDatabase
+    from sofia.security.corroboration_engine import CorroborationEngine
     print("✅ Immune system components imported successfully")
 except ImportError as e:
     print(f"❌ Failed to import immune components: {e}")
@@ -193,7 +193,7 @@ def test_layered_integration():
 
     # Layer 2: Linguistic warfare (chunk-level)
     print("\n   Layer 2: Linguistic warfare (chunk-level)")
-    from linguistic_warfare import check_for_warfare
+    from sofia.security.linguistic_warfare import check_for_warfare
     should_quarantine, warfare_analysis = check_for_warfare(test_text, test_url)
     print(f"      ✓ Quarantine: {should_quarantine}")
     if should_quarantine:

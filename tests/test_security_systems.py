@@ -34,7 +34,7 @@ def test_security_integration():
     print("\n🔍 Testing Protection Utilities...")
     
     try:
-        from protection_utils import (
+        from sofia.security.protection_utils import (
             is_protected_content, get_protection_reason, validate_protection_integrity,
             get_all_protected_items, protect_item, is_migration_allowed
         )
@@ -59,7 +59,7 @@ def test_security_integration():
     print("\n🛡️ Testing Symbolic Memory Guardian...")
     
     try:
-        from symbolic_memory_guardian import SymbolicMemoryGuardian, create_symbolic_backup, check_symbolic_integrity
+        from sofia.core.symbolic_memory_guardian import SymbolicMemoryGuardian, create_symbolic_backup, check_symbolic_integrity
         
         guardian = SymbolicMemoryGuardian()
         
@@ -99,7 +99,7 @@ def test_security_integration():
     
     # Test episodic memory protection
     try:
-        from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
+        from sofia.core.CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
         
         episodic_memory = EpisodicMemorySystem()
         
@@ -142,7 +142,7 @@ def test_security_integration():
     print("\n🔄 Testing Cross-System Protection Consistency...")
     
     try:
-        from identity_core import get_identity_core
+        from sofia.core.identity_core import get_identity_core
         
         # Test identity core protection
         identity_core = get_identity_core()
@@ -283,7 +283,7 @@ def test_self_modification():
     print("=" * 60)
     
     try:
-        from self_modification_engine import create_self_modifying_learner, SelfModificationEngine
+        from sofia.core.self_modification_engine import create_self_modifying_learner, SelfModificationEngine
         
         # Create self-modifying learner
         learner = create_self_modifying_learner()
@@ -315,7 +315,7 @@ def demonstrate_modification_safety():
     print("=" * 60)
     
     try:
-        from self_modification_engine import SelfModificationEngine
+        from sofia.core.self_modification_engine import SelfModificationEngine
         
         engine = SelfModificationEngine()
         
@@ -360,7 +360,7 @@ def test_comprehensive_security_measures():
     # Test 1: Identity protection
     print("\n1. Testing Identity Protection...")
     try:
-        from identity_core import get_identity_core
+        from sofia.core.identity_core import get_identity_core
         identity_core = get_identity_core()
         if identity_core:
             print("   ✅ Identity core accessible and protected")
@@ -375,7 +375,7 @@ def test_comprehensive_security_measures():
     # Test 2: Memory backup systems
     print("\n2. Testing Memory Backup Systems...")
     try:
-        from symbolic_memory_guardian import SymbolicMemoryGuardian
+        from sofia.core.symbolic_memory_guardian import SymbolicMemoryGuardian
         guardian = SymbolicMemoryGuardian()
         backups = guardian.list_backups()
         if len(backups) > 0:
@@ -397,7 +397,7 @@ def test_comprehensive_security_measures():
     # Test 3: Protection enforcement
     print("\n3. Testing Protection Enforcement...")
     try:
-        from protection_utils import is_protected_content, protect_item
+        from sofia.security.protection_utils import is_protected_content, protect_item
         
         # Test protecting a new item
         test_item = {

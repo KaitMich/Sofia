@@ -9,9 +9,9 @@ import os
 import shutil
 import json
 from pathlib import Path
-from alphawall import AlphaWall
-from linguistic_warfare import LinguisticWarfareDetector, check_for_warfare
-from quarantine_layer import UserMemoryQuarantine
+from sofia.security.alphawall import AlphaWall
+from sofia.security.linguistic_warfare import LinguisticWarfareDetector, check_for_warfare
+from sofia.security.quarantine_layer import UserMemoryQuarantine
 
 # Use a dedicated test data directory
 TEST_DATA_DIR = "data/test_identity_security"

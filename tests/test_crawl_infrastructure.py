@@ -18,10 +18,10 @@ import shutil
 from pathlib import Path
 
 # Import components to test
-from robots_txt_manager import RobotsTxtManager
-from domain_rate_limiter import DomainRateLimiter
-from persistent_url_queue import PersistentURLQueue
-from crawl_orchestrator import CrawlOrchestrator
+from sofia.crawler.robots_txt_manager import RobotsTxtManager
+from sofia.crawler.domain_rate_limiter import DomainRateLimiter
+from sofia.crawler.persistent_url_queue import PersistentURLQueue
+from sofia.crawler.crawl_orchestrator import CrawlOrchestrator
 
 
 class TestCrawlInfrastructure:

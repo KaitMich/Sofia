@@ -4,8 +4,8 @@ GROUP B Integration Test: Authentic Expression Calibrator ↔ Creative Engine
 Tests the bidirectional integration between authenticity validation and creative expression.
 """
 
-from authentic_expression_calibrator import AuthenticExpressionCalibrator
-from creative_engine import CreativeEngine
+from sofia.core.authentic_expression_calibrator import AuthenticExpressionCalibrator
+from sofia.core.creative_engine import CreativeEngine
 import json
 
 def test_authentic_creative_bidirectional_integration():

@@ -8,7 +8,7 @@ def test_progression_integration():
     
     try:
         # Test 1: Import and initialize
-        from learning_progression_tracker import LearningProgressionTracker
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
         tracker = LearningProgressionTracker()
         print("✅ Learning progression tracker initialized")
         

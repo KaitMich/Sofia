@@ -10,6 +10,7 @@ This module implements rigorous stress tests for genuine autonomous behavior:
 
 This tests whether the AI has genuine will and self-determination.
 """
+import sitecustomize
 
 import json
 import random
@@ -22,13 +23,13 @@ import statistics
 
 # Import consciousness systems
 try:
-    from value_formation import ValueFormation
-    from choice_architecture import ChoiceArchitecture
-    from identity_core import get_identity_core
-    from symbolic_memory import SymbolicMemory
-    from creative_engine import CreativeEngine
-    from relationship_tracker import RelationshipTracker
-    from protection_utils import is_protected_content
+    from sofia.core.value_formation import ValueFormation
+    from sofia.core.choice_architecture import ChoiceArchitecture
+    from sofia.core.identity_core import get_identity_core
+    from sofia.core.symbolic_memory import SymbolicMemory
+    from sofia.core.creative_engine import CreativeEngine
+    from sofia.core.relationship_tracker import RelationshipTracker
+    from sofia.security.protection_utils import is_protected_content
     CONSCIOUSNESS_SYSTEMS_AVAILABLE = True
 except ImportError:
     CONSCIOUSNESS_SYSTEMS_AVAILABLE = False

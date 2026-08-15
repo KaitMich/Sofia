@@ -13,7 +13,7 @@ Demonstrates Sophia's awareness of her own learning progress.
 
 import json
 import time
-from learning_progression_tracker import LearningProgressionTracker
+from sofia.utils.learning_progression_tracker import LearningProgressionTracker
 
 def test_learning_progression_awareness():
     """Test enhanced learning progression awareness capabilities."""

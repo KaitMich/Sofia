@@ -28,7 +28,7 @@ test_results = {
 # Test 1: Episodic Memory Creation and Retrieval
 print("\n1. Testing Episodic Memory System...")
 try:
-    from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
+    from sofia.core.CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
     
     em = EpisodicMemorySystem()
     test_results["components_tested"].append("episodic_memory")
@@ -66,7 +66,7 @@ except Exception as e:
 # Test 2: Brain Metrics Analysis
 print("\n2. Testing Brain Metrics System...")
 try:
-    from brain_metrics import BrainMetrics
+    from sofia.memory.brain_metrics import BrainMetrics
     
     bm = BrainMetrics()
     test_results["components_tested"].append("brain_metrics")
@@ -160,8 +160,8 @@ except Exception as e:
 print("\n4. Testing Memory Optimizer Integration...")
 try:
     # Test imports that memory_optimizer claims to use
-    from unified_memory import get_unified_memory
-    from brain_metrics import BrainMetrics
+    from sofia.core.unified_memory import get_unified_memory
+    from sofia.memory.brain_metrics import BrainMetrics
     from memory_maintenance import prune_phase1_symbolic_vectors
     
     test_results["components_tested"].append("memory_optimizer_dependencies")
@@ -192,8 +192,8 @@ except Exception as e:
 print("\n5. Testing Cross-Component Data Flow...")
 try:
     # Create an episodic memory and see if brain metrics can analyze it
-    from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
-    from brain_metrics import BrainMetrics
+    from sofia.core.CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
+    from sofia.memory.brain_metrics import BrainMetrics
     
     em = EpisodicMemorySystem()
     
@@ -245,7 +245,7 @@ except Exception as e:
 print("\n6. Testing Maintenance Acting on Health Analysis...")
 try:
     from memory_maintenance import MemoryMaintenanceManager
-    from brain_metrics import BrainMetrics
+    from sofia.memory.brain_metrics import BrainMetrics
     
     mm = MemoryMaintenanceManager()
     

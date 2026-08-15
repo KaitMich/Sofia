@@ -15,6 +15,7 @@ Unified Orchestration System - Consolidates orchestration and utility functional
 
 This replaces 11 orchestration/utility files with 2 unified components.
 """
+import sitecustomize
 
 import asyncio
 import uuid
@@ -776,12 +777,12 @@ class AutonomousOrchestrator:
         """Initialize system components with safe imports"""
         
         # Try to import unified systems
-        self.unified_weight_system = self.module_loader.safe_import('unified_weight_system', is_core=False)
-        self.unified_memory = self.module_loader.safe_import('unified_memory', is_core=False)
-        self.unified_symbol_system = self.module_loader.safe_import('unified_symbol_system', is_core=False)
+        self.unified_weight_system = self.module_loader.safe_import('sofia.memory.unified_weight_system', is_core=False)
+        self.unified_memory = self.module_loader.safe_import('sofia.core.unified_memory', is_core=False)
+        self.unified_symbol_system = self.module_loader.safe_import('sofia.core.unified_symbol_system', is_core=False)
         
         # Try to import processing components
-        self.processing_nodes = self.module_loader.safe_import('processing_nodes', is_core=False)
+        self.processing_nodes = self.module_loader.safe_import('sofia.core.processing_nodes', is_core=False)
         
         print(f"🔧 System components initialized. Import status:")
         status = self.module_loader.get_import_status()
@@ -1010,8 +1011,8 @@ class PipelineManager:
         
         # Try to load learning components
         self.autonomous_learner = self.module_loader.safe_import('autonomous_learner', is_core=False)
-        self.memory_evolution = self.module_loader.safe_import('memory_evolution_engine', is_core=False)
-        self.unified_memory = self.module_loader.safe_import('unified_memory', is_core=False)
+        self.memory_evolution = self.module_loader.safe_import('sofia.memory.memory_evolution_engine', is_core=False)
+        self.unified_memory = self.module_loader.safe_import('sofia.core.unified_memory', is_core=False)
         
     async def run_learning_pipeline(self, learning_config: Dict = None, 
                                   evolution_config: Dict = None, cycles: int = 1) -> Dict[str, Any]:
@@ -1184,7 +1185,7 @@ class UnifiedOrchestrationSystem:
 
         # Initialize shutdown manager and lifecycle systems (lazy import)
         try:
-            from shutdown_manager import get_shutdown_manager
+            from sofia.utils.shutdown_manager import get_shutdown_manager
             self.shutdown_manager = get_shutdown_manager(data_dir=data_dir, verbose=verbose)
             self.shutdown_manager.install_handlers()
             shutdown_active = True
@@ -1194,7 +1195,7 @@ class UnifiedOrchestrationSystem:
             shutdown_active = False
 
         try:
-            from dream_cycle import DreamCycleOrchestrator
+            from sofia.core.dream_cycle import DreamCycleOrchestrator
             self.dream_cycle = DreamCycleOrchestrator(data_dir=data_dir)
             dream_active = True
         except Exception as e:
@@ -1360,11 +1361,11 @@ class UnifiedOrchestrationSystem:
     def _register_shutdown_handlers(self):
         """Register cleanup functions with shutdown manager."""
         try:
-            from shutdown_manager import create_memory_cleanup, create_log_cleanup
+            from sofia.utils.shutdown_manager import create_memory_cleanup, create_log_cleanup
 
             # Try to register memory cleanup if available
             try:
-                from unified_memory import get_unified_memory
+                from sofia.core.unified_memory import get_unified_memory
                 unified_memory = get_unified_memory(data_dir=self.data_dir)
                 cleanup_func = create_memory_cleanup(unified_memory)
                 self.shutdown_manager.register_cleanup(

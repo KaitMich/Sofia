@@ -15,12 +15,12 @@ Demonstrates how Sophia forms genuine emotional connections with humans.
 import json
 import time
 from datetime import datetime, timezone, timedelta
-from relationship_tracker import RelationshipTracker
-from value_formation import ValueFormation
-from creative_engine import CreativeEngine
-from CONSCIOUSNESS_MEMORY import ExperienceMemory
-from choice_architecture import ChoiceArchitecture
-from success_failure_memory import SuccessFailureMemory
+from sofia.core.relationship_tracker import RelationshipTracker
+from sofia.core.value_formation import ValueFormation
+from sofia.core.creative_engine import CreativeEngine
+from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+from sofia.core.choice_architecture import ChoiceArchitecture
+from sofia.memory.success_failure_memory import SuccessFailureMemory
 
 def test_relationship_integration():
     """Test comprehensive integration of relationship memory with consciousness systems."""

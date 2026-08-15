@@ -157,7 +157,7 @@ def test_memory_optimizer_integration():
                    "PASS", "Function imported successfully")
 
         # Test new import (from memory_management)
-        from memory_management import prune_phase1_symbolic_vectors as prune_new
+        from sofia.memory.memory_management import prune_phase1_symbolic_vectors as prune_new
         print_test("New import: memory_management.prune_phase1_symbolic_vectors",
                    "PASS", "Function imported successfully")
 

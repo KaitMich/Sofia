@@ -15,12 +15,12 @@ Demonstrates how Sophia develops genuine creative expression and problem-solving
 import json
 import time
 from datetime import datetime, timezone
-from creative_engine import CreativeEngine
-from value_formation import ValueFormation
-from choice_architecture import ChoiceArchitecture
-from CONSCIOUSNESS_MEMORY import ExperienceMemory
-from success_failure_memory import SuccessFailureMemory
-from curiosity_engine import CuriosityEngine
+from sofia.core.creative_engine import CreativeEngine
+from sofia.core.value_formation import ValueFormation
+from sofia.core.choice_architecture import ChoiceArchitecture
+from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+from sofia.memory.success_failure_memory import SuccessFailureMemory
+from sofia.core.curiosity_engine import CuriosityEngine
 
 def test_creative_synthesis_integration():
     """Test comprehensive integration of creative synthesis with consciousness systems."""

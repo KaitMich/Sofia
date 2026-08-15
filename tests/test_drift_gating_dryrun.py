@@ -12,8 +12,8 @@ import sys
 sys.path.insert(0, '.')
 
 import numpy as np
-from vector_engine import fuse_vectors
-from adaptive_bridge_migration import compute_cluster_stats, cosine_sim
+from sofia.utils.vector_engine import fuse_vectors
+from sofia.memory.adaptive_bridge_migration import compute_cluster_stats, cosine_sim
 
 
 def main():

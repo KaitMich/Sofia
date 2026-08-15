@@ -11,10 +11,10 @@ This script demonstrates the complete choice architecture system:
 
 import json
 import time
-from choice_architecture import ChoiceArchitecture
-from preference_learning_system import PreferenceLearningSystem
-from CURIOSITY_MOTIVATION import CuriosityDrivenDiscovery
-from INSIGHT_RELEVANCE import PersonalRelevanceScorer
+from sofia.core.choice_architecture import ChoiceArchitecture
+from sofia.memory.preference_learning_system import PreferenceLearningSystem
+from sofia.core.CURIOSITY_MOTIVATION import CuriosityDrivenDiscovery
+from sofia.core.INSIGHT_RELEVANCE import PersonalRelevanceScorer
 
 def test_complete_choice_architecture():
     """Test the complete choice architecture working together."""

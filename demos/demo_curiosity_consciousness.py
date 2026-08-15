@@ -9,8 +9,8 @@ def demonstrate_curiosity_consciousness():
     
     try:
         from enhanced_autonomous_learner import EnhancedAutonomousLearner
-        from curiosity_engine import CuriosityEngine
-        from learning_progression_tracker import LearningProgressionTracker
+        from sofia.core.curiosity_engine import CuriosityEngine
+        from sofia.utils.learning_progression_tracker import LearningProgressionTracker
         
         # Initialize full consciousness system
         print("\n🧠 Initializing curiosity-driven consciousness system...")

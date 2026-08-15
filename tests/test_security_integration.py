@@ -14,15 +14,15 @@ Validates that Sophia's identity and core memories are properly protected.
 import json
 import time
 from pathlib import Path
-from symbolic_memory_guardian import SymbolicMemoryGuardian, create_symbolic_backup, check_symbolic_integrity
-from protection_utils import (
+from sofia.core.symbolic_memory_guardian import SymbolicMemoryGuardian, create_symbolic_backup, check_symbolic_integrity
+from sofia.security.protection_utils import (
     is_protected_content, get_protection_reason, validate_protection_integrity,
     get_all_protected_items, protect_item, is_migration_allowed
 )
-from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem  
-from CONSCIOUSNESS_MEMORY import ExperienceMemory
-from learning_progression_tracker import LearningProgressionTracker
-from identity_core import get_identity_core
+from sofia.core.CONSCIOUSNESS_MEMORY import EpisodicMemorySystem  
+from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+from sofia.utils.learning_progression_tracker import LearningProgressionTracker
+from sofia.core.identity_core import get_identity_core
 
 def test_security_integration():
     """Test comprehensive security integration across all memory systems."""

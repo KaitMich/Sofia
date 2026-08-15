@@ -13,10 +13,10 @@ Demonstrates Sophia's cross-experience synthesis capabilities.
 
 import json
 import time
-from INSIGHT_RELEVANCE import PatternRecognitionEngine as PatternRecognitionSystem
-from CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
-from CONSCIOUSNESS_MEMORY import ExperienceMemory
-from learning_progression_tracker import LearningProgressionTracker
+from sofia.core.INSIGHT_RELEVANCE import PatternRecognitionEngine as PatternRecognitionSystem
+from sofia.core.CONSCIOUSNESS_MEMORY import EpisodicMemorySystem
+from sofia.core.CONSCIOUSNESS_MEMORY import ExperienceMemory
+from sofia.utils.learning_progression_tracker import LearningProgressionTracker
 
 def test_pattern_recognition_basic():
     """Test basic pattern recognition capabilities."""

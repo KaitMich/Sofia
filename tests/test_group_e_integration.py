@@ -37,7 +37,7 @@ def test_group_e_integration():
         results["tests_run"] += 1
         
         try:
-            from cluster_namer import cluster_memory, cluster_symbols, assign_cluster_names
+            from sofia.utils.cluster_namer import cluster_memory, cluster_symbols, assign_cluster_names
             
             # Test basic K-means clustering (from original clustering.py)
             test_memory_data = [
@@ -130,7 +130,7 @@ def test_group_e_integration():
         results["tests_run"] += 1
         
         try:
-            import system_analytics as sa
+            from sofia.utils import system_analytics as sa
             
             # Check dependency handling
             matplotlib_ok = getattr(sa, 'MATPLOTLIB_AVAILABLE', False)

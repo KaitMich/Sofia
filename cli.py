@@ -1,3 +1,4 @@
+import sitecustomize
 # cli.py - Command Line Interface for Dual Brain AI System
 
 import sys
@@ -17,7 +18,7 @@ except ImportError as e:
     ORCHESTRATOR_AVAILABLE = False
 
 # Import shutdown manager
-from shutdown_manager import get_shutdown_manager, create_memory_cleanup, create_log_cleanup
+from sofia.utils.shutdown_manager import get_shutdown_manager, create_memory_cleanup, create_log_cleanup
 
 class DualBrainCLI:
     """Command Line Interface for the Dual Brain AI System"""
@@ -782,7 +783,7 @@ Examples:
         and moves them when they have sufficient related neighbors.
         """
         try:
-            from memory_management import run_bridge_reclassification_review
+            from sofia.memory.memory_management import run_bridge_reclassification_review
 
             mode = "DRY RUN (preview only)" if args.dry_run else "LIVE (will make changes)"
             self.print_status(f"Bridge Memory Review - {mode}")
@@ -846,7 +847,7 @@ Examples:
         - REM Phase (Dream Sleep): Generate insights from distant connections
         """
         try:
-            from dream_cycle import DreamCycleOrchestrator
+            from sofia.core.dream_cycle import DreamCycleOrchestrator
 
             # Determine mode
             if args.nrem_only and args.rem_only:
@@ -989,7 +990,7 @@ Examples:
 
             # Also register real memory cleanup if available
             try:
-                from unified_memory import get_unified_memory
+                from sofia.core.unified_memory import get_unified_memory
                 unified_memory = get_unified_memory(data_dir=self.data_dir)
                 self.shutdown_manager.register_cleanup(
                     create_memory_cleanup(unified_memory),
@@ -1030,7 +1031,7 @@ Examples:
     def cmd_immune_status(self, args) -> int:
         """Show immune system health and statistics"""
         try:
-            from immune_audit import ImmuneAudit
+            from sofia.security.immune_audit import ImmuneAudit
 
             self.print_status("Checking immune system health...", "info")
             audit = ImmuneAudit(self.data_dir)
@@ -1085,7 +1086,7 @@ Examples:
     def cmd_immune_review(self, args) -> int:
         """Review recent immune decisions"""
         try:
-            from immune_audit import ImmuneAudit
+            from sofia.security.immune_audit import ImmuneAudit
 
             self.print_status(f"Retrieving last {args.limit} decisions...", "info")
             audit = ImmuneAudit(self.data_dir)
@@ -1102,7 +1103,7 @@ Examples:
     def cmd_immune_trust(self, args) -> int:
         """Show trust history for a domain"""
         try:
-            from immune_audit import ImmuneAudit
+            from sofia.security.immune_audit import ImmuneAudit
 
             self.print_status(f"Retrieving trust history for {args.domain}...", "info")
             audit = ImmuneAudit(self.data_dir)
@@ -1158,7 +1159,7 @@ Examples:
     def cmd_immune_override(self, args) -> int:
         """Human override of immune decision"""
         try:
-            from self_correction import SelfCorrection
+            from sofia.security.self_correction import SelfCorrection
 
             self.print_status(f"Recording human override for {args.item_id}...", "info")
 
@@ -1182,7 +1183,7 @@ Examples:
     def cmd_immune_export(self, args) -> int:
         """Export full immune audit trail"""
         try:
-            from immune_audit import ImmuneAudit
+            from sofia.security.immune_audit import ImmuneAudit
 
             self.print_status(f"Exporting immune audit to {args.output}...", "info")
 
@@ -1203,7 +1204,7 @@ Examples:
     def cmd_crawl_status(self, args) -> int:
         """Show crawl infrastructure status and statistics"""
         try:
-            from crawl_orchestrator import CrawlOrchestrator
+            from sofia.crawler.crawl_orchestrator import CrawlOrchestrator
 
             self.print_status("Crawl Infrastructure Status", "info")
             print("=" * 60)
@@ -1252,7 +1253,7 @@ Examples:
     def cmd_crawl_add(self, args) -> int:
         """Add URL(s) to crawl queue"""
         try:
-            from crawl_orchestrator import CrawlOrchestrator
+            from sofia.crawler.crawl_orchestrator import CrawlOrchestrator
 
             orchestrator = CrawlOrchestrator(data_dir=self.data_dir)
 
@@ -1275,7 +1276,7 @@ Examples:
     def cmd_crawl_queue(self, args) -> int:
         """Show crawl queue status"""
         try:
-            from crawl_orchestrator import CrawlOrchestrator
+            from sofia.crawler.crawl_orchestrator import CrawlOrchestrator
             import sqlite3
 
             orchestrator = CrawlOrchestrator(data_dir=self.data_dir)
@@ -1320,7 +1321,7 @@ Examples:
     def cmd_crawl_clear(self, args) -> int:
         """Clear completed URLs from queue"""
         try:
-            from crawl_orchestrator import CrawlOrchestrator
+            from sofia.crawler.crawl_orchestrator import CrawlOrchestrator
 
             orchestrator = CrawlOrchestrator(data_dir=self.data_dir)
 
@@ -1347,7 +1348,7 @@ Examples:
     def cmd_robots_check(self, args) -> int:
         """Check robots.txt status for a URL"""
         try:
-            from crawl_orchestrator import CrawlOrchestrator
+            from sofia.crawler.crawl_orchestrator import CrawlOrchestrator
 
             orchestrator = CrawlOrchestrator(data_dir=self.data_dir)
 
@@ -1392,7 +1393,7 @@ Examples:
     def cmd_crawl_health(self, args) -> int:
         """Run comprehensive crawl health check"""
         try:
-            from crawl_orchestrator import CrawlOrchestrator
+            from sofia.crawler.crawl_orchestrator import CrawlOrchestrator
 
             orchestrator = CrawlOrchestrator(data_dir=self.data_dir)
 
@@ -1538,7 +1539,7 @@ Examples:
             if result.get('next_phase_query'):
                 print(f"\n💤 Phase transition achieved — running memory consolidation...")
                 try:
-                    from memory_evolution_engine import run_memory_evolution
+                    from sofia.memory.memory_evolution_engine import run_memory_evolution
                     evo_result = run_memory_evolution(data_dir=self.data_dir)
                     print(f"   Reversed: {evo_result.get('reversed', 0)} | Migrated: {evo_result.get('migrated', 0)}")
                 except Exception as e:
@@ -1827,7 +1828,7 @@ Examples:
         # Check for specific task status
         if hasattr(args, 'task_id') and args.task_id:
             try:
-                from background_tasks import get_task
+                from sofia.utils.background_tasks import get_task
                 task = get_task(args.task_id, self.data_dir)
                 if not task:
                     self.print_status(f"Task not found: {args.task_id}", "error")
@@ -1879,7 +1880,7 @@ Examples:
 
         # Background tasks
         try:
-            from background_tasks import list_tasks
+            from sofia.utils.background_tasks import list_tasks
             tasks = list_tasks(limit=5, data_dir=self.data_dir)
             running = [t for t in tasks if t['status'] == 'running']
             if running:
@@ -1904,7 +1905,7 @@ Examples:
             if args.background:
                 # Run in background
                 try:
-                    from background_tasks import get_task_manager, start_background_task
+                    from sofia.utils.background_tasks import get_task_manager, start_background_task
 
                     task_manager = get_task_manager(self.data_dir)
                     metadata = {
@@ -1925,7 +1926,7 @@ Examples:
                         """Background learning process"""
                         try:
                             from enhanced_autonomous_learner import start_massive_web_learning
-                            from background_tasks import update_task
+                            from sofia.utils.background_tasks import update_task
 
                             result = start_massive_web_learning(
                                 seed_urls=seeds,
@@ -1939,7 +1940,7 @@ Examples:
                             else:
                                 update_task(task_id, 'completed', result={'status': 'done'}, data_dir=data_dir)
                         except Exception as e:
-                            from background_tasks import update_task
+                            from sofia.utils.background_tasks import update_task
                             update_task(task_id, 'failed', error=str(e), data_dir=data_dir)
 
                     p = multiprocessing.Process(
@@ -2028,7 +2029,7 @@ Examples:
 
         if args.background:
             try:
-                from background_tasks import get_task_manager
+                from sofia.utils.background_tasks import get_task_manager
                 import multiprocessing
 
                 task_manager = get_task_manager(self.data_dir)
@@ -2038,14 +2039,14 @@ Examples:
                 def bg_topic_learn(task_id, url, urls, data_dir):
                     try:
                         from enhanced_autonomous_learner import start_massive_web_learning
-                        from background_tasks import update_task
+                        from sofia.utils.background_tasks import update_task
                         result = start_massive_web_learning([url], urls, 'general', data_dir)
                         if hasattr(result, 'session_stats'):
                             update_task(task_id, 'completed', result=result.session_stats, data_dir=data_dir)
                         else:
                             update_task(task_id, 'completed', data_dir=data_dir)
                     except Exception as e:
-                        from background_tasks import update_task
+                        from sofia.utils.background_tasks import update_task
                         update_task(task_id, 'failed', error=str(e), data_dir=data_dir)
 
                 p = multiprocessing.Process(
