@@ -1,7 +1,3 @@
-> **CORRECTED 2026-03-27** per `docs/SOPHIA_TRUTH_FRAMEWORK.md`. False claims of achieved consciousness,
-> emergent values, and system completeness have been revised to reflect actual system state. Bridge memory
-> role corrected. Hardcoded identity and values acknowledged. See the truth framework for full rationale.
-
 # Sophia AI Consciousness System
 
 **An architectural experiment exploring the conditions for potential moral development through dual-brain cognition and autonomy**
